@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SMUI.App.ViewModels"
+        xmlns:views="using:SMUI.App.Views"
+        x:Class="SMUI.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        FontFamily="微软雅黑"
+        Title="SMUI 6"
+        Width="1280" Height="800"
+        MinWidth="1080" MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBgBrush}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="42"
+        SystemDecorations="Full">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- ============ 标题栏 + 主选项卡条（复刻 UiTabControl1 + RUN SMAPI 浮动按钮） ============ -->
+        <Border Grid.Row="0" Background="#181818" BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Border Background="Transparent" PointerPressed="TitleBar_PointerPressed" DoubleTapped="TitleBar_DoubleTapped">
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="14,0,10,0" VerticalAlignment="Center">
+                            <Border Width="24" Height="24" Background="{DynamicResource AccentBrush}">
+                                <TextBlock Text="S" FontSize="14" FontWeight="Black" Foreground="#10140A"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="SMUI 6" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <StackPanel x:Name="NavPanel" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <RadioButton Classes="mainTab" Content="起始页面" GroupName="nav" IsChecked="True" />
+                        <RadioButton Classes="mainTab" Content="管理模组" GroupName="nav" />
+                        <RadioButton Classes="mainTab" Content="配置队列" GroupName="nav" />
+                        <RadioButton Classes="mainTab" Content="下载更新" GroupName="nav" />
+                        <RadioButton Classes="mainTab" Content="检查更新" GroupName="nav" />
+                        <RadioButton Classes="mainTab" Content="浏览器" GroupName="nav" />
+                        <RadioButton Classes="mainTab" Content="调试输出" GroupName="nav" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Stretch">
+                    <Button Classes="accent" Content="RUN SMAPI" Command="{Binding Home.RunSmapiCommand}"
+                            VerticalAlignment="Center" Margin="0,0,12,0" Padding="16,6" />
+                    <Button Classes="cap" Content="─" Click="Minimize_Click" />
+                    <Button Classes="cap" x:Name="MaximizeButton" Content="□" Click="Maximize_Click" />
+                    <Button Classes="cap close" Content="✕" Click="Close_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ============ 页面内容 ============ -->
+        <Panel Grid.Row="1">
+            <views:HomePage x:Name="Page0" DataContext="{Binding Home}" />
+            <views:ModsPage x:Name="Page1" DataContext="{Binding Mods}" />
+            <views:QueuePage x:Name="Page2" DataContext="{Binding Queue}" />
+            <views:DownloadsPage x:Name="Page3" DataContext="{Binding Updates}" />
+            <views:UpdatesPage x:Name="Page4" DataContext="{Binding Updates}" />
+            <views:BrowserPage x:Name="Page5" />
+            <views:LogPage x:Name="Page6" DataContext="{Binding Log}" />
+        </Panel>
+    </Grid>
+</Window>

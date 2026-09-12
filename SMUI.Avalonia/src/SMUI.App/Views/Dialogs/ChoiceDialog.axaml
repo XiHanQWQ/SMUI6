@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SMUI.App.ViewModels"
+        x:Class="SMUI.App.Views.Dialogs.ChoiceDialog"
+        x:DataType="vm:ChoiceDialogViewModel"
+        Title="{Binding Title}"
+        Width="480" MaxWidth="640" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Background="{DynamicResource WindowBgBrush}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="34">
+
+    <Design.DataContext>
+        <vm:ChoiceDialogViewModel/>
+    </Design.DataContext>
+
+    <Border Margin="1" CornerRadius="12" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1">
+        <StackPanel Margin="22,18,22,20" Spacing="14">
+            <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" TextWrapping="Wrap" />
+            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14,10"
+                    MaxHeight="260" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <ScrollViewer>
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="13" LineHeight="21" />
+                </ScrollViewer>
+            </Border>
+            <ItemsControl ItemsSource="{Binding Options}" Margin="0,2,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding}" Command="{Binding $parent[Window].((vm:ChoiceDialogViewModel)DataContext).SelectCommand}"
+                                CommandParameter="{Binding}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Margin="0,0,0,7" Padding="14,9" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Border>
+</Window>

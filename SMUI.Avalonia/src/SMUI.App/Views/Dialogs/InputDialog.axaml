@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SMUI.App.ViewModels"
+        xmlns:v="using:SMUI.App.Views"
+        x:Class="SMUI.App.Views.Dialogs.InputDialog"
+        x:DataType="vm:InputDialogViewModel"
+        Title="{Binding Title}"
+        Width="440" MaxWidth="620" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Background="{DynamicResource WindowBgBrush}"
+        TransparencyLevelHint="AcrylicBlur"
+        TransparencyBackgroundFallback="{DynamicResource WindowBgBrush}">
+
+    <Design.DataContext>
+        <vm:InputDialogViewModel/>
+    </Design.DataContext>
+
+    <Border Margin="1" CornerRadius="12" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1">
+        <StackPanel Margin="22,18,22,20" Spacing="14">
+            <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" IsVisible="{Binding Label, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <TextBox Text="{Binding Value}" x:Name="ValueBox" AcceptsReturn="{Binding Multiline}"
+                     MinHeight="{Binding Multiline, Converter={x:Static v:MultilineMinHeightConverter.Instance}}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,4,0,0">
+                <Button Content="取消" Command="{Binding CancelCommand}" MinWidth="88" />
+                <Button Content="确定" Command="{Binding OkCommand}" Classes="accent" MinWidth="88" IsDefault="True" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

@@ -1,0 +1,127 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SMUI.App.ViewModels"
+             xmlns:v="using:SMUI.App.Views"
+             x:Class="SMUI.App.Views.QueuePage"
+             x:DataType="vm:QueuePageViewModel">
+
+    <Design.DataContext>
+        <vm:QueuePageViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Border Grid.Row="0" Background="{DynamicResource PanelBrush}" Padding="14,10"
+                BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="配置队列" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+                <TextBlock Text="把模组项加入队列后统一编辑安装规划（Code2）" Classes="dim" VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="250,7,260,7,*">
+            <GridSplitter Grid.Column="1" Background="Transparent" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
+
+            <!-- 队列列表 -->
+            <Border Grid.Column="0" Background="{DynamicResource PanelBrush}"
+                    BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="Auto,*">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="12,10">
+                        <TextBlock Text="队列" Classes="sectionTitle" VerticalAlignment="Center" />
+                        <Button Classes="ghost" Content="清空" Command="{Binding ClearQueueCommand}" />
+                    </StackPanel>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding QueueItems}" SelectedItem="{Binding SelectedQueueItem}"
+                             Margin="8,0,8,8" Background="Transparent">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:QueueItemVm">
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="{Binding Name}" FontSize="13" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Category}" FontSize="10.5" Classes="dim" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- 编辑区 -->
+            <Grid Grid.Column="1" ColumnDefinitions="260,*" Margin="0">
+
+                <!-- 项内容 -->
+                <Border Grid.Column="2" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,1,0">
+                    <Grid RowDefinitions="Auto,*,Auto" Margin="10">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="0,4,0,8">
+                            <TextBlock Text="项内容" Classes="sectionTitle" VerticalAlignment="Center" />
+                            <Button Classes="ghost" Content="⟳" Command="{Binding RescanContentsCommand}" />
+                        </StackPanel>
+                        <ListBox Grid.Row="1" x:Name="ContentList" ItemsSource="{Binding Contents}" Margin="0,0,0,8"
+                                 Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ContentVm">
+                                    <StackPanel Orientation="Horizontal" Spacing="7">
+                                        <TextBlock Text="{Binding Name}" FontSize="12.5"
+                                                   Foreground="{Binding ColorKey, Converter={x:Static v:StatusColorConverter.Instance}}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Kind}" FontSize="10" Classes="dim" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <WrapPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Button Classes="ghost" Content="添加文件" Command="{Binding AddFilesCommand}" Margin="0,0,8,6" />
+                            <Button Classes="ghost" Content="添加文件夹" Command="{Binding AddFolderCommand}" Margin="0,0,8,6" />
+                            <Button Classes="ghost" Content="删除选中" Command="{Binding DeleteContentsCommand}" Margin="0,0,8,6" />
+                            <Button Classes="ghost" Content="解压压缩包" Command="{Binding ExtractArchiveCommand}" Margin="0,0,8,6" />
+                            <Button Classes="ghost" Content="拿出内容" Command="{Binding UnNestCommand}" Margin="0,0,8,6" />
+                            <Button Classes="ghost" Content="套层" Command="{Binding NestCommand}" Margin="0,0,8,6" />
+                            <Button Classes="ghost" Content="打开目录" Command="{Binding OpenItemDirectoryCommand}" Margin="0,0,8,6" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 安装规划 -->
+                <Grid Grid.Column="4" RowDefinitions="Auto,Auto,*,Auto" Margin="14,10,14,10">
+
+                    <StackPanel Grid.Row="0" Spacing="8">
+                        <TextBlock Text="项信息" Classes="sectionTitle" />
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <TextBox Text="{Binding EditingName}" Watermark="项名称" Width="180" Margin="0,0,8,8" />
+                            <TextBox Text="{Binding EditingVersion}" Watermark="版本号（可选）" Width="120" Margin="0,0,8,8" />
+                            <Button Classes="accent" Content="💾 保存" Command="{Binding SaveItemCommand}" VerticalAlignment="Center" Margin="0,0,8,8" />
+                            <Button Classes="tool" Content="保存并移出队列" Command="{Binding SaveAndRemoveCommand}" VerticalAlignment="Center" Margin="0,0,8,8" />
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <TextBlock Text="安装规划" Classes="sectionTitle" VerticalAlignment="Center" Margin="0,0,10,6" />
+                        <Button Classes="tool" Margin="0,0,8,6" Content="➕ 添加规划" Command="{Binding AddPlanCommand}" />
+                        <Button Classes="tool" Margin="0,0,8,6" Content="✏️ 编辑" Command="{Binding EditPlanCommand}" />
+                        <Button Classes="tool" Margin="0,0,8,6" Content="🗑️ 删除" Command="{Binding RemovePlanCommand}" />
+                        <Button Classes="tool" Margin="0,0,8,6" Content="↑" Command="{Binding MovePlanUpCommand}" />
+                        <Button Classes="tool" Margin="0,0,8,6" Content="↓" Command="{Binding MovePlanDownCommand}" />
+                        <Button Classes="accent" Margin="0,0,8,6" Content="⚡ 自动规划" Command="{Binding AutoPlanCommand}" />
+                    </WrapPanel>
+
+                    <ListBox Grid.Row="2" x:Name="PlanList" ItemsSource="{Binding Plans}"
+                             SelectedItem="{Binding SelectedPlan}" Background="Transparent" Margin="0"
+                             DoubleTapped="PlanList_DoubleTapped">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PlanStepVm">
+                                <Grid ColumnDefinitions="190,*" Margin="2,3">
+                                    <TextBlock Grid.Column="0" Text="{Binding Display}" FontSize="12.5"
+                                               Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="1" Text="{Binding ValuePreview}" FontSize="12"
+                                               Classes="dim" TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock Grid.Row="3" Classes="dim" TextWrapping="Wrap"
+                               Text="双击规划行可直接编辑。规划将按顺序写入项目录下的 Code2 文件；自动规划会为含 manifest.json 的文件夹生成标准安装命令。" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
