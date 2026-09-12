@@ -11,8 +11,6 @@
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBgBrush}"
         ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaChromeHints="NoChrome"
-        ExtendClientAreaTitleBarHeightHint="42"
         SystemDecorations="Full">
 
     <Design.DataContext>

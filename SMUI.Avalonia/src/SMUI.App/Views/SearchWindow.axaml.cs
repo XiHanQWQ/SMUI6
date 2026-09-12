@@ -16,16 +16,12 @@ public class SearchResultRow
     public string Category { get; set; } = "";
     public string Version { get; set; } = "";
     public string StatusText { get; set; } = "";
-    /// <summary>双击跳转回管理模组页所需的位置信息。</summary>
     public string ItemPath { get; set; } = "";
-
-    /// <summary>命中的字段说明（项名/作者/描述/UniqueID）。</summary>
     public string MatchIn { get; set; } = "";
-
     public string Location => SubLibrary + " ▸ " + Category;
 }
 
-/// <summary>全库搜索窗体（复刻 Form搜索）：项名/作者/描述/UniqueID 关键字搜索，双击跳转。</summary>
+/// <summary>全库搜索窗体：项名/作者/描述/UniqueID 关键字搜索，双击跳转。</summary>
 public partial class SearchWindow : Window
 {
     private readonly ModsPageViewModel _mods;
@@ -33,7 +29,6 @@ public partial class SearchWindow : Window
     private readonly string _currentSub;
     private readonly string _currentCategory;
 
-    /// <summary>双击结果后请求管理模组页跳转定位（子库, 分类, 项名）。</summary>
     public event Action<string, string, string>? LocateRequested;
 
     public SearchWindow(ModsPageViewModel mods, SettingsService settings,
@@ -46,26 +41,19 @@ public partial class SearchWindow : Window
         _currentCategory = currentCategory;
         KeywordBox.Text = initialKeyword;
         SearchButton.Click += (_, _) => _ = RunSearchAsync();
-        KeywordBox.KeyDown += (_, e) =>
-        {
-            if (e.Key == Key.Enter) _ = RunSearchAsync();
-        };
+        KeywordBox.KeyDown += (_, e) => { if (e.Key == Key.Enter) _ = RunSearchAsync(); };
         KeywordBox.Focus();
     }
 
     private async Task RunSearchAsync()
     {
         var keyword = KeywordBox.Text?.Trim() ?? "";
-        if (keyword == "")
-        {
-            SummaryText.Text = "请先输入关键字";
-            return;
-        }
+        if (keyword == "") { SummaryText.Text = "请先输入关键字"; return; }
         SearchButton.IsEnabled = false;
         SummaryText.Text = "搜索中...";
         ResultList.ItemsSource = null;
 
-        var scope = ScopeBox.SelectedIndex; // 0 当前分类 / 1 当前子库 / 2 全库
+        var scope = ScopeBox.SelectedIndex;
         var results = await Task.Run(() => Search(keyword, scope));
         ResultList.ItemsSource = results;
         SummaryText.Text = results.Count == 0 ? "没有匹配的模组项" : $"共 {results.Count} 项匹配";
@@ -94,18 +82,14 @@ public partial class SearchWindow : Window
                 var info = new ItemInfo();
                 info.Read(entry.ItemPath, new ItemInfo.ComputeFlags
                 {
-                    Name = true,
-                    Author = true,
-                    Description = true,
-                    UniqueId = true,
+                    Name = true, Author = true, Description = true, UniqueId = true,
                 });
 
                 var matchedIn =
                     entry.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ? "项名" :
                     info.Authors.Any(a => a.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ? "作者" :
                     info.Descriptions.Any(d => d.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ? "描述" :
-                    info.UniqueIds.Any(u => u.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ? "UniqueID" :
-                    "";
+                    info.UniqueIds.Any(u => u.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ? "UniqueID" : "";
 
                 if (matchedIn == "") continue;
                 rows.Add(new SearchResultRow

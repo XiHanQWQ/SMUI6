@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using SMUI.App.ViewModels;
 
@@ -15,7 +15,7 @@ public partial class HomePage : UserControl
         {
             var captured = index;
             if (child is RadioButton radio)
-                radio.Checked += (_, _) => ShowInner(captured);
+                radio.IsCheckedChanged += (_, _) => ShowInner(captured);
             index++;
         }
         ShowInner(0);

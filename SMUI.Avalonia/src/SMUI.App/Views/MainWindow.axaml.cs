@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using SMUI.App.ViewModels;
@@ -62,7 +62,7 @@ public partial class MainWindow : Window
         {
             var captured = index;
             if (child is RadioButton radio)
-                radio.Checked += (_, _) =>
+                radio.IsCheckedChanged += (_, _) =>
                 {
                     if (DataContext is MainWindowViewModel vm)
                         vm.SelectedPageIndex = captured;

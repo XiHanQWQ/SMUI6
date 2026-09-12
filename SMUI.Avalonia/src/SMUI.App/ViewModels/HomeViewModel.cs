@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -60,8 +60,8 @@ public partial class HomeViewModel : ViewModelBase
                 Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime d => d.MainWindow,
                 _ => null,
             };
-            if (top?.Clipboard is { } clip)
-                await clip.SetTextAsync(text);
+            // TODO: Avalonia 12 剪贴板 API 重构后恢复
+            // if (top?.Clipboard is { } clip) clip.SetTextAsync(text);
             _log.Print("状态信息已复制到剪贴板", LogKind.Info);
         }
         catch { }

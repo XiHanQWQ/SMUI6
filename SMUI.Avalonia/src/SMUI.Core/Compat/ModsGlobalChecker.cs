@@ -78,7 +78,7 @@ public class ModsGlobalCheck
             try { text = File.ReadAllText(Path.Combine(modsFolder, relative)); }
             catch { continue; }
             JsonDocument doc;
-            try { doc = JsonDocument.Parse(text); }
+            try { doc = SMUI.Core.Util.JsonHelper.ParseWithComments(text); }
             catch { continue; }
             using (doc)
             {
@@ -125,7 +125,7 @@ public class ModsGlobalCheck
         foreach (var relative in manifests)
         {
             JsonDocument doc;
-            try { doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(modsFolder, relative))); }
+            try { doc = SMUI.Core.Util.JsonHelper.ParseWithComments(File.ReadAllText(Path.Combine(modsFolder, relative))); }
             catch { continue; }
             using (doc)
             {

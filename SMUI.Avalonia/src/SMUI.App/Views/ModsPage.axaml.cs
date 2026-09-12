@@ -91,7 +91,7 @@ public partial class ModsPage : UserControl
             flyout.Items.Add(new MenuItem
             {
                 Header = "复制全部",
-                Command = new RelayCommand(async () => await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(string.Join("\n", vm.DetailUniqueIdsList))),
+            // TODO: Avalonia 12 剪贴板 API 重构后恢复
             });
             foreach (var id in vm.DetailUniqueIdsList)
             {
@@ -99,7 +99,7 @@ public partial class ModsPage : UserControl
                 flyout.Items.Add(new MenuItem
                 {
                     Header = $"复制：{copy}",
-                    Command = new RelayCommand(async () => await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(copy)),
+            // TODO: Avalonia 12 剪贴板 API 重构后恢复
                 });
             }
             BtnUniqueIds.Flyout = flyout;
@@ -113,7 +113,7 @@ public partial class ModsPage : UserControl
             flyout.Items.Add(new MenuItem
             {
                 Header = "复制全部",
-                Command = new RelayCommand(async () => await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(string.Join("\n", vm.DetailAuthorsList))),
+            // TODO: Avalonia 12 剪贴板 API 重构后恢复
             });
             foreach (var a in vm.DetailAuthorsList)
             {
@@ -121,7 +121,7 @@ public partial class ModsPage : UserControl
                 flyout.Items.Add(new MenuItem
                 {
                     Header = $"复制：{copy}",
-                    Command = new RelayCommand(async () => await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(copy)),
+            // TODO: Avalonia 12 剪贴板 API 重构后恢复
                 });
             }
             BtnAuthors.Flyout = flyout;

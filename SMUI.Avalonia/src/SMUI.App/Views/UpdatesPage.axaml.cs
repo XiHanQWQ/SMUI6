@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 
 namespace SMUI.App.Views;
 
@@ -13,7 +13,7 @@ public partial class UpdatesPage : UserControl
         {
             var captured = index;
             if (child is RadioButton radio)
-                radio.Checked += (_, _) => ShowStep(captured);
+                radio.IsCheckedChanged += (_, _) => ShowStep(captured);
             index++;
         }
         ShowStep(0);

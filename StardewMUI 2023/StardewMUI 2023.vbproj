@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
     <RootNamespace>SMUI6</RootNamespace>
     <StartupObject>Sub Main</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
@@ -16,9 +16,10 @@
     <AssemblyVersion>6.7.0</AssemblyVersion>
     <FileVersion>6.7.0</FileVersion>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <Version>6.7.0</Version>
+    <Version>6.7.1</Version>
     <AnalysisLevel>latest</AnalysisLevel>
     <UseWPF>True</UseWPF>
+    <NoWarn>$(NoWarn);WFO1000</NoWarn>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
 

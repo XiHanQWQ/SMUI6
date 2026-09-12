@@ -1,12 +1,12 @@
 [Setup]
 SetupIconFile=D:\34528\Desktop\SMUI-2023-master\StardewMUI 2023\dropbox.ico
 AppName=SMUI Avalonia
-AppVersion=6.7.0
+AppVersion=6.7.1
 AppPublisher=XiHanQWQ
 DefaultDirName={autopf}\SMUI Avalonia
 DefaultGroupName=SMUI Avalonia
 OutputDir=D:\34528\Desktop\SMUI_Installer_Stage
-OutputBaseFilename=SMUI.Avalonia.6.7.0.Installer
+OutputBaseFilename=SMUI.Avalonia.6.7.1.Installer
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

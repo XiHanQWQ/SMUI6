@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.WebView.Desktop;
 using System;
 
 namespace SMUI.App;
@@ -14,6 +13,5 @@ internal static class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .UseDesktopWebView()
             .LogToTrace();
 }

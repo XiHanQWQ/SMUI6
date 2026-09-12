@@ -266,7 +266,7 @@ public class InstallEngine
         string installedVersion;
         try
         {
-            using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifest));
+            using var doc = SMUI.Core.Util.JsonHelper.ParseWithComments(File.ReadAllText(manifest));
             installedVersion = doc.RootElement.TryGetProperty("Version", out var v) ? v.ToString() : "";
         }
         catch

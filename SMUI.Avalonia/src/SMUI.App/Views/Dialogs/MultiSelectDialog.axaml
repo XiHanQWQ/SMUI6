@@ -9,9 +9,7 @@
         CanResize="False"
         ShowInTaskbar="False"
         Background="{DynamicResource WindowBgBrush}"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaChromeHints="NoChrome"
-        ExtendClientAreaTitleBarHeightHint="34">
+        ExtendClientAreaToDecorationsHint="True">
 
     <Design.DataContext>
         <vm:MultiSelectDialogViewModel/>

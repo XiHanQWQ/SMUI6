@@ -279,7 +279,7 @@ public class ItemInfo
             catch { continue; }
 
             JsonDocument doc;
-            try { doc = JsonDocument.Parse(text); }
+            try { doc = SMUI.Core.Util.JsonHelper.ParseWithComments(text); }
             catch { continue; }
             using (doc)
             {
@@ -309,7 +309,7 @@ public class ItemInfo
                     {
                         try
                         {
-                            using var doc2 = JsonDocument.Parse(File.ReadAllText(installedManifest));
+                            using var doc2 = SMUI.Core.Util.JsonHelper.ParseWithComments(File.ReadAllText(installedManifest));
                             if (TryGetString(doc2.RootElement, "Version", out var iv))
                                 AddUnique(InstalledVersions, iv);
                         }
