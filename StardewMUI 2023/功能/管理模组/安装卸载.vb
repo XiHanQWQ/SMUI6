@@ -44,115 +44,76 @@ Public Class 安装卸载
                     后台线程对象.ReportProgress(2, $"加载规划数据：{Path.GetFileName(模组项路径列表(i))}")
                     任务队列.全部数据初始化()
                     任务队列.项路径 = 模组项路径列表(i)
-                    Dim 引擎 As New SMUI.Core.Engine.InstallEngine With {
-                        .ItemPath = 模组项路径列表(i),
-                        .GamePath = 设置.全局设置数据("StardewValleyGamePath"),
-                        .GameBackupPath = 设置.全局设置数据("StardewValleyGameBackupPath"),
-                        .Report = Sub(kind, msg) 后台线程对象.ReportProgress(kind, msg)
-                    }
-                    ' 插件自定义规划桥接：把插件注册的处理器接入引擎（内置码不重复注册）
-                    For Each 注册项 In 任务队列.队列键值匹配字典
-                        If Not SMUI.Core.Engine.InstallEngine.BuiltInStepCodes.Contains(注册项.Key) Then
-                            Dim 规划码 = 注册项.Key
-                            Dim 识别器 = 注册项.Value
-                            引擎.RecognizeHandlers(规划码) = Sub() 识别器.Invoke()
-                        End If
-                    Next
-                    For Each 注册项 In 任务队列.安装操作匹配字典
-                        If Not SMUI.Core.Engine.InstallEngine.BuiltInStepCodes.Contains(注册项.Key) Then
-                            Dim 规划码 = 注册项.Key
-                            Dim 处理器 = 注册项.Value
-                            引擎.InstallHandlers(规划码) = Sub() 处理器.Invoke()
-                        End If
-                    Next
-                    For Each 注册项 In 任务队列.卸载操作匹配字典
-                        If Not SMUI.Core.Engine.InstallEngine.BuiltInStepCodes.Contains(注册项.Key) Then
-                            Dim 规划码 = 注册项.Key
-                            Dim 处理器 = 注册项.Value
-                            引擎.UninstallHandlers(规划码) = Sub() 处理器.Invoke()
-                        End If
-                    Next
-                    ' 插件处理器读取的原始规划与任务列表镜像（保持旧版语义）
-                    任务队列.安装规划原文本列表对象 = New List(Of KeyValuePair(Of String, String))(引擎.RawPlan)
-                    任务队列.任务列表.Clear()
-                    任务队列.当前正在处理的索引 = 0
-
-                    Dim s1 As String = 引擎.LoadPlan()
+                    Dim s1 As String = 任务队列.加载安装规划数据()
                     If s1 <> "" Then
                         后台线程对象.ReportProgress(3, $"加载规划数据错误： {s1}")
                         Continue For
                     End If
-                    后台线程对象.ReportProgress(2, $"规划步骤总数：{引擎.Steps.Count}")
-                    任务队列.任务列表.Clear()
-                    For Each 步骤 In 引擎.Steps
-                        任务队列.任务列表.Add(New 任务队列.任务列表结构 With {.规划名称 = 步骤.Name, .参数行 = 步骤.Args})
-                    Next
+                    后台线程对象.ReportProgress(2, $"规划步骤总数：{任务队列.任务列表.Count}")
 
                     Select Case 操作类型
                         Case 操作类型.安装
-                            For i2 = 0 To 引擎.Steps.Count - 1
-                                Try
-                                    引擎.ExecuteInstall(i2)
-                                Catch ex As Exception
-                                    后台线程对象.ReportProgress(3, $"{ex.Message}")
+                            For i2 = 0 To 任务队列.任务列表.Count - 1
+                                Dim s2 As String = 任务队列.执行安装(i2)
+                                If s2 <> "" Then
+                                    后台线程对象.ReportProgress(3, $"{s2}")
                                     后台线程对象.ReportProgress(3, $"正在回滚操作")
                                     For i3 = i2 To 0 Step -1
-                                        Try
-                                            引擎.ExecuteUninstall(i3)
-                                        Catch
-                                            ' 回滚阶段的单步失败不中断回滚
-                                        End Try
+                                        任务队列.执行卸载(i3)
                                     Next
                                     Exit For
-                                End Try
+                                End If
                             Next
                             后台线程对象.ReportProgress(50, i)
                         Case 操作类型.卸载
-                            For i2 = 引擎.Steps.Count - 1 To 0 Step -1
-                                Try
-                                    引擎.ExecuteUninstall(i2)
-                                    If 引擎.UninstallCancelled Then Exit For
-                                Catch ex As Exception
-                                    后台线程对象.ReportProgress(3, $"{ex.Message}")
+                            For i2 = 任务队列.任务列表.Count - 1 To 0 Step -1
+                                Dim s2 As String = 任务队列.执行卸载(i2)
+                                If 任务队列.是否取消了操作 Then Exit For
+                                If s2 <> "" Then
+                                    后台线程对象.ReportProgress(3, $"{s2}")
                                     后台线程对象.ReportProgress(3, $"卸载操作不能通过反向执行来回滚操作，这可能已经导致了预期外的问题")
                                     Exit For
-                                End Try
+                                End If
                             Next
                             后台线程对象.ReportProgress(50, i)
                         Case 操作类型.更新项_直接覆盖
                             后台线程对象.ReportProgress(2, $"规划数据已载入")
-                            For Each 步骤 In 引擎.Steps
-                                If 步骤.Name = "CD-D-MODS" Then
-                                    If Directory.Exists(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 步骤.Args)) Then
-                                        后台线程对象.ReportProgress(1, $"已找到游戏内的 {步骤.Args} 文件夹，正在覆盖到数据库")
-                                        FileIO.FileSystem.CopyDirectory(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 步骤.Args), Path.Combine(模组项路径列表(i), 步骤.Args), True)
-                                    Else
-                                        后台线程对象.ReportProgress(1, $"未找到游戏内的 {步骤.Args} 文件夹，跳过")
-                                    End If
-                                End If
+
+                            For i2 = 0 To 任务队列.任务列表.Count - 1
+                                Select Case 任务队列.任务列表(i2).规划名称
+                                    Case "CD-D-MODS"
+                                        If FileIO.FileSystem.DirectoryExists(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 任务队列.任务列表(i2).参数行)) Then
+                                            后台线程对象.ReportProgress(1, $"已找到游戏内的 {任务队列.任务列表(i2).参数行} 文件夹，正在覆盖到数据库")
+                                            FileIO.FileSystem.CopyDirectory(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 任务队列.任务列表(i2).参数行), Path.Combine(模组项路径列表(i), 任务队列.任务列表(i2).参数行), True)
+                                        Else
+                                            后台线程对象.ReportProgress(1, $"未找到游戏内的 {任务队列.任务列表(i2).参数行} 文件夹，跳过")
+                                        End If
+                                End Select
                             Next
                         Case 操作类型.更新项_完全替换
                             后台线程对象.ReportProgress(2, $"规划数据已载入")
-                            For Each 步骤 In 引擎.Steps
-                                If 步骤.Name = "CD-D-MODS" Then
-                                    If Directory.Exists(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 步骤.Args)) Then
-                                        后台线程对象.ReportProgress(1, $"已找到游戏内的 {步骤.Args} 文件夹")
-                                        If Directory.Exists(Path.Combine(模组项路径列表(i), 步骤.Args)) Then
-                                            后台线程对象.ReportProgress(1, $"正在删除数据库内已有内容")
-                                            FileIO.FileSystem.DeleteDirectory(Path.Combine(模组项路径列表(i), 步骤.Args), FileIO.DeleteDirectoryOption.DeleteAllContents)
-                                            后台线程对象.ReportProgress(1, $"正在复制到数据库")
-                                            FileIO.FileSystem.CopyDirectory(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 步骤.Args), Path.Combine(模组项路径列表(i), 步骤.Args), True)
+                            For i2 = 0 To 任务队列.任务列表.Count - 1
+                                Select Case 任务队列.任务列表(i2).规划名称
+                                    Case "CD-D-MODS"
+                                        If FileIO.FileSystem.DirectoryExists(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 任务队列.任务列表(i2).参数行)) Then
+                                            后台线程对象.ReportProgress(1, $"已找到游戏内的 {任务队列.任务列表(i2).参数行} 文件夹")
+                                            If FileIO.FileSystem.DirectoryExists(Path.Combine(模组项路径列表(i), 任务队列.任务列表(i2).参数行)) Then
+                                                后台线程对象.ReportProgress(1, $"正在删除数据库内已有内容")
+                                                FileIO.FileSystem.DeleteDirectory(Path.Combine(模组项路径列表(i), 任务队列.任务列表(i2).参数行), FileIO.DeleteDirectoryOption.DeleteAllContents)
+                                                后台线程对象.ReportProgress(1, $"正在复制到数据库")
+                                                FileIO.FileSystem.CopyDirectory(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods", 任务队列.任务列表(i2).参数行), Path.Combine(模组项路径列表(i), 任务队列.任务列表(i2).参数行), True)
+                                            Else
+                                                后台线程对象.ReportProgress(1, $"数据库中不存在 {任务队列.任务列表(i2).参数行} 文件夹，为避免意外，跳过")
+                                            End If
                                         Else
-                                            后台线程对象.ReportProgress(1, $"数据库中不存在 {步骤.Args} 文件夹，为避免意外，跳过")
+                                            后台线程对象.ReportProgress(1, $"未找到游戏内的 {任务队列.任务列表(i2).参数行} 文件夹，跳过")
                                         End If
-                                    Else
-                                        后台线程对象.ReportProgress(1, $"未找到游戏内的 {步骤.Args} 文件夹，跳过")
-                                    End If
-                                End If
+                                End Select
                             Next
                     End Select
                 Next
             End Sub
+
         AddHandler 后台线程对象.ProgressChanged,
             Sub(sender, e)
                 Select Case e.ProgressPercentage

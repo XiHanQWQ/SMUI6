@@ -23,7 +23,7 @@ Public Class 全局模组安装检查器
         Form1.UiButton98.Enabled = False
         Form1.RichTextBox3.Text = "这里输出扫描结果"
 
-        Dim m1 As New SmuiCore.Services.ModsGlobalCheck
+        Dim m1 As New ModsGlobalCheck
         Dim smapiver As String = ""
         If FileIO.FileSystem.FileExists(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "StardewModdingAPI.exe")) Then
             Dim fileVersionInfo As FileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "StardewModdingAPI.exe"))

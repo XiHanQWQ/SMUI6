@@ -1,7 +1,6 @@
 ﻿
 Imports System.IO
 Imports System.Net.Http
-Imports SharpCompress.Archives
 
 Public Class SMAPI安装管理器
 
@@ -28,7 +27,7 @@ Public Class SMAPI安装管理器
     Public Shared Async Sub 获取发行版文件列表()
         If 正在进行获取文件列表 Then Exit Sub
         正在进行获取文件列表 = True
-        Dim a As New SmuiCore.GitApi.GitHubAllReleaseFile
+        Dim a As New GitAPI.GitHubAllReleaseFile
         Form1.Label55.Text = "正在获取文件列表"
         Dim s1 As String = Await Task.Run(Function() a.获取("Pathoschild/SMAPI"))
         If s1 <> "" Then
@@ -234,12 +233,10 @@ Public Class SMAPI安装管理器
         Form1.Label55.Text = "正在解压"
         Application.DoEvents()
         清理解压()
-        Using 档案 = SharpCompress.Archives.ArchiveFactory.Open(Path.Combine(设置.SMAPI下载路径, Form1.UiComboBox9.Text))
-            For Each 压缩条目 In 档案.Entries
-                If 压缩条目.IsDirectory Then Continue For
-                压缩条目.WriteToDirectory(设置.SMAPI解压路径, New SharpCompress.Common.ExtractionOptions() With {.ExtractFullPath = True, .Overwrite = True})
-            Next
-        End Using
+        Dim zip1 As New SevenZip.SevenZipExtractor(Path.Combine(设置.SMAPI下载路径, Form1.UiComboBox9.Text))
+        For i = 0 To zip1.ArchiveFileData.Count - 1
+            zip1.ExtractFiles(设置.SMAPI解压路径 & "\", i)
+        Next
         Dim a As New 搜索文件类
         a.搜索文件(设置.SMAPI解压路径, True, "SMAPI.Installer.exe")
         If a.错误信息 <> "" Then
@@ -276,12 +273,10 @@ Public Class SMAPI安装管理器
         Form1.Label55.Text = "正在解压"
         Application.DoEvents()
         清理解压()
-        Using 档案 = SharpCompress.Archives.ArchiveFactory.Open(Path.Combine(设置.SMAPI下载路径, Form1.UiComboBox9.Text))
-            For Each 压缩条目 In 档案.Entries
-                If 压缩条目.IsDirectory Then Continue For
-                压缩条目.WriteToDirectory(设置.SMAPI解压路径, New SharpCompress.Common.ExtractionOptions() With {.ExtractFullPath = True, .Overwrite = True})
-            Next
-        End Using
+        Dim zip1 As New SevenZip.SevenZipExtractor(Path.Combine(设置.SMAPI下载路径, Form1.UiComboBox9.Text))
+        For i = 0 To zip1.ArchiveFileData.Count - 1
+            zip1.ExtractFiles(设置.SMAPI解压路径 & "\", i)
+        Next
         Dim a As New 搜索文件类
         a.搜索文件(设置.SMAPI解压路径, True, "SMAPI.Installer.exe")
         If a.错误信息 <> "" Then

@@ -25,21 +25,108 @@ Public Class DLC
         Public 插件Entry加载状态 As Boolean
     End Structure
 
-    ''' <summary>DLC 体系已移除：所有扩展功能视为永久解锁，不再加载任何 DLC DLL。用户插件加载不受影响。</summary>
     Public Shared Sub 初始化()
-        DLC解锁标记.CustomInputExtension = True
-        DLC解锁标记.CustomSkinExtension = True
-        DLC解锁标记.NewItemExtension = True
-        DLC解锁标记.CheckUpdatesExtension = True
-        DLC解锁标记.DistributionExtension = True
-        DLC解锁标记.SeasonPass2023 = True
-        DLC解锁标记.UpdateModItemExtension = True
-        DLC解锁标记.SeasonPass2024 = True
-        DLC解锁标记.EasyStartExperience = True
-        For i = 0 To Form1.ListView9.Items.Count - 1
-            Form1.ListView9.Items(i).SubItems(1).Text = "已激活"
-            Form1.ListView9.Items(i).ForeColor = Color1.绿色
-        Next
+        加载单个DLC("SMUI6.DLC1.CustomInputExtension.dll")
+        加载单个DLC("SMUI6.DLC2.CustomSkinExtension.dll")
+        加载单个DLC("SMUI6.DLC3.NewItemExtension.dll")
+        加载单个DLC("SMUI6.DLC4.CheckUpdatesExtension.dll")
+        加载单个DLC("SMUI6.DLC5.DistributionExtension.dll")
+        加载单个DLC("SMUI6.DLC6.UpdateModItemExtension.dll")
+        加载单个DLC("SMUI6.SeasonPass2023.dll")
+        加载单个DLC("SMUI6.SeasonPass2024.dll")
+        加载单个DLC("SMUI6.EasyStartExperience.dll")
+        If DLC解锁标记.CustomInputExtension Then
+            Form1.ListView9.Items(0).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(0).ForeColor = Color1.绿色
+        End If
+        If DLC解锁标记.CustomSkinExtension Then
+            Form1.ListView9.Items(1).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(1).ForeColor = Color1.绿色
+        End If
+        If DLC解锁标记.NewItemExtension Then
+            Form1.ListView9.Items(2).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(2).ForeColor = Color1.绿色
+        End If
+        If DLC解锁标记.CheckUpdatesExtension Then
+            Form1.ListView9.Items(3).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(3).ForeColor = Color1.绿色
+        End If
+        If DLC解锁标记.DistributionExtension Then
+            Form1.ListView9.Items(5).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(5).ForeColor = Color1.绿色
+        End If
+        If DLC解锁标记.UpdateModItemExtension Then
+            Form1.ListView9.Items(6).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(6).ForeColor = Color1.绿色
+        End If
+        If DLC解锁标记.SeasonPass2023 Then
+            DLC解锁标记.CustomInputExtension = True
+            DLC解锁标记.CustomSkinExtension = True
+            DLC解锁标记.NewItemExtension = True
+            DLC解锁标记.CheckUpdatesExtension = True
+            Form1.ListView9.Items(0).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(0).ForeColor = Color1.绿色
+            Form1.ListView9.Items(1).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(1).ForeColor = Color1.绿色
+            Form1.ListView9.Items(2).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(2).ForeColor = Color1.绿色
+            Form1.ListView9.Items(3).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(3).ForeColor = Color1.绿色
+            Form1.ListView9.Items(4).SubItems(1).Text = "已激活"
+        End If
+        If DLC解锁标记.SeasonPass2024 Then
+            DLC解锁标记.CustomInputExtension = True
+            DLC解锁标记.CustomSkinExtension = True
+            DLC解锁标记.NewItemExtension = True
+            DLC解锁标记.CheckUpdatesExtension = True
+            DLC解锁标记.DistributionExtension = True
+            DLC解锁标记.UpdateModItemExtension = True
+            Form1.ListView9.Items(0).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(0).ForeColor = Color1.绿色
+            Form1.ListView9.Items(1).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(1).ForeColor = Color1.绿色
+            Form1.ListView9.Items(2).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(2).ForeColor = Color1.绿色
+            Form1.ListView9.Items(3).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(3).ForeColor = Color1.绿色
+            Form1.ListView9.Items(5).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(5).ForeColor = Color1.绿色
+            Form1.ListView9.Items(6).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(6).ForeColor = Color1.绿色
+            Form1.ListView9.Items(7).SubItems(1).Text = "已激活"
+        End If
+        If DLC解锁标记.EasyStartExperience Then
+            DLC解锁标记.CustomInputExtension = True
+            DLC解锁标记.NewItemExtension = True
+            DLC解锁标记.CheckUpdatesExtension = True
+            DLC解锁标记.UpdateModItemExtension = True
+            Form1.ListView9.Items(0).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(0).ForeColor = Color1.绿色
+            Form1.ListView9.Items(2).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(2).ForeColor = Color1.绿色
+            Form1.ListView9.Items(3).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(3).ForeColor = Color1.绿色
+            Form1.ListView9.Items(6).SubItems(1).Text = "已激活"
+            Form1.ListView9.Items(6).ForeColor = Color1.绿色
+            Form1.ListView9.Items(8).SubItems(1).Text = "已激活"
+        End If
+    End Sub
+
+    Public Shared Sub 加载单个DLC(文件名 As String)
+        Try
+            If Not FileIO.FileSystem.FileExists(Path.Combine(设置.DLC文件夹路径, 文件名)) Then
+                Exit Sub
+            End If
+            Dim 程序集 As Assembly = Assembly.LoadFile(Path.Combine(设置.DLC文件夹路径, 文件名))
+            'Dim 系统接口程序 As ShellFile = ShellFile.FromFilePath(Path.Combine(设置.DLC文件夹路径, 文件名))
+            Dim 获取类型 As Type = 程序集.GetType(程序集.GetName.Name & ".Entry")
+            Dim 创建实例 As Object = Activator.CreateInstance(获取类型)
+            Dim 实现方法 As MethodInfo = 获取类型.GetMethod("Entry")
+            实现方法.Invoke(创建实例, Array.Empty(Of Object)())
+            DebugPrint($"已加载：{文件名}", Color1.绿色)
+        Catch ex As Exception
+            DebugPrint($"加载 DLL 错误，对象：{ex.Source} 错误信息：{ex.Message} TargetSite：{ex.TargetSite.Name}", Color1.红色)
+        End Try
     End Sub
 
     Public Shared Sub 加载用户插件()
@@ -74,10 +161,5 @@ Public Class DLC
         Next
 
     End Sub
-
-
-
-
-
 
 End Class

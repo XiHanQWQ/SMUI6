@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports System.Text.RegularExpressions
 Imports Sunny.UI
-Imports SmuiCore
+Imports SMUI6.NEXUS.GetModFileList
 
 ''' <summary>
 ''' 检查更新步骤三的批量更新队列：
@@ -262,7 +262,15 @@ Public Class 批量更新队列
     End Function
 
     Private Shared Function 更新键提取(更新键文本 As String, 前缀列表 As String()) As String
-        Return SmuiCore.UpdateKeys.Extract(更新键文本, 前缀列表)
+        For Each 键 As String In 更新键文本.Split("|"c)
+            Dim 单个键 As String = 键.Trim
+            Dim 冒号位置 As Integer = 单个键.IndexOf(":"c)
+            If 冒号位置 < 1 Then Continue For
+            If Not 前缀列表.Contains(单个键.Substring(0, 冒号位置).Trim.ToLower) Then Continue For
+            Dim 键值 As String = 单个键.Substring(冒号位置 + 1).Trim
+            If 键值 <> "" Then Return 键值
+        Next
+        Return ""
     End Function
 
     ''' <summary>批量更新的自动挑文件逻辑：只在比本地版本新的文件里挑，显示标题（name）去版本号后与旧标题
@@ -272,7 +280,7 @@ Public Class 批量更新队列
     ''' 或互为包含），族内按数值版本降序取最高的那个。绝不做跨文件挑选——SVE 这类一个模组页挂多个
     ''' 附属文件的（Grampleton Fields / Immersive Farm 等）版本号互有高低，跨文件比版本会把别的
     ''' 附属文件误当成更新下载</summary>
-    Private Shared Function 批量挑选NEXUS文件(旧标题 As String, 旧版本号 As String, 文件列表 As List(Of FileListDataOne), ByRef 结果 As 文件挑选结果, ByRef 说明 As String) As FileListDataOne
+    Private Shared Function 批量挑选NEXUS文件(旧标题 As String, 旧版本号 As String, 文件列表 As List(Of FileListDataOne), ByRef 结果 As 文件挑选结果, ByRef 说明 As String) As FileListDataOne?
         Dim 旧标题去版本 As String = Regex.Replace(旧标题, "\d+(\.\d+)*", "").Trim()
         Dim 同族文件 = 文件列表.Where(Function(f) 标题同族(旧标题去版本, f.name)).
             OrderByDescending(Function(f) 版本排序键(f.version)).
@@ -321,8 +329,8 @@ Public Class 批量更新队列
         Dim 旧版本号 As String = ""
         If 项信息.版本.Count > 0 Then 旧版本号 = 项信息.版本(0)
 
-        Dim 文件列表 As New SmuiCore.GetModFileList With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
-        Dim 错误信息 As String = Await Task.Run(Function() 文件列表.StartGet("stardewvalley", 模组ID, SmuiCore.FileType.main_optional_updateFile_miscellaneous))
+        Dim 文件列表 As New NEXUS.GetModFileList With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
+        Dim 错误信息 As String = Await Task.Run(Function() 文件列表.StartGet("stardewvalley", 模组ID, NEXUS.FileType.main_optional_updateFile_miscellaneous))
         If 错误信息 <> "" Then
             记账当前项(False, "获取 NEXUS 文件列表失败：" & 错误信息)
             Exit Function
@@ -342,7 +350,7 @@ Public Class 批量更新队列
         End If
         Dim 挑选结果类型 As 文件挑选结果 = 文件挑选结果.找到更新
         Dim 挑选说明 As String = ""
-        Dim 选中的文件 As FileListDataOne = 批量挑选NEXUS文件(旧文件标题, 旧版本号, 文件列表.FileListData, 挑选结果类型, 挑选说明)
+        Dim 选中的文件 As FileListDataOne? = 批量挑选NEXUS文件(旧文件标题, 旧版本号, 文件列表.FileListData, 挑选结果类型, 挑选说明)
         Select Case 挑选结果类型
             Case 文件挑选结果.已是最新
                 记账当前项(True, 挑选说明)
@@ -352,20 +360,20 @@ Public Class 批量更新队列
                 Exit Function
         End Select
 
-        FileIO.FileSystem.WriteAllText(标题文件路径, 选中的文件.name, False)
+        FileIO.FileSystem.WriteAllText(标题文件路径, 选中的文件.Value.name, False)
         更新模组.正在处理的NEXUSID = 模组ID
-        DebugPrint("[批量更新] " & Path.GetFileName(路径) & " 自动选择文件：" & 选中的文件.name & " (ID " & 选中的文件.file_id & ")", Color1.青色)
+        DebugPrint("[批量更新] " & Path.GetFileName(路径) & " 自动选择文件：" & 选中的文件.Value.name & " (ID " & 选中的文件.Value.file_id & ")", Color1.青色)
 
         If 设置.全局设置数据("NexusPremium") = "True" Then
-            更新模组.获取服务器列表(模组ID, 选中的文件.file_id.ToString, 路径,,, "batch")
+            更新模组.获取服务器列表(模组ID, 选中的文件.Value.file_id.ToString, 路径,,, "batch")
         Else
-            更新模组.转到浏览器获取额外参数(模组ID, 选中的文件.file_id.ToString, 路径, "batch")
+            更新模组.转到浏览器获取额外参数(模组ID, 选中的文件.Value.file_id.ToString, 路径, "batch")
         End If
     End Function
 
     ''' <summary>GitHub 自动更新：取最新的一个带压缩包附件的发行版直接加入下载队列</summary>
     Private Shared Async Function 启动GitHub更新(仓库 As String, 路径 As String) As Task
-        Dim 发行版数据 As New SmuiCore.GitApi.GitHubAllReleaseFile
+        Dim 发行版数据 As New GitAPI.GitHubAllReleaseFile
         Dim 错误信息 As String = Await Task.Run(Function() 发行版数据.获取(仓库))
         If 错误信息 <> "" Then
             记账当前项(False, "获取 GitHub 发行版失败：" & 错误信息)

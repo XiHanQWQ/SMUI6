@@ -44,7 +44,34 @@ Public Class 共享方法
     End Function
 
     Public Shared Function CompareVersion(Version1 As String, Version2 As String) As Integer
-        Return SmuiCore.VersionUtils.CompareVersion(Version1, Version2)
+        If String.IsNullOrEmpty(Version1) OrElse String.IsNullOrEmpty(Version2) Then Return 0
+
+        Dim cleanVersion1 As String = System.Text.RegularExpressions.Regex.Replace(Version1, "[^\d\.]", "")
+        Dim cleanVersion2 As String = System.Text.RegularExpressions.Regex.Replace(Version2, "[^\d\.]", "")
+        Dim arrVersion1() As String = cleanVersion1.Split("."c)
+        Dim arrVersion2() As String = cleanVersion2.Split("."c)
+        Dim maxLength As Integer = Math.Max(arrVersion1.Length, arrVersion2.Length)
+
+        For i As Integer = 0 To maxLength - 1
+            Dim num1 As Integer = 0
+            Dim num2 As Integer = 0
+
+            If i < arrVersion1.Length Then
+                If Not Integer.TryParse(arrVersion1(i), num1) Then num1 = 0
+            End If
+
+            If i < arrVersion2.Length Then
+                If Not Integer.TryParse(arrVersion2(i), num2) Then num2 = 0
+            End If
+
+            If num1 < num2 Then
+                Return -1
+            ElseIf num1 > num2 Then
+                Return 1
+            End If
+        Next
+
+        Return 0
     End Function
 
     Public Shared Function CompareVersion_old(Version1 As String, Version2 As String) As Int128

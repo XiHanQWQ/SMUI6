@@ -1,6 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/SMUI.App/SMUI.App.csproj" />
-    <Project Path="src/SMUI.Core/SMUI.Core.csproj" />
-  </Folder>
-</Solution>

@@ -4,6 +4,7 @@ Imports Sunny.UI
 
 Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        SevenZip.SevenZipBase.SetLibraryPath(Application.StartupPath & "\7za64\7z.dll")
         界面控制.DPI = Me.CreateGraphics().DpiX / 96
         检查用户身份组()
         状态信息.判断应用程序启动模式()
@@ -11,9 +12,6 @@ Public Class Form1
         状态信息.初始化SMAPI运行态定时器()
         项信息读取类.初始化安装状态字典()
         设置.启动时加载设置()
-        SmuiCore.CoreTokens.GitHubToken = 设置.全局设置数据("GithubToken")
-        SmuiCore.CoreTokens.GiteeToken = 设置.全局设置数据("GiteeToken")
-        SmuiCore.CoreTokens.NexusApiKey = 设置.全局设置数据("NexusAPI")
         密码本.读取导入导出密码本()
         DLC.初始化()
         配置队列.初始化()
@@ -82,7 +80,7 @@ Public Class Form1
 
         If 检查更新.在退出后安装更新 Then
             If FileIO.FileSystem.FileExists(设置.安装程序更新下载文件路径) Then
-                System.Diagnostics.Process.Start(New ProcessStartInfo(设置.安装程序更新下载文件路径, "/qb") With {.UseShellExecute = True})
+                ShellExecute(Nothing, "", 设置.安装程序更新下载文件路径, "/qb", Path.GetDirectoryName(设置.安装程序更新下载文件路径), Nothing)
             Else
                 MsgBox("找不到下载的安装程序文件！", MsgBoxStyle.Critical)
             End If

@@ -39,6 +39,7 @@ Public Class 设置
         AddHandler Form1.UiButton31.Click, AddressOf 保存启动项设置
         AddHandler Form1.UiButton35.Click, AddressOf 保存数值和开关设置
         AddHandler Form1.UiButton37.Click, AddressOf 保存字体设置
+        AddHandler Form1.UiButton38.Click, AddressOf 保存隐私设置
         AddHandler Form1.UiButton25.Click, AddressOf 选择游戏文件夹路径
         AddHandler Form1.UiButton26.Click, AddressOf 选择数据库路径
         AddHandler Form1.UiButton27.Click, AddressOf 选择游戏备份路径
@@ -115,6 +116,7 @@ Public Class 设置
         刷新字体显示(Form1)
         刷新设置显示()
         UIMessageTip.DefaultStyle = New TipStyle With {.TextFont = New Font(Form1.Font.Name, 10), .BackColor = ColorTranslator.FromWin32(RGB(24, 24, 24)), .TextColor = Form1.ForeColor, .Padding = New Padding(15)}
+        数据上传.发送用户统计()
         ' 许可协议签署界面已移除，视为始终已签署，兼容旧设置文件里遗留的 False
         全局设置数据("AgreementSigned") = "True"
     End Sub
@@ -198,6 +200,20 @@ Public Class 设置
 
         Form1.UiComboBox8.Text = 全局设置数据("FontName")
 
+        Select Case 全局设置数据("UploadUserInfo")
+            Case "True"
+                Form1.UiRadioButton3.Checked = True
+                Form1.UiRadioButton4.Checked = False
+            Case "False"
+                Form1.UiRadioButton3.Checked = False
+                Form1.UiRadioButton4.Checked = True
+        End Select
+        Form1.UiCheckBox3.Checked = 全局设置数据("UploadWindowsVer")
+        Form1.UiCheckBox11.Checked = 全局设置数据("UploadCPU0")
+        Form1.UiCheckBox14.Checked = 全局设置数据("UploadRAM")
+        Form1.UiCheckBox15.Checked = 全局设置数据("UploadCDiskCapacity")
+        Form1.UiCheckBox12.Checked = 全局设置数据("UploadGPU")
+        Form1.UiCheckBox13.Checked = 全局设置数据("UploadScreen")
 
         Form1.UiSwitch2.Active = 全局设置数据("ProcessMonitor")
         Form1.UiSwitch3.Active = 全局设置数据("PerformanceMonitor")
@@ -233,9 +249,6 @@ Public Class 设置
     End Sub
 
     Public Shared Sub 保存网络API设置()
-        SmuiCore.CoreTokens.GitHubToken = 设置.全局设置数据("GithubToken")
-        SmuiCore.CoreTokens.GiteeToken = 设置.全局设置数据("GiteeToken")
-        SmuiCore.CoreTokens.NexusApiKey = 设置.全局设置数据("NexusAPI")
         全局设置数据("NexusAPI") = Form1.TextBox1.Text
         全局设置数据("GiteeToken") = Form1.暗黑文本框6.Text
         全局设置数据("GithubToken") = Form1.暗黑文本框7.Text
@@ -286,6 +299,20 @@ Public Class 设置
         If propInfo IsNot Nothing Then control.Font = New Font(全局设置数据("FontName"), control.Font.Size)
     End Sub
 
+    Public Shared Sub 保存隐私设置()
+        If Form1.UiRadioButton3.Checked Then
+            全局设置数据("UploadUserInfo") = "True"
+        Else
+            全局设置数据("UploadUserInfo") = "False"
+        End If
+        全局设置数据("UploadWindowsVer") = Form1.UiCheckBox3.Checked
+        全局设置数据("UploadCPU0") = Form1.UiCheckBox11.Checked
+        全局设置数据("UploadRAM") = Form1.UiCheckBox14.Checked
+        全局设置数据("UploadCDiskCapacity") = Form1.UiCheckBox15.Checked
+        全局设置数据("UploadGPU") = Form1.UiCheckBox12.Checked
+        全局设置数据("UploadScreen") = Form1.UiCheckBox13.Checked
+        UIMessageTip.Show("更改已写入内存，正常退出时写入文件",, 2500)
+    End Sub
 
     Public Shared Sub 保存WebView2设置()
         If Form1.UiRadioButton7.Checked Then
@@ -301,12 +328,10 @@ Public Class 设置
 
     Public Shared Sub 选择游戏文件夹路径()
         Dim p1 As New List(Of String) From {"这里没有列出，手动选择游戏文件夹"}
-        If OperatingSystem.IsWindows() Then
-            Dim MyReg As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 413150")
-            If MyReg IsNot Nothing Then p1.Add(MyReg.GetValue("InstallLocation").ToString())
-            Dim MyReg2 As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\GOG.com\Games\1453375253")
-            If MyReg2 IsNot Nothing Then p1.Add(MyReg2.GetValue("PATH").ToString())
-        End If
+        Dim MyReg As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 413150")
+        If MyReg IsNot Nothing Then p1.Add(MyReg.GetValue("InstallLocation").ToString())
+        Dim MyReg2 As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\GOG.com\Games\1453375253")
+        If MyReg2 IsNot Nothing Then p1.Add(MyReg2.GetValue("PATH").ToString())
         '这届的小白真是日了狗了，连个游戏文件夹都找不到，就TM这技术还玩单机游戏
         Dim AllDrives() As DriveInfo = DriveInfo.GetDrives()
         For Each D1 As DriveInfo In AllDrives
@@ -441,7 +466,7 @@ R1:
     End Sub
 
     Public Shared Sub 检测NEXUS密钥是否可用()
-        Dim a As New SmuiCore.GetUserInfo With {.ST_ApiKey = Form1.TextBox1.Text}
+        Dim a As New NEXUS.GetUserInfo With {.ST_ApiKey = Form1.TextBox1.Text}
         Dim x As String = a.StartGet()
         If x <> "" Then
             'Form1.Label7.Text = 获取动态多语言文本("data/DynamicText/LogInFailed")

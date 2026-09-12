@@ -1,6 +1,6 @@
 ﻿
 Imports System.IO
-Imports SharpCompress.Archives
+Imports SMUI6.下载文件
 Imports Sunny.UI
 
 Public Class 检查更新
@@ -28,7 +28,6 @@ Public Class 检查更新
             Exit Sub
         End If
 
-        If OperatingSystem.IsWindows() Then
         Using key As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\1059 Studio\SMUI 2023")
             If key Is Nothing Then
                 Form1.UiListBox3.Items(0) = "便携版禁用检查更新"
@@ -51,7 +50,6 @@ Public Class 检查更新
                 Exit Sub
             End If
         End Using
-        End If
 
 Dev1:
         Form1.UiButton46.Enabled = False
@@ -76,13 +74,13 @@ Dev1:
 
         AddHandler 服务器获取_更新.DoWork,
             Sub(sender As Object, e As ComponentModel.DoWorkEventArgs)
-                Dim a As New SmuiCore.GitApi.Release
+                Dim a As New GitAPI.Release
 
                 Select Case 设置.全局设置数据("UpdateSever")
                     Case "Gitee"
-                        a.获取仓库发布版信息(SmuiCore.GitApi.开源代码平台.Gitee, "CYXSJY/SMUI6")
+                        a.获取仓库发布版信息(GitAPI.GitApiObject.开源代码平台.Gitee, "CYXSJY/SMUI6")
                     Case Else
-                        a.获取仓库发布版信息(SmuiCore.GitApi.开源代码平台.GitHub, "XiHanQWQ/SMUI6")
+                        a.获取仓库发布版信息(GitAPI.GitApiObject.开源代码平台.GitHub, "XiHanQWQ/SMUI6")
                 End Select
 
                 If a.ErrorString <> "" Then
@@ -160,7 +158,9 @@ Dev1:
                 End If
             End Sub
 
-        Dim 下载状态 As New SmuiCore.DownloadState
+        Dim 已下载字节数 As Long = 0
+        Dim 总字节数 As Long = 0
+        Dim 是否终止下载 As Boolean = False
         Dim 上一秒的已下载字节数 As Long = 0
 
         AddHandler 服务器获取_自动更新.DoWork,
@@ -174,7 +174,7 @@ Dev1:
 
                     Dim 实际下载地址 As String = 更新_下载地址
                     服务器获取_自动更新.ReportProgress(0, 实际下载地址)
-                    e.Result = SmuiCore.Downloader.DownloadFile(实际下载地址, 设置.安装程序更新下载文件路径, 下载状态)
+                    e.Result = DownloadFile(实际下载地址, 设置.安装程序更新下载文件路径, 已下载字节数, 总字节数, 是否终止下载)
 
                 ElseIf 更新_分卷下载.Count > 0 Then
 
@@ -190,14 +190,13 @@ Dev1:
                     For i = 0 To 分卷文件.Count - 1
                         Dim 实际下载地址 As String = 更新_分卷下载(分卷文件(i))
                         服务器获取_自动更新.ReportProgress(0, 实际下载地址)
-                        e.Result = SmuiCore.Downloader.DownloadFile(实际下载地址, Path.Combine(设置.用户数据文件夹路径, 分卷文件(i)), 下载状态)
+                        e.Result = DownloadFile(实际下载地址, Path.Combine(设置.用户数据文件夹路径, 分卷文件(i)), 已下载字节数, 总字节数, 是否终止下载)
                     Next
-                    Using 档案 = SharpCompress.Archives.ArchiveFactory.Open(Path.Combine(设置.用户数据文件夹路径, "SMUI 6 Installer.7z.001"))
-                        For Each 压缩条目 In 档案.Entries
-                            If 压缩条目.IsDirectory Then Continue For
-                            压缩条目.WriteToDirectory(设置.用户数据文件夹路径, New SharpCompress.Common.ExtractionOptions() With {.ExtractFullPath = True, .Overwrite = True})
-                        Next
-                    End Using
+                    Dim zip1 As New SevenZip.SevenZipExtractor(Path.Combine(设置.用户数据文件夹路径, "SMUI 6 Installer.7z.001"))
+                    For i As Integer = 0 To zip1.ArchiveFileData.Count - 1
+                        zip1.ExtractFiles(设置.用户数据文件夹路径 & "\", zip1.ArchiveFileData(i).Index)
+                    Next
+                    zip1.Dispose()
 
                 End If
 
@@ -234,8 +233,8 @@ Dev1:
 
         AddHandler 自动更新界面刷新.Tick,
            Sub(sender As Object, e As EventArgs)
-               If 下载状态.总字节量 = 0 Then Exit Sub
-               If 下载状态.已下载字节量 = 下载状态.总字节量 And 下载状态.总字节量 > 0 Then
+               If 总字节数 = 0 Then Exit Sub
+               If 已下载字节数 = 总字节数 And 总字节数 > 0 Then
                    Form1.UiListBox3.Items(0) = 更新_标题
                    Form1.UiListBox3.Items(1) = "版本 " & 更新_版本 & " 发布者 " & 更新_发布者
                    If FileIO.FileSystem.FileExists(设置.安装程序更新下载文件路径) = False Then
@@ -246,8 +245,8 @@ Dev1:
                Form1.UiListBox3.Items(0) = 更新_标题
                Form1.UiListBox3.Items(1) = "版本 " & 更新_版本 & " 发布者 " & 更新_发布者
                If 更新_分卷下载.Count > 0 Then Form1.UiListBox3.Items(1) &= " 分卷数量 " & 更新_分卷下载.Count
-               Form1.UiListBox3.Items(2) = Format(下载状态.已下载字节量 / 1024 / 1024, "0.0") & " MB / " & Format(下载状态.总字节量 / 1024 / 1024, "0.0") & " MB   " & Format((下载状态.已下载字节量 - 上一秒的已下载字节数) / 1024, "0") & " KB/s   " & Format((下载状态.已下载字节量 / 下载状态.总字节量) * 100, "0") & "%"
-               上一秒的已下载字节数 = 下载状态.已下载字节量
+               Form1.UiListBox3.Items(2) = Format(已下载字节数 / 1024 / 1024, "0.0") & " MB / " & Format(总字节数 / 1024 / 1024, "0.0") & " MB   " & Format((已下载字节数 - 上一秒的已下载字节数) / 1024, "0") & " KB/s   " & Format((已下载字节数 / 总字节数) * 100, "0") & "%"
+               上一秒的已下载字节数 = 已下载字节数
            End Sub
 
         服务器获取_更新.RunWorkerAsync()

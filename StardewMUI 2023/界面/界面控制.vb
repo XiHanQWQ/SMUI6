@@ -121,8 +121,6 @@ Public Class 界面控制
 
         Form1.ColumnHeader7.Width = (Form1.ListView7.Width - 垂直滚动条实际预留宽度) * 0.3
         Form1.ColumnHeader8.Width = (Form1.ListView7.Width - 垂直滚动条实际预留宽度) * 0.7
-        Form1.ColumnHeader9.Width = Form1.ListView9.Width * 0.7
-        Form1.ColumnHeader13.Width = Form1.ListView9.Width * 0.3
 
         Form1.UiButton45.Height = Form1.UiTabControl1.ItemSize.Height : Form1.UiButton45.Width = Form1.UiTabControl1.Width - Form1.UiTabControl1.ItemSize.Width * 7
         Form1.UiButton45.Left = Form1.UiTabControl1.Width - Form1.UiButton45.Width : Form1.UiButton45.Top = 0
@@ -131,6 +129,8 @@ Public Class 界面控制
         Form1.ColumnHeader15.Width = (Form1.ListView10.Width - 垂直滚动条实际预留宽度) * 0.2
         Form1.ColumnHeader16.Width = (Form1.ListView10.Width - 垂直滚动条实际预留宽度) * 0.2
 
+        Form1.ColumnHeader9.Width = Form1.ListView9.Width * 0.7
+        Form1.ColumnHeader13.Width = Form1.ListView9.Width * 0.3
         Form1.ColumnHeader11.Width = Form1.ListView4.Width - 垂直滚动条实际预留宽度
 
         Form1.ColumnHeader21.Width = (Form1.ListView8.Width - 垂直滚动条实际预留宽度) * 0.5
@@ -206,6 +206,8 @@ Public Class 界面控制
 
         Form1.UiRadioButton1.RadioButtonSize = 20 * DPI
         Form1.UiRadioButton2.RadioButtonSize = 20 * DPI
+        Form1.UiRadioButton3.RadioButtonSize = 20 * DPI
+        Form1.UiRadioButton4.RadioButtonSize = 20 * DPI
         'Form1.UiRadioButton5.RadioButtonSize = 20 * DPI
         'Form1.UiRadioButton6.RadioButtonSize = 20 * DPI
         Form1.UiRadioButton7.RadioButtonSize = 20 * DPI
@@ -215,6 +217,7 @@ Public Class 界面控制
 
         'Form1.UiCheckBox1.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox2.CheckBoxSize = 20 * DPI
+        Form1.UiCheckBox3.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox4.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox5.CheckBoxSize = 20 * DPI
         'Form1.UiCheckBox6.CheckBoxSize = 20 * DPI
@@ -222,6 +225,11 @@ Public Class 界面控制
         Form1.UiCheckBox8.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox9.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox10.CheckBoxSize = 20 * DPI
+        Form1.UiCheckBox11.CheckBoxSize = 20 * DPI
+        Form1.UiCheckBox12.CheckBoxSize = 20 * DPI
+        Form1.UiCheckBox13.CheckBoxSize = 20 * DPI
+        Form1.UiCheckBox14.CheckBoxSize = 20 * DPI
+        Form1.UiCheckBox15.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox16.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox17.CheckBoxSize = 20 * DPI
         Form1.UiCheckBox18.CheckBoxSize = 20 * DPI

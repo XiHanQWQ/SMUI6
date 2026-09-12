@@ -18,8 +18,6 @@ Public Class 常驻主题
                                                             Form1.UiButton53.PerformClick()
                                                     End Select
                                                 End Sub
-        AddHandler Form1.UiButton66.Click, Sub(s, e) Process.Start(New ProcessStartInfo("https://afdian.com/a/1059Studio?tab=shop") With {.UseShellExecute = True})
-        AddHandler Form1.UiButton69.Click, Sub(s, e) Process.Start(New ProcessStartInfo("https://payhip.com/1059Studio") With {.UseShellExecute = True})
         AddHandler Form1.UiButton68.Click, Sub(s, e) Process.Start(New ProcessStartInfo("https://space.bilibili.com/319785096/channel/collectiondetail?sid=2903558") With {.UseShellExecute = True})
 
         AddHandler Form1.UiButton64.Click, Sub(s, e)
@@ -32,6 +30,8 @@ Public Class 常驻主题
                                            End Sub
         AddHandler Form1.UiButton65.Click, Sub(s, e) Process.Start(New ProcessStartInfo("https://kook.top/yW15HU") With {.UseShellExecute = True})
 
+        AddHandler Form1.UiButton66.Click, Sub(s, e) Process.Start(New ProcessStartInfo("https://afdian.com/a/1059Studio?tab=shop") With {.UseShellExecute = True})
+        AddHandler Form1.UiButton69.Click, Sub(s, e) Process.Start(New ProcessStartInfo("https://payhip.com/1059Studio") With {.UseShellExecute = True})
         AddHandler Form1.UiButton47.Click, Sub()
                                                Clipboard.SetText(Form1.UiListBox1.Items(0) & vbCrLf & Form1.UiListBox1.Items(1) & vbCrLf & Form1.UiListBox1.Items(2) & vbCrLf & Form1.UiListBox1.Items(3) & vbCrLf & Form1.UiListBox1.Items(4))
                                            End Sub

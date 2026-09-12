@@ -16,11 +16,11 @@ Public Class 在线模组列表
         AddHandler Form1.UiButton97.Click, Sub()
                                                Select Case Form1.UiComboBox6.SelectedIndex
                                                    Case 0
-                                                       获取模组列表并显示(Form1.Panel40, SmuiCore.ListModType.TheLatest10ModsReleased)
+                                                       获取模组列表并显示(Form1.Panel40, NEXUS.ListModType.TheLatest10ModsReleased)
                                                    Case 1
-                                                       获取模组列表并显示(Form1.Panel40, SmuiCore.ListModType.TheLatest10ModsUpdated)
+                                                       获取模组列表并显示(Form1.Panel40, NEXUS.ListModType.TheLatest10ModsUpdated)
                                                    Case 2
-                                                       获取模组列表并显示(Form1.Panel40, SmuiCore.ListModType.The10EveryTimeHotMods)
+                                                       获取模组列表并显示(Form1.Panel40, NEXUS.ListModType.The10EveryTimeHotMods)
                                                End Select
                                            End Sub
     End Sub
@@ -65,13 +65,13 @@ Public Class 在线模组列表
         End Using
     End Function
 
-    Public Shared Async Sub 获取模组列表并显示(基于面板 As Panel, 类型 As SmuiCore.ListModType)
+    Public Shared Async Sub 获取模组列表并显示(基于面板 As Panel, 类型 As NEXUS.ListModType)
         基于面板.Controls.Clear()
         GC.Collect()
 
         Form1.UiButton97.Enabled = False
 
-        Dim a As New SmuiCore.GetModList With {
+        Dim a As New NEXUS.GetModList With {
             .ST_ApiKey = 设置.全局设置数据("NexusAPI")
         }
         If Await Task.Run(Function() a.StartGet("stardewvalley", 类型)) <> "" Then

@@ -1,7 +1,7 @@
 ﻿
 
 Imports System.Text.RegularExpressions
-Imports SmuiCore
+Imports SMUI6.NEXUS.GetModFileList
 
 Public Class NEXUS判断合适的文件标题
 
@@ -12,7 +12,7 @@ Public Class NEXUS判断合适的文件标题
     ''' <param name="oldVersion"></param>
     ''' <param name="filesList"></param>
     ''' <returns></returns>
-    Public Shared Function 尝试判断(oldTitle As String, oldVersion As String, filesList As List(Of FileListDataOne)) As FileListDataOne
+    Public Shared Function 尝试判断(oldTitle As String, oldVersion As String, filesList As List(Of FileListDataOne)) As FileListDataOne?
         ' 步骤1：首先判断是否有标题完全相同的文件
         For Each file In filesList
             If file.file_name.Equals(oldTitle) Then
@@ -23,7 +23,7 @@ Public Class NEXUS判断合适的文件标题
         ' 步骤2：判断标题文字相似度并比较版本号
         Dim versionPattern As String = "\d+(\.\d+)*"
         Dim oldTitleWithoutVersion As String = Regex.Replace(oldTitle, versionPattern, "").Trim()
-        Dim bestMatchFile As FileListDataOne = Nothing
+        Dim bestMatchFile As FileListDataOne? = Nothing
         Dim bestVersionDifference As Integer = Integer.MaxValue
 
         For Each file In filesList

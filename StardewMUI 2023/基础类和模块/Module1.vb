@@ -80,6 +80,10 @@ Module Module1
         Return scaledScrollBarWidth
     End Function
 
+    <DllImport("shell32.dll")>
+    Public Function ShellExecute(hwnd As IntPtr, lpOperation As String, lpFile As String, lpParameters As String, lpDirectory As String, nShowCmd As Integer) As IntPtr
+    End Function
+
     <StructLayout(LayoutKind.Sequential)>
     Public Structure DISPLAY_DEVICE
         Public cb As Integer

@@ -44,10 +44,12 @@ Public Class 内容中心
         AddHandler 菜单项_游戏文件夹.Click, Sub() Process.Start("explorer.exe", 设置.全局设置数据("StardewValleyGamePath"))
         AddHandler 菜单项_游戏Mods文件夹.Click, Sub() Process.Start("explorer.exe", Path.Combine(设置.全局设置数据("StardewValleyGamePath"), "Mods"))
         AddHandler 菜单项_游戏存档文件夹.Click, Sub()
-                                          System.Diagnostics.Process.Start(New ProcessStartInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\StardewValley\Saves") With {.UseShellExecute = True})
+                                          Dim wsh As New IWshRuntimeLibrary.IWshShell_Class
+                                          Process.Start("explorer.exe", wsh.SpecialFolders.Item("AppData") & "\StardewValley\Saves")
                                       End Sub
         AddHandler 菜单项_SMAPI日志文件夹.Click, Sub()
-                                             System.Diagnostics.Process.Start(New ProcessStartInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\StardewValley\ErrorLogs") With {.UseShellExecute = True})
+                                             Dim wsh As New IWshRuntimeLibrary.IWshShell_Class
+                                             Process.Start("explorer.exe", wsh.SpecialFolders.Item("AppData") & "\StardewValley\ErrorLogs")
                                          End Sub
 
         AddHandler 菜单项_SMAPI官网.Click, Sub() Process.Start(New ProcessStartInfo("https://smapi.io") With {.UseShellExecute = True})

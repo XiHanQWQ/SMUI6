@@ -40,6 +40,8 @@ Partial Class 关于界面
         PictureBox8 = New PictureBox()
         Label9 = New Label()
         PictureBox9 = New PictureBox()
+        Label10 = New Label()
+        PictureBox10 = New PictureBox()
         Label11 = New Label()
         PictureBox11 = New PictureBox()
         Label12 = New Label()
@@ -55,6 +57,7 @@ Partial Class 关于界面
         CType(PictureBox7, ComponentModel.ISupportInitialize).BeginInit()
         CType(PictureBox8, ComponentModel.ISupportInitialize).BeginInit()
         CType(PictureBox9, ComponentModel.ISupportInitialize).BeginInit()
+        CType(PictureBox10, ComponentModel.ISupportInitialize).BeginInit()
         CType(PictureBox11, ComponentModel.ISupportInitialize).BeginInit()
         CType(PictureBox12, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
@@ -240,6 +243,26 @@ Partial Class 关于界面
         PictureBox9.TabIndex = 31
         PictureBox9.TabStop = False
         ' 
+        ' Label10
+        ' 
+        Label10.Location = New Point(581, 554)
+        Label10.Margin = New Padding(20, 20, 0, 0)
+        Label10.Name = "Label10"
+        Label10.Size = New Size(343, 64)
+        Label10.TabIndex = 34
+        Label10.Text = "SevenZipSharp" & vbCrLf & "LGPL-3.0" & vbCrLf & "以及来自 7zip 官方的 7z.dll、7z.exe 以及旧版组件"
+        Label10.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' PictureBox10
+        ' 
+        PictureBox10.Image = My.Resources.Resources._7zip
+        PictureBox10.Location = New Point(497, 554)
+        PictureBox10.Margin = New Padding(20, 20, 0, 0)
+        PictureBox10.Name = "PictureBox10"
+        PictureBox10.Size = New Size(64, 64)
+        PictureBox10.TabIndex = 33
+        PictureBox10.TabStop = False
+        ' 
         ' Label11
         ' 
         Label11.Location = New Point(581, 470)
@@ -314,6 +337,8 @@ Partial Class 关于界面
         Controls.Add(PictureBox12)
         Controls.Add(Label11)
         Controls.Add(PictureBox11)
+        Controls.Add(Label10)
+        Controls.Add(PictureBox10)
         Controls.Add(Label9)
         Controls.Add(PictureBox9)
         Controls.Add(Label8)
@@ -345,6 +370,7 @@ Partial Class 关于界面
         CType(PictureBox7, ComponentModel.ISupportInitialize).EndInit()
         CType(PictureBox8, ComponentModel.ISupportInitialize).EndInit()
         CType(PictureBox9, ComponentModel.ISupportInitialize).EndInit()
+        CType(PictureBox10, ComponentModel.ISupportInitialize).EndInit()
         CType(PictureBox11, ComponentModel.ISupportInitialize).EndInit()
         CType(PictureBox12, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
@@ -368,6 +394,8 @@ Partial Class 关于界面
     Friend WithEvents PictureBox8 As PictureBox
     Friend WithEvents Label9 As Label
     Friend WithEvents PictureBox9 As PictureBox
+    Friend WithEvents Label10 As Label
+    Friend WithEvents PictureBox10 As PictureBox
     Friend WithEvents Label11 As Label
     Friend WithEvents PictureBox11 As PictureBox
     Friend WithEvents Label12 As Label

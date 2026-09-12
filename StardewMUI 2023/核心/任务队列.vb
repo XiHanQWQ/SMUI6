@@ -38,7 +38,17 @@ Public Class 任务队列
     Delegate Sub DE1()
 
     Public Shared Sub 初始化队列键值匹配字典()
-        ' 内置规划码由 SmuiCore 引擎内置实现；此字典现仅承载插件注册的自定义规划码
+        队列键值匹配字典.Clear()
+        队列键值匹配字典.Add("CD-D-MODS", AddressOf CD1.匹配到_复制文件夹到Mods)
+        队列键值匹配字典.Add("CD-D-MODS-COVER", AddressOf CD1.匹配到_覆盖文件夹到Mods)
+        队列键值匹配字典.Add("CD-D-ROOT", AddressOf CD1.匹配到_复制文件夹)
+        队列键值匹配字典.Add("CD-D-CONTENT", AddressOf CD1.匹配到_覆盖Content)
+        队列键值匹配字典.Add("CD-F", AddressOf CD1.匹配到_安装单个文件)
+        队列键值匹配字典.Add("CR-Check-EXIST", AddressOf CD1.匹配到_检查存在性)
+        队列键值匹配字典.Add("CR-IN-MODS-VER", AddressOf CD1.匹配到_安装时检查Mods中已安装模组的版本)
+        队列键值匹配字典.Add("CR-UN", AddressOf CD1.匹配到_卸载时取消操作)
+        队列键值匹配字典.Add("CR-SHELL", AddressOf CD1.匹配到_运行可执行文件)
+        队列键值匹配字典.Add("CR-MSGBOX", AddressOf CD1.匹配到_弹窗)
     End Sub
 
     Public Shared Property 安装规划原文本列表对象 As New List(Of KeyValuePair(Of String, String))
@@ -82,6 +92,15 @@ Public Class 任务队列
     Delegate Sub DE2()
 
     Public Shared Sub 初始化安装操作匹配字典()
+        安装操作匹配字典.Add("CD-D-MODS", AddressOf CD2.匹配到_复制文件夹到Mods)
+        安装操作匹配字典.Add("CD-D-MODS-COVER", AddressOf CD2.匹配到_覆盖文件夹到Mods)
+        安装操作匹配字典.Add("CD-D-ROOT", AddressOf CD2.匹配到_复制文件夹)
+        安装操作匹配字典.Add("CD-D-CONTENT", AddressOf CD2.匹配到_覆盖Content)
+        安装操作匹配字典.Add("CD-F", AddressOf CD2.匹配到_安装单个文件)
+        安装操作匹配字典.Add("CR-Check-EXIST", AddressOf CD2.匹配到_检查存在性)
+        安装操作匹配字典.Add("CR-IN-MODS-VER", AddressOf CD2.匹配到_安装时检查Mods中已安装模组的版本)
+        安装操作匹配字典.Add("CR-SHELL", AddressOf CD2.匹配到_运行可执行文件)
+        安装操作匹配字典.Add("CR-MSGBOX", AddressOf CD2.匹配到_弹窗)
     End Sub
 
     Public Shared Function 执行安装(任务索引 As Integer) As String
@@ -102,6 +121,14 @@ Public Class 任务队列
     Delegate Sub DE3()
 
     Public Shared Sub 初始化卸载操作匹配字典()
+        卸载操作匹配字典.Add("CD-D-MODS", AddressOf CD3.匹配到_复制文件夹到Mods)
+        卸载操作匹配字典.Add("CD-D-ROOT", AddressOf CD3.匹配到_复制文件夹)
+        卸载操作匹配字典.Add("CD-D-CONTENT", AddressOf CD3.匹配到_覆盖Content)
+        卸载操作匹配字典.Add("CD-F", AddressOf CD3.匹配到_安装单个文件)
+        卸载操作匹配字典.Add("CR-Check-EXIST", AddressOf CD3.匹配到_检查存在性)
+        卸载操作匹配字典.Add("CR-UN", AddressOf CD3.匹配到_卸载时取消操作)
+        卸载操作匹配字典.Add("CR-SHELL", AddressOf CD3.匹配到_运行可执行文件)
+        卸载操作匹配字典.Add("CR-MSGBOX", AddressOf CD3.匹配到_弹窗)
     End Sub
 
     Public Shared Function 执行卸载(任务索引 As Integer) As String

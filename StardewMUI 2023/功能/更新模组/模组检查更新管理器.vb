@@ -97,7 +97,10 @@ Public Class 模组检查更新管理器
         Dim 键 As String = ""
         Try
             Dim 文本 As String = File.ReadAllText(README路径)
-            键 = SmuiCore.UpdateKeys.ExtractFromReadme(文本)
+            Dim NEXUS匹配 As Match = Regex.Match(文本, "nexusmods\.com/stardewvalley/mods/(\d+)", RegexOptions.IgnoreCase)
+            If NEXUS匹配.Success Then 键 = "nexus:" & NEXUS匹配.Groups(1).Value
+            Dim GitHub匹配 As Match = Regex.Match(文本, "github\.com/([A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+)", RegexOptions.IgnoreCase)
+            If GitHub匹配.Success Then 键 &= If(键 = "", "", "|") & "github:" & GitHub匹配.Groups(1).Value.TrimEnd("."c)
             If 键 <> "" Then DebugPrint("[更新键] 从 README 提取到更新地址：" & 键, Color1.青色)
         Catch ex As Exception
             DebugPrint("从 README 提取更新键失败：" & ex.Message, Color1.橙色)
@@ -219,20 +222,20 @@ Public Class 模组检查更新管理器
         Next
     End Sub
 
-    Public Shared Property 获取到的数据 As New SmuiCore.Services.SMAPI云服务.用于接收的数据对象
+    Public Shared Property 获取到的数据 As New SMAPI云服务.用于接收的数据对象
 
     Public Shared Async Sub 发送并显示返回的数据()
         If Form1.ListView8.Items.Count = 0 Then Exit Sub
-        获取到的数据 = New SmuiCore.Services.SMAPI云服务.用于接收的数据对象
-        Dim a As New SmuiCore.Services.SMAPI云服务.用于发送的数据对象 With {
+        获取到的数据 = New SMAPI云服务.用于接收的数据对象
+        Dim a As New SMAPI云服务.用于发送的数据对象 With {
             .apiVersion = Form1.暗黑文本框11.Text,
             .gameVersion = Form1.暗黑文本框12.Text,
             .platform = Form1.UiComboBox10.Text,
             .includeExtendedMetadata = True,
-            .mods = New List(Of SmuiCore.Services.SMAPI云服务.用于发送的数据对象.mod_single)
+            .mods = New List(Of SMAPI云服务.用于发送的数据对象.mod_single)
         }
         For i = 0 To Form1.ListView8.Items.Count - 1
-            Dim b As New SmuiCore.Services.SMAPI云服务.用于发送的数据对象.mod_single With {
+            Dim b As New SMAPI云服务.用于发送的数据对象.mod_single With {
                 .id = Form1.ListView8.Items(i).Text,
                 .updatekeys = Form1.ListView8.Items(i).SubItems(1).Text.Split("|"c).ToList,
                 .installedversion = Form1.ListView8.Items(i).SubItems(2).Text
@@ -241,7 +244,7 @@ Public Class 模组检查更新管理器
         Next
         Form1.UiButton80.Enabled = False
         UIMessageTip.Show("开始连接 SMAPI 服务器",, 2500)
-        Dim x As New SmuiCore.Services.SMAPI云服务
+        Dim x As New SMAPI云服务
         Dim s1 As String = Await x.发送并接收Async(a)
         If s1 <> "" Then
             DebugPrint(s1, Color1.红色)

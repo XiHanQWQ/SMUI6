@@ -1,6 +1,5 @@
 ﻿Imports System.IO
 Imports Sunny.UI
-Imports SharpCompress.Archives
 
 Public Class 配置队列
 
@@ -414,13 +413,12 @@ jx1:
         If Form1.ListView6.SelectedItems(0).SubItems(1).Text <> "文件" Then Exit Sub
         Dim 压缩包路径 As String = Path.Combine(正在编辑规划的项路径, Form1.ListView6.SelectedItems(0).Text)
         Select Case IO.Path.GetExtension(压缩包路径)
-            Case ".7z", ".zip", ".rar"
-                Using 档案 = SharpCompress.Archives.ArchiveFactory.Open(压缩包路径)
-                    For Each 压缩条目 In 档案.Entries
-                        If 压缩条目.IsDirectory Then Continue For
-                        压缩条目.WriteToDirectory(正在编辑规划的项路径, New SharpCompress.Common.ExtractionOptions() With {.ExtractFullPath = True, .Overwrite = True})
-                    Next
-                End Using
+            Case ".7z", ".zip"
+                Dim zip1 As New SevenZip.SevenZipExtractor(压缩包路径)
+                For i As Integer = 0 To zip1.ArchiveFileData.Count - 1
+                    zip1.ExtractFiles(正在编辑规划的项路径 & "\", zip1.ArchiveFileData(i).Index)
+                Next
+                zip1.Dispose()
         End Select
         重新扫描项的数据内容()
     End Sub

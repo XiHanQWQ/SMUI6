@@ -34,6 +34,17 @@
 	<SelfContained>true</SelfContained>
   </PropertyGroup>
 
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="dropbox.ico" />
@@ -50,12 +61,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="32.0.3" />
     <PackageReference Include="Magick.NET-Q16-x64" Version="13.9.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2535.41" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SharpCompress" Version="0.37.2" />
     <PackageReference Include="SunnyUI" Version="3.6.6" />
+    <PackageReference Include="SevenZipSharp" Version="0.64.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -124,10 +137,6 @@
 
   <ItemGroup>
     <PackageReference Update="chromiumembeddedframework.runtime.win-x86" Version="120.1.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\SMUI.Avalonia\src\SMUI.Core\SMUI.Core.csproj" />
   </ItemGroup>
 
 </Project>

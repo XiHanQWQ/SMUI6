@@ -14,7 +14,6 @@ Public Class 状态信息
             启动模式 = 应用程序启动模式枚举.Steam
             Exit Sub
         End If
-        If OperatingSystem.IsWindows() Then
         Using key As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\1059 Studio\SMUI 2023")
             If key Is Nothing Then
                 启动模式 = 应用程序启动模式枚举.便携式离线
@@ -35,9 +34,6 @@ Public Class 状态信息
                 End If
             End If
         End Using
-        Else
-            启动模式 = 应用程序启动模式枚举.便携式离线
-        End If
     End Sub
 
     Public Shared Sub 刷新起始页面状态信息()

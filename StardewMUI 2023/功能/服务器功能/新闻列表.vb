@@ -18,7 +18,7 @@ Public Class 新闻列表
                                              Dim c As New 多项单选对话框("新闻公告", {"OK"}, 列表数据(sender.Tag).Value.Split("|")(1).Replace("{vbCrLf}", vbCrLf), 200, 500)
                                              c.ShowDialog(Form1)
                                          Case "link"
-                                             System.Diagnostics.Process.Start(New ProcessStartInfo(列表数据(sender.Tag).Value.Split("|")(1)) With {.UseShellExecute = True})
+                                             ShellExecute(IntPtr.Zero, "open", 列表数据(sender.Tag).Value.Split("|")(1), Nothing, Nothing, 1)
                                      End Select
                                  End Sub
             If 列表数据(i).Value.Split("|").Length >= 3 Then
@@ -66,7 +66,7 @@ jx1:
         Dim 服务器获取_新闻 As New ComponentModel.BackgroundWorker
         AddHandler 服务器获取_新闻.DoWork,
             Sub(sender As Object, e As ComponentModel.DoWorkEventArgs)
-                Dim a As New SmuiCore.GitApi.TextFileString
+                Dim a As New GitAPI.TextFileString
                 Dim x1 As String = ""
                 Select Case 设置.全局设置数据("NewsLanguage")
                     Case "简体中文"
@@ -76,9 +76,9 @@ jx1:
                 End Select
                 Select Case 设置.全局设置数据("NewsSever")
                     Case "Gitee"
-                        a.获取文本文件数据(SmuiCore.GitApi.开源代码平台.Gitee, "CYXSJY/SMUI6", "master", x1, 设置.全局设置数据("GiteeToken"), False)
+                        a.获取文本文件数据(GitAPI.GitApiObject.开源代码平台.Gitee, "CYXSJY/SMUI6", "master", x1, 设置.全局设置数据("GiteeToken"), False)
                     Case Else
-                        a.获取文本文件数据(SmuiCore.GitApi.开源代码平台.GitHub, "XiHanQWQ/SMUI6", "master", x1, 设置.全局设置数据("GithubToken"), False)
+                        a.获取文本文件数据(GitAPI.GitApiObject.开源代码平台.GitHub, "XiHanQWQ/SMUI6", "master", x1, 设置.全局设置数据("GithubToken"), False)
                 End Select
 
                 If a.ErrorString <> "" Then

@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 Imports System.Text.RegularExpressions
-Imports SmuiCore
+Imports SMUI6.NEXUS.GetModFileList
 Imports System.Diagnostics
 
 Public Class 更新模组
@@ -136,8 +136,8 @@ Public Class 更新模组
         Form1.Label34.Text = "   正在连接到 NEXUS API 获取文件列表 ..."
         Form1.Panel34.Controls.Clear()
         Form1.Panel34.Enabled = True
-        Dim a As New SmuiCore.GetModFileList With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
-        Dim str1 As String = Await Task.Run(Function() a.StartGet("stardewvalley", 模组ID, SmuiCore.FileType.main_optional_updateFile_miscellaneous))
+        Dim a As New NEXUS.GetModFileList With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
+        Dim str1 As String = Await Task.Run(Function() a.StartGet("stardewvalley", 模组ID, NEXUS.FileType.main_optional_updateFile_miscellaneous))
         Form1.Label34.Text = "   " & If(FileIO.FileSystem.FileExists(Path.Combine(模组项绝对路径, "Code2")), "更新到模组项：", "创建新模组项：") & Path.GetFileName(模组项绝对路径)
         If str1 <> "" Then
             Dim L1 As New Label With {.AutoSize = False, .Padding = New Padding(10), .Dock = DockStyle.Fill, .Text = str1}
@@ -152,7 +152,7 @@ Public Class 更新模组
             If FileIO.FileSystem.FileExists(Path.Combine(模组项绝对路径, "NexusFileName")) Then
                 Dim str2 = FileIO.FileSystem.ReadAllText(Path.Combine(模组项绝对路径, "NexusFileName"))
                 Dim fa1 = NEXUS判断合适的文件标题.尝试判断(str2, 用于自动选择的旧版本号, a.FileListData)
-                If fa1 IsNot Nothing Then 自动判断最合适的 = fa1.file_id
+                If fa1.HasValue Then 自动判断最合适的 = fa1.Value.file_id
             End If
         End If
 
@@ -262,7 +262,7 @@ Public Class 更新模组
     Public Shared Async Sub 获取服务器列表(模组ID As String, 文件ID As String, 模组项绝对路径 As String, Optional key As String = "", Optional expires As String = "", Optional 结束后切换到选项卡 As String = "")
         Form1.Label34.Text = "   正在连接到 NEXUS API 获取服务器列表 ..."
         Form1.Panel34.Enabled = False
-        Dim a As New SmuiCore.GetModFileDownloadURL With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
+        Dim a As New NEXUS.GetModFileDownloadURL With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
         Dim str1 As String = Await Task.Run(Function() a.StartGet("stardewvalley", 模组ID, 文件ID, key, expires))
         If str1 <> "" Then
             DebugPrint(str1, Color1.红色)
@@ -294,7 +294,7 @@ Public Class 更新模组
 
     Public Shared Async Function 获取服务器列表(模组ID As String, 文件ID As String, 模组项绝对路径 As String, 向哪一个标签控件输出状态 As Label, Optional key As String = "", Optional expires As String = "", Optional 结束后切换到选项卡 As String = "") As Task(Of Boolean)
         向哪一个标签控件输出状态.Text = "正在连接到 NEXUS API 获取服务器列表 ..."
-        Dim a As New SmuiCore.GetModFileDownloadURL With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
+        Dim a As New NEXUS.GetModFileDownloadURL With {.ST_ApiKey = 设置.全局设置数据("NexusAPI")}
         Dim str1 As String = Await Task.Run(Function() a.StartGet("stardewvalley", 模组ID, 文件ID, key, expires))
         If str1 <> "" Then
             DebugPrint(str1, Color1.红色)
@@ -364,7 +364,7 @@ Public Class 更新模组
         Form1.Label34.Text = "   正在连接到 GitHub 获取发行版 ..."
         Form1.Panel34.Controls.Clear()
         Form1.Panel34.Enabled = True
-        Dim a As New SmuiCore.GitApi.GitHubAllReleaseFile
+        Dim a As New GitAPI.GitHubAllReleaseFile
         Dim str1 As String = Await Task.Run(Function() a.获取(仓库作者和名称))
         Form1.Label34.Text = "   " & If(FileIO.FileSystem.FileExists(Path.Combine(模组项绝对路径, "Code2")), "更新到模组项：", "创建新模组项：") & Path.GetFileName(模组项绝对路径)
         If str1 <> "" Then

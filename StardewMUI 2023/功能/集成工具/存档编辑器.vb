@@ -45,7 +45,8 @@ Public Class 存档编辑器
                                             End Sub
     End Sub
 
-    Public Shared Property 存档路径 As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley", "Saves")
+    Public Shared ReadOnly Property Wsh As New IWshRuntimeLibrary.IWshShell_Class
+    Public Shared Property 存档路径 As String = Wsh.SpecialFolders.Item("AppData") & "\StardewValley\Saves"
     Public Shared Property 存档列表菜单 As New 暗黑菜单条控件本体
     Public Shared Property Xmldoc1 As XmlDocument
     Public Shared Property Xmldoc2 As XmlDocument
