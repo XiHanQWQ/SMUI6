@@ -9,15 +9,13 @@
         CanResize="False"
         ShowInTaskbar="False"
         Background="{DynamicResource WindowBgBrush}"
-        ExtendClientAreaToDecorationsHint="True">
-
+>
     <Design.DataContext>
         <vm:ChoiceDialogViewModel/>
     </Design.DataContext>
 
     <Border Margin="1" CornerRadius="12" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1">
         <StackPanel Margin="22,18,22,20" Spacing="14">
-            <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" TextWrapping="Wrap" />
             <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14,10"
                     MaxHeight="260" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                 <ScrollViewer>
@@ -29,7 +27,7 @@
                     <DataTemplate>
                         <Button Content="{Binding}" Command="{Binding $parent[Window].((vm:ChoiceDialogViewModel)DataContext).SelectCommand}"
                                 CommandParameter="{Binding}"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                HorizontalAlignment="Left" MinWidth="150" HorizontalContentAlignment="Left"
                                 Margin="0,0,0,7" Padding="14,9" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

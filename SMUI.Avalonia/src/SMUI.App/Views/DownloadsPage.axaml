@@ -8,32 +8,59 @@
         <vm:UpdatesPageViewModel/>
     </Design.DataContext>
 
-    <!-- ============ 下载更新（复刻原版下载选项卡） ============ -->
+    <!-- ============ 下载更新（一比一复刻 WinForms：顶栏提示 + 左队列/右文件区） ============ -->
     <Grid RowDefinitions="Auto,*">
-        <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="12,8"
-                BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Classes="accent" Content="⬇ 下载并新建项..." Command="{Binding DownloadAndCreateItemCommand}" />
-                <TextBlock Text="输入压缩包直链或选择本地压缩包，自动解压并生成安装规划" Classes="dim" VerticalAlignment="Center" />
+
+        <!-- 顶栏：选择要下载的文件 | 提示文字 -->
+        <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="14,12"
+                BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Spacing="26">
+                <TextBlock Text="选择要下载的文件" Foreground="{DynamicResource AccentBrush}" FontSize="14.5"
+                           FontWeight="Bold" VerticalAlignment="Center" />
+                <TextBlock Text="在管理模组选项卡中发起更新来获取文件列表" FontSize="14" VerticalAlignment="Center" />
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto" Margin="14,12">
-            <TextBlock Grid.Row="0" Text="下载和更新队列" FontWeight="Bold" Margin="0,0,0,8" />
-            <ListBox Grid.Row="1" ItemsSource="{Binding Downloads}" Background="#202020" Margin="0,0,0,10">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="*,180,90,Auto" VerticalAlignment="Center" Margin="2,4">
-                            <TextBlock Text="{Binding FileName}" FontSize="12.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                            <ProgressBar Grid.Column="1" Value="{Binding Progress}" Maximum="100" Height="6" Margin="10,0" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="2" Text="{Binding ProgressText}" FontSize="11" Classes="dim" VerticalAlignment="Center" Margin="0,0,8,0" />
-                            <Button Grid.Column="3" Classes="ghost" Content="✕" Command="{Binding CancelCommand}" FontSize="11" />
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBlock Grid.Row="2" Classes="dim" TextWrapping="Wrap"
-                       Text="NEXUS 模组更新请在「检查更新」或「管理模组」中使用（需要 API Key）；此处队列显示所有进行中的下载任务，点击 ✕ 可取消。" />
+        <!-- 主体：左侧队列 23% | 右侧文件区 -->
+        <Grid Grid.Row="1" ColumnDefinitions="23*,1,77*">
+
+            <!-- 左：下载和更新队列 + NEXUS 下载模式 -->
+            <Border Grid.Column="0" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <TextBlock Grid.Row="0" Text="下载和更新队列" FontSize="14" Margin="14,10" />
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Downloads}" Background="Transparent" Margin="6,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center" Margin="2,5">
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="{Binding FileName}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                                        <ProgressBar Value="{Binding Progress}" Maximum="100" Height="5" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="ghost" Content="✕" Command="{Binding CancelCommand}" FontSize="11" Margin="6,0,0,0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock Grid.Row="2" Text="{Binding NexusModeText}" FontSize="14" Margin="14,10" />
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Background="{DynamicResource BorderBrush1}" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
+
+            <!-- 右：文件列表区（发起 NEXUS 更新后展示可选文件） -->
+            <Panel Grid.Column="2" Background="{DynamicResource WindowBgBrush}">
+                <ListBox ItemsSource="{Binding NexusFileOptions}" Background="Transparent" Margin="0,4"
+                         SelectionMode="Multiple" x:Name="NexusFileList">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="12,6" Spacing="2">
+                                <TextBlock Text="{Binding Display}" FontSize="13" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Detail}" FontSize="10.5" Classes="dim" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Panel>
         </Grid>
     </Grid>
 </UserControl>

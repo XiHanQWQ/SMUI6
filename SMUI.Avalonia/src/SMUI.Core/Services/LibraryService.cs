@@ -213,11 +213,25 @@ public class LibraryService
     {
         var mark = new AppearanceMark();
         var colorFile = Path.Combine(folder, "Color");
-        if (File.Exists(colorFile)) mark.Color = File.ReadAllText(colorFile).Trim();
+        if (File.Exists(colorFile)) mark.Color = NormalizeColorKey(File.ReadAllText(colorFile).Trim());
         var fontFile = Path.Combine(folder, "Font");
         if (File.Exists(fontFile)) mark.FontStyle = File.ReadAllText(fontFile).Trim();
         return mark;
     }
+
+    /// <summary>把 Color 标记文件内容（WinForms 兼容的大写 RED/ORANGE/AQUA 等）归一化为小写画刷 key。</summary>
+    public static string NormalizeColorKey(string raw) => raw.ToUpperInvariant() switch
+    {
+        "RED" => "red",
+        "ORANGE" => "orange",
+        "YELLOW" => "yellow",
+        "GREEN" => "green",
+        "AQUA" => "cyan",
+        "CYAN" => "cyan",
+        "BLUE" => "blue",
+        "PURPLE" => "purple",
+        _ => "",
+    };
 
     // ------------------------------------------------------------- 描述与预览图
 

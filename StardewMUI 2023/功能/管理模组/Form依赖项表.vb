@@ -1,7 +1,6 @@
 ﻿
 Imports System.IO
-Imports Newtonsoft.Json
-Imports Newtonsoft.Json.Linq
+Imports System.Text.Json.Nodes
 Imports Sunny.UI
 
 Public Class Form依赖项表
@@ -73,10 +72,10 @@ Public Class Form依赖项表
         Me.Text = "正在扫描"
         Application.DoEvents()
         For i = 0 To x1.文件绝对路径集合.Count - 1
-            Dim JsonData As Object = CType(JsonConvert.DeserializeObject(FileIO.FileSystem.ReadAllText(x1.文件绝对路径集合(i))), JObject)
-            If JsonData.item("UniqueID") IsNot Nothing Then
+            Dim JsonData As JsonObject = FileIO.FileSystem.ReadAllText(x1.文件绝对路径集合(i)).从文本()
+            If JsonData.取值("UniqueID") IsNot Nothing Then
                 For i2 = 0 To Me.ListView1.Items.Count - 1
-                    If Me.ListView1.Items.Item(i2).Text.ToUpper.Trim = JsonData.item("UniqueID").ToString.ToUpper.Trim Then
+                    If Me.ListView1.Items.Item(i2).Text.ToUpper.Trim = JsonData.取值("UniqueID").ToString.ToUpper.Trim Then
                         Me.ListView1.Items.Item(i2).SubItems(3).Text = "已安装"
                         Me.ListView1.Items.Item(i2).ForeColor = Color1.绿色
                         Exit For

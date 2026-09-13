@@ -25,6 +25,16 @@ public class UpdateResultVm : ViewModelBase
         string.IsNullOrEmpty(SuggestedVersion) ? "无更新建议" :
         string.IsNullOrEmpty(InstalledVersion) ? $"→ {SuggestedVersion}" :
         $"{InstalledVersion} → {SuggestedVersion}";
+
+    public string NexusIdText => string.IsNullOrEmpty(NexusId) ? "-" : NexusId;
+    public string SuggestedVersionText => string.IsNullOrEmpty(SuggestedVersion) ? "已是最新" : SuggestedVersion;
+}
+
+/// <summary>NEXUS 文件列表行（下载更新页右栏展示）。</summary>
+public class NexusFileOptionVm
+{
+    public string Display { get; set; } = "";
+    public string Detail { get; set; } = "";
 }
 
 public partial class UpdatesPageViewModel : ViewModelBase
@@ -38,6 +48,7 @@ public partial class UpdatesPageViewModel : ViewModelBase
         _settings = settings;
         _dialogs = dialogs;
         _log = log;
+        RefreshVersions();
     }
 
     public ObservableCollection<UpdateResultVm> Results { get; } = new();
@@ -53,6 +64,92 @@ public partial class UpdatesPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private UpdateResultVm? _selectedResult;
+
+    // ------------------------------------------------- 步骤一表单（复刻 WinForms：SMAPI 版本/游戏版本/操作系统平台）
+
+    [ObservableProperty]
+    private string _smapiVersion = "";
+
+    [ObservableProperty]
+    private string _gameVersion = "";
+
+    [ObservableProperty]
+    private string _osPlatform = "Windows";
+
+    /// <summary>下载更新页左侧的 NEXUS 下载模式显示。</summary>
+    [ObservableProperty]
+    private string _nexusModeText = "NEXUS 下载模式：FREE";
+
+    /// <summary>NEXUS 主文件列表（下载更新页右栏展示）。</summary>
+    public ObservableCollection<NexusFileOptionVm> NexusFileOptions { get; } = new();
+
+    public void RefreshVersions()
+    {
+        OsPlatform = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows) ? "Windows"
+            : System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX) ? "macOS" : "Linux";
+        NexusModeText = _settings["NexusPremium"] == "True"
+            ? "NEXUS 下载模式：Premium"
+            : "NEXUS 下载模式：FREE";
+        try
+        {
+            if (_settings.GamePath is { Length: > 0 } game)
+            {
+                var smapiDll = Path.Combine(game, "StardewModdingAPI.dll");
+                if (File.Exists(smapiDll))
+                    SmapiVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(smapiDll).FileVersion ?? "";
+                var gameExe = Path.Combine(game, "Stardew Valley.exe");
+                if (File.Exists(gameExe))
+                    GameVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(gameExe).FileVersion ?? "";
+            }
+        }
+        catch
+        {
+            // 版本探测失败时保留空值供手填
+        }
+    }
+
+    [RelayCommand]
+    private void ClearResults() => Results.Clear();
+
+    [RelayCommand]
+    private async Task RemoveSelectedResultAsync()
+    {
+        if (SelectedResult == null)
+        {
+            await _dialogs.InfoAsync("移除选中", "请先在列表中选中一个条目。");
+            return;
+        }
+        Results.Remove(SelectedResult);
+    }
+
+    [RelayCommand]
+    private async Task EditUpdateKeysAsync()
+    {
+        if (SelectedResult == null)
+        {
+            await _dialogs.InfoAsync("编辑更新键", "请先在列表中选中一个条目。");
+            return;
+        }
+        var input = await _dialogs.InputAsync("编辑更新键",
+            $"修改 {SelectedResult.Name} 的 NEXUS 模组号：", SelectedResult.NexusId ?? "");
+        if (input == null) return;
+        SelectedResult.NexusId = input.Trim();
+        _log.Print($"已更新更新键：{SelectedResult.Name} → {input.Trim()}", LogKind.Info);
+    }
+
+    [RelayCommand]
+    private async Task EditVersionAsync()
+    {
+        if (SelectedResult == null)
+        {
+            await _dialogs.InfoAsync("编辑版本", "请先在列表中选中一个条目。");
+            return;
+        }
+        var input = await _dialogs.InputAsync("编辑版本",
+            $"修改 {SelectedResult.Name} 的建议版本号：", SelectedResult.SuggestedVersion ?? "");
+        if (input == null) return;
+        SelectedResult.SuggestedVersion = input.Trim();
+    }
 
     // ------------------------------------------------- smapi.io 批量检查
 
@@ -177,15 +274,21 @@ public partial class UpdatesPageViewModel : ViewModelBase
                 return;
             }
 
-            var options = files
-                .OrderByDescending(f => f.IsPrimary)
-                .ThenByDescending(f => f.UploadedTime)
+            var orderedFiles = files.OrderByDescending(f => f.IsPrimary).ThenByDescending(f => f.UploadedTime).ToList();
+            NexusFileOptions.Clear();
+            foreach (var f in orderedFiles)
+                NexusFileOptions.Add(new NexusFileOptionVm
+                {
+                    Display = f.Name,
+                    Detail = $"v{f.Version} · {FormatSize(f.Size)} · ID {f.FileId}" + (f.IsPrimary ? " · 主文件" : ""),
+                });
+            var options = orderedFiles
                 .Select(f => $"{f.Name}  (v{f.Version}, {FormatSize(f.Size)})")
                 .ToList();
             var pick = await _dialogs.ChoiceAsync("选择要下载的 NEXUS 文件",
                 $"NEXUS MOD {nexusId} 的主文件列表：", options);
             if (pick < 0) return;
-            var file = files.OrderByDescending(f => f.IsPrimary).ThenByDescending(f => f.UploadedTime).ToList()[pick];
+            var file = orderedFiles[pick];
 
             BusyText = "正在获取下载地址...";
             var (urls, urlError) = await AppServices.Nexus.GetDownloadUrlsAsync(int.Parse(nexusId), file.FileId);
@@ -287,9 +390,9 @@ public partial class UpdatesPageViewModel : ViewModelBase
 
     // ------------------------------------------------- 下载并新建项
 
-    /// <summary>从 URL（NEXUS/GitHub 直链）下载压缩包并新建模组项。</summary>
+    /// <summary>从 URL（NEXUS/GitHub 直链）下载压缩包并新建模组项；可传入预填 URL（最新模组卡片“+”入口）。</summary>
     [RelayCommand]
-    public async Task DownloadAndCreateItemAsync()
+    public async Task DownloadAndCreateItemAsync(string? presetUrl = null)
     {
         var sub = _settings.LastSubLibrary;
         if (string.IsNullOrEmpty(sub))
@@ -299,7 +402,7 @@ public partial class UpdatesPageViewModel : ViewModelBase
         }
 
         var url = await _dialogs.InputAsync("下载并新建模组项",
-            "输入压缩包直链 URL（GitHub Release 附件等），或留空改为本地选择压缩包：", "");
+            "输入压缩包直链 URL（GitHub Release 附件等），或留空改为本地选择压缩包：", presetUrl ?? "");
         string archivePath;
         if (!string.IsNullOrWhiteSpace(url))
         {
@@ -486,8 +589,209 @@ public partial class UpdatesPageViewModel : ViewModelBase
         }
     }
 
+
+    // ------------------------------------------------- 步骤一：检查更新表（复刻 WinForms ListView8）
+
+    public ObservableCollection<CheckRowVm> CheckRows { get; } = new();
+
+    [ObservableProperty]
+    private CheckRowVm? _selectedCheckRow;
+
+    [ObservableProperty]
+    private int _stepIndex;
+
+    /// <summary>把一个模组项的更新键信息加入检查更新表（管理模组右键「加入检查更新表」入口）。</summary>
+    public int AddToCheckTable(string itemPath)
+    {
+        var info = new ItemInfo();
+        info.Read(itemPath, new ItemInfo.ComputeFlags
+        {
+            UniqueId = true,
+            UpdateKeys = true,
+            InstalledVersion = true,
+        }, _settings.GamePath);
+        int added = 0;
+        var ids = info.UniqueIds.Count > 0 ? info.UniqueIds : new List<string> { Path.GetFileName(itemPath) };
+        foreach (var id in ids)
+        {
+            var keys = new List<string>();
+            keys.AddRange(info.NexusIds.Select(n => $"nexus:{n}"));
+            keys.AddRange(info.ModDropIds.Select(m => $"moddrop:{m}"));
+            keys.AddRange(info.GitHubRepos.Select(g => $"github:{g}"));
+            if (keys.Count == 0) keys.AddRange(info.UniqueIds.Select(u => $"smapi:{u}"));
+            CheckRows.Add(new CheckRowVm
+            {
+                UniqueId = id,
+                UpdateKeys = string.Join("|", keys),
+                Version = info.InstalledVersions.FirstOrDefault() ?? "",
+            });
+            added++;
+        }
+        return added;
+    }
+
+    [RelayCommand]
+    private async Task RemoveCheckRowAsync()
+    {
+        if (SelectedCheckRow == null) { await _dialogs.InfoAsync("移除选中", "请先在检查更新表中选中条目。"); return; }
+        CheckRows.Remove(SelectedCheckRow);
+    }
+
+    [RelayCommand]
+    private void ClearCheckRows() => CheckRows.Clear();
+
+    [RelayCommand]
+    private async Task EditCheckKeysAsync()
+    {
+        if (SelectedCheckRow == null) { await _dialogs.InfoAsync("编辑更新键", "请先在检查更新表中选中条目。"); return; }
+        var s = await _dialogs.InputAsync("编辑更新键", "多个更新键用竖线隔开", SelectedCheckRow.UpdateKeys);
+        if (s == null) return;
+        SelectedCheckRow.UpdateKeys = s.Trim();
+    }
+
+    [RelayCommand]
+    private async Task EditCheckVersionAsync()
+    {
+        if (SelectedCheckRow == null) { await _dialogs.InfoAsync("编辑版本", "请先在检查更新表中选中条目。"); return; }
+        var s = await _dialogs.InputAsync("编辑版本", "输入该条目的版本号", SelectedCheckRow.Version);
+        if (s == null) return;
+        SelectedCheckRow.Version = s.Trim();
+    }
+
+    /// <summary>发送检查更新表到 smapi.io（复刻 发送并显示返回的数据）。</summary>
+    [RelayCommand]
+    public async Task SendCheckTableAsync()
+    {
+        if (CheckRows.Count == 0)
+        {
+            await _dialogs.InfoAsync("发送数据", "检查更新表为空：请在「管理模组」的右键菜单中选择【加入检查更新表】。");
+            return;
+        }
+        IsBusy = true;
+        BusyText = $"正在向 smapi.io 查询 {CheckRows.Count} 个条目...";
+        Results.Clear();
+        try
+        {
+            var queries = CheckRows.Select(r => new SmapiCloudService.ModQuery(
+                r.UniqueId,
+                r.UpdateKeys.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(),
+                r.Version)).ToList();
+            var (results, error) = await AppServices.SmapiCloud.CheckModsAsync(queries);
+            if (error != "")
+            {
+                await _dialogs.InfoAsync("检查失败", error);
+                return;
+            }
+            foreach (var r in results)
+                Results.Add(new UpdateResultVm
+                {
+                    UniqueId = r.Id,
+                    Name = string.IsNullOrEmpty(r.Name) ? r.Id : r.Name,
+                    InstalledVersion = "",
+                    SuggestedVersion = r.SuggestedVersion,
+                    Compatibility = r.CompatibilitySummary,
+                    NexusId = r.NexusId,
+                    ModDropId = r.ModDropId,
+                    GitHubRepo = r.GitHubRepo,
+                    Url = r.SuggestedUrl,
+                    StatusText = string.IsNullOrEmpty(r.SuggestedVersion) ? "已是最新" : "有更新",
+                });
+            StepIndex = 1;
+            _log.Print($"检查完成：{Results.Count(r => r.SuggestedVersion != "")} 个条目有更新建议", LogKind.Success);
+        }
+        finally
+        {
+            IsBusy = false;
+            BusyText = "";
+        }
+    }
+
+    [RelayCommand]
+    private void SelectUpdatableResults()
+    {
+        // ponytail: ListBox 多选无法从 VM 驱动，此处用状态文字标记更新可用项，点击列头筛选时可见
+        foreach (var r in Results)
+            r.StatusText = string.IsNullOrEmpty(r.SuggestedVersion) ? "已是最新" : "有更新";
+        _log.Print($"更新可用：{Results.Count(r => r.SuggestedVersion != "")} 个", LogKind.Info);
+    }
+
+    [RelayCommand]
+    private void GotoStep3() => StepIndex = 2;
+
+    [RelayCommand]
+    private void ClearResultsAndBack()
+    {
+        Results.Clear();
+        StepIndex = 0;
+    }
+
+    [RelayCommand]
+    private void ClearLocalAndBack() => StepIndex = 1;
+
+    [RelayCommand]
+    private async Task ShowResultDetailAsync()
+    {
+        if (SelectedResult == null) { await _dialogs.InfoAsync("显示所有信息", "请先选中一个返回条目。"); return; }
+        await _dialogs.InfoAsync(SelectedResult.Name,
+            $"UniqueID：{SelectedResult.UniqueId}\n" +
+            $"NEXUS：{(string.IsNullOrEmpty(SelectedResult.NexusId) ? "-" : SelectedResult.NexusId)}\n" +
+            $"ModDrop：{(string.IsNullOrEmpty(SelectedResult.ModDropId) ? "-" : SelectedResult.ModDropId)}\n" +
+            $"GitHub：{(string.IsNullOrEmpty(SelectedResult.GitHubRepo) ? "-" : SelectedResult.GitHubRepo)}\n" +
+            $"建议版本：{(string.IsNullOrEmpty(SelectedResult.SuggestedVersion) ? "已是最新" : SelectedResult.SuggestedVersion)}\n" +
+            $"兼容性：{SelectedResult.Compatibility}");
+    }
+
+    [RelayCommand]
+    private async Task ShowLocalItemOpsAsync()
+    {
+        if (SelectedLocalItem == null)
+        {
+            await _dialogs.InfoAsync("对选中的单项操作", "请先扫描子库并选中一个模组项，再使用下方更新按钮。");
+            return;
+        }
+        await _dialogs.InfoAsync("对选中的单项操作", $"已选中 [{SelectedLocalItem.Category}] {SelectedLocalItem.Name}。\n使用工具栏的「N网更新选中项 / GitHub 更新选中项 / 打开建议链接」执行更新。");
+    }
+
+    // ------------------------------------------------- 步骤三：在本地找到项
+
+    public ObservableCollection<LocalItemVm> LocalItems { get; } = new();
+
+    [ObservableProperty]
+    private LocalItemVm? _selectedLocalItem;
+
+    [RelayCommand]
+    public async Task ScanLocalItemsAsync()
+    {
+        var sub = _settings.LastSubLibrary;
+        if (string.IsNullOrEmpty(sub))
+        {
+            await _dialogs.InfoAsync("扫描子库", "请先在「管理模组」选择数据子库。");
+            return;
+        }
+        LocalItems.Clear();
+        var cats = AppServices.Library.ScanCategories(sub);
+        await Task.Run(() =>
+        {
+            foreach (var (cat, _) in cats)
+                foreach (var entry in AppServices.Library.ScanItems(sub, cat))
+                    LocalItems.Add(new LocalItemVm { Name = entry.Name, Category = cat, ItemPath = entry.ItemPath });
+        });
+        _log.Print($"已扫描子库「{sub}」：{LocalItems.Count} 个模组项", LogKind.Info);
+    }
+
+    [RelayCommand]
+    private void RemoveLocalItem()
+    {
+        if (SelectedLocalItem != null) LocalItems.Remove(SelectedLocalItem);
+    }
+
+    [RelayCommand]
+    private void ClearLocalItems() => LocalItems.Clear();
+
+    /// <summary>更新目标：优先步骤三选中的本地项。</summary>
     private async Task<string?> PickTargetItemAsync()
     {
+        if (SelectedLocalItem != null) return SelectedLocalItem.ItemPath;
         var sub = _settings.LastSubLibrary;
         if (string.IsNullOrEmpty(sub)) return null;
         var cats = AppServices.Library.ScanCategories(sub);
@@ -577,4 +881,20 @@ public partial class DownloadTaskVm : ViewModelBase
 
     [CommunityToolkit.Mvvm.Input.RelayCommand]
     private void Cancel() => CancellationSource.Cancel();
+}
+
+/// <summary>检查更新表行（步骤一，复刻 WinForms ListView8 三列）。</summary>
+public partial class CheckRowVm : ViewModelBase
+{
+    public string UniqueId { get; set; } = "";
+    public string UpdateKeys { get; set; } = "";
+    public string Version { get; set; } = "";
+}
+
+/// <summary>步骤三本地模组项。</summary>
+public class LocalItemVm
+{
+    public string Name { get; set; } = "";
+    public string Category { get; set; } = "";
+    public string ItemPath { get; set; } = "";
 }

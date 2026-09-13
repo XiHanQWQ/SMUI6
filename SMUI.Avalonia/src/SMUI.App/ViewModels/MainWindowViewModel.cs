@@ -13,6 +13,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public UpdatesPageViewModel Updates { get; }
     public LogViewModel Log { get; }
     public SettingsPageViewModel Settings { get; }
+    public ToolsViewModel Tools { get; }
 
     private readonly UiLogService _log;
     private readonly IDialogService _dialogs;
@@ -20,7 +21,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(
         HomeViewModel home, ModsPageViewModel mods, QueuePageViewModel queue,
         UpdatesPageViewModel updates, LogViewModel log, SettingsPageViewModel settings,
-        UiLogService logService, IDialogService dialogs)
+        ToolsViewModel tools, UiLogService logService, IDialogService dialogs)
     {
         Home = home;
         Mods = mods;
@@ -28,6 +29,7 @@ public partial class MainWindowViewModel : ViewModelBase
         Updates = updates;
         Log = log;
         Settings = settings;
+        Tools = tools;
         _log = logService;
         _dialogs = dialogs;
 

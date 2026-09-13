@@ -4,17 +4,6 @@
 Public Class PluginAPI
 
     ''' <summary>
-    ''' 在起始页面的创作者面板中添加交互界面，推荐用自定义控件把界面摆出来
-    ''' </summary>
-    ''' <param name="panel">任何有 Dock 属性的控件</param>
-    Public Shared Sub 添加创作者面板(panel As Control)
-        If panel Is Nothing Then Exit Sub
-        Form1.TabPage创作者面板.Controls.Add(panel)
-        panel.BringToFront()
-        panel.Dock = DockStyle.Top
-    End Sub
-
-    ''' <summary>
     ''' 向调试界面输出内容，注意在其他线程中使用此方法无效
     ''' </summary>
     ''' <param name="文本"></param>

@@ -112,7 +112,7 @@ Public Class 管理模组的菜单
 
     Public Shared Sub 添加项菜单的所有菜单项()
         项菜单.Items.Add(菜单项_新建项)
-        If DLC.DLC解锁标记.NewItemExtension Then 项菜单.Items.Add(菜单项_下载并新建项)
+        项菜单.Items.Add(菜单项_下载并新建项)
         项菜单.Items.Add(New ToolStripSeparator)
         项菜单.Items.Add(菜单项_移动项)
         项菜单.Items.Add(菜单项_删除项)
@@ -274,12 +274,10 @@ Public Class 管理模组的菜单
     Public Shared Sub 添加链接菜单的所有菜单项()
         链接菜单.Items.Add(菜单项_打开链接)
         链接菜单.Items.Add(菜单项_复制链接)
-        If DLC.DLC解锁标记.UpdateModItemExtension Then
-            链接菜单.Items.Add(New ToolStripSeparator)
-            链接菜单.Items.Add(菜单项_从此NEXUS链接更新)
-            链接菜单.Items.Add(菜单项_从此ModDrop链接更新)
-            链接菜单.Items.Add(菜单项_从此GitHub链接更新)
-        End If
+        链接菜单.Items.Add(New ToolStripSeparator)
+        链接菜单.Items.Add(菜单项_从此NEXUS链接更新)
+        链接菜单.Items.Add(菜单项_从此ModDrop链接更新)
+        链接菜单.Items.Add(菜单项_从此GitHub链接更新)
     End Sub
 
     ''' <summary>
@@ -357,12 +355,10 @@ Public Class 管理模组的菜单
         检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_通过NEXUS更新)
         检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_通过ModDrop更新)
         检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_通过Gtihub更新)
-        If DLC.DLC解锁标记.CustomInputExtension Then
-            检查更新找到模组项的菜单.Items.Add(New ToolStripSeparator)
-            检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_输入NEXUS更新)
-            检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_输入ModDrop更新)
-            检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_输入Gtihub更新)
-        End If
+        检查更新找到模组项的菜单.Items.Add(New ToolStripSeparator)
+        检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_输入NEXUS更新)
+        检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_输入ModDrop更新)
+        检查更新找到模组项的菜单.Items.Add(菜单项_检查更新_输入Gtihub更新)
     End Sub
 
 

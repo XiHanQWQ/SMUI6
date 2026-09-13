@@ -1,5 +1,4 @@
-﻿Imports Newtonsoft.Json
-Imports Newtonsoft.Json.Linq
+﻿Imports System.Text.Json.Nodes
 Imports Microsoft.VisualBasic.FileIO.FileSystem
 
 Public Class SearchItem
@@ -43,9 +42,9 @@ Public Class SearchItem
                             ManifestFile.SearchManifests(mDir2.FullName)
                             For i = 0 To ManifestFile.FileCollection.Count - 1
                                 Dim a As String = My.Computer.FileSystem.ReadAllText(CombinePath(mDir2.FullName, ManifestFile.FileCollection(i)))
-                                Dim JsonData As Object = CType(JsonConvert.DeserializeObject(a), JObject)
-                                If JsonData.item("Name") IsNot Nothing Then
-                                    If DetermineWhetherToAddToOutput(JsonData.item("Name").ToString, SearchWhat) = True Then
+                                Dim JsonData As JsonObject = a.从文本()
+                                If JsonData.取值("Name") IsNot Nothing Then
+                                    If DetermineWhetherToAddToOutput(JsonData.取值("Name").ToString, SearchWhat) = True Then
                                         Results.Add(mDir2.FullName)
                                         Exit For
                                     End If
@@ -57,9 +56,9 @@ Public Class SearchItem
                             ManifestFile.SearchManifests(mDir2.FullName)
                             For i = 0 To ManifestFile.FileCollection.Count - 1
                                 Dim a As String = My.Computer.FileSystem.ReadAllText(CombinePath(mDir2.FullName, ManifestFile.FileCollection(i)))
-                                Dim JsonData As Object = CType(JsonConvert.DeserializeObject(a), JObject)
-                                If JsonData.item("Author") IsNot Nothing Then
-                                    If DetermineWhetherToAddToOutput(JsonData.item("Author").ToString, SearchWhat) = True Then
+                                Dim JsonData As JsonObject = a.从文本()
+                                If JsonData.取值("Author") IsNot Nothing Then
+                                    If DetermineWhetherToAddToOutput(JsonData.取值("Author").ToString, SearchWhat) = True Then
                                         Results.Add(mDir2.FullName)
                                         Exit For
                                     End If
@@ -71,9 +70,9 @@ Public Class SearchItem
                             ManifestFile.SearchManifests(mDir2.FullName)
                             For i = 0 To ManifestFile.FileCollection.Count - 1
                                 Dim a As String = My.Computer.FileSystem.ReadAllText(CombinePath(mDir2.FullName, ManifestFile.FileCollection(i)))
-                                Dim JsonData As Object = CType(JsonConvert.DeserializeObject(a), JObject)
-                                If JsonData.item("UniqueID") IsNot Nothing Then
-                                    If DetermineWhetherToAddToOutput(JsonData.item("UniqueID").ToString, SearchWhat) = True Then
+                                Dim JsonData As JsonObject = a.从文本()
+                                If JsonData.取值("UniqueID") IsNot Nothing Then
+                                    If DetermineWhetherToAddToOutput(JsonData.取值("UniqueID").ToString, SearchWhat) = True Then
                                         Results.Add(mDir2.FullName)
                                         Exit For
                                     End If

@@ -3,7 +3,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports Microsoft.VisualBasic.FileIO.FileSystem
-Imports Newtonsoft.Json.Linq
+Imports System.Text.Json.Nodes
 
 Public Class 项信息读取类
 
@@ -165,11 +165,11 @@ Public Class 项信息读取类
 
     Public Shared Function 从JSON读取语义版本号(JsonTextInVersion As String, Optional ByRef ErrorString As String = "") As String
         Try
-            Dim JsonData As JObject = JObject.Parse(JsonTextInVersion)
-            Dim MajorVersion As String = JsonData.GetValue("MajorVersion", StringComparison.OrdinalIgnoreCase).ToString
-            Dim MinorVersion As String = JsonData.GetValue("MinorVersion", StringComparison.OrdinalIgnoreCase).ToString
-            Dim PatchVersion As String = JsonData.GetValue("PatchVersion", StringComparison.OrdinalIgnoreCase).ToString
-            Dim Build As String = JsonData.GetValue("Build", StringComparison.OrdinalIgnoreCase).ToString
+            Dim JsonData As JsonObject = JsonTextInVersion.从文本()
+            Dim MajorVersion As String = JsonData.取值("MajorVersion").ToString
+            Dim MinorVersion As String = JsonData.取值("MinorVersion").ToString
+            Dim PatchVersion As String = JsonData.取值("PatchVersion").ToString
+            Dim Build As String = JsonData.取值("Build").ToString
 
             If String.IsNullOrEmpty(MajorVersion) Then Return ""
 

@@ -1,4 +1,4 @@
-﻿
+
 Imports System.Drawing.Text
 Imports System.IO
 Imports System.Reflection
@@ -67,11 +67,7 @@ Public Class 设置
         AddHandler Form1.UiButton71.Click, AddressOf 选择WebView2独立运行时路径
 
         AddHandler Form1.UiButton95.Click, Sub()
-                                               If DLC.DLC解锁标记.CustomSkinExtension Then
-                                                   If Form自定义背景.Visible = False Then 显示窗体(Form自定义背景, Form1)
-                                               Else
-                                                   UIMessageTip.Show("DLC 2 未激活",, 2500)
-                                               End If
+                                               If Form自定义背景.Visible = False Then 显示窗体(Form自定义背景, Form1)
                                            End Sub
 
     End Sub
@@ -121,8 +117,11 @@ Public Class 设置
 
     Public Shared Sub 启动时检查用户文件夹()
         If FileIO.FileSystem.DirectoryExists(用户数据文件夹路径) = False Then FileIO.FileSystem.CreateDirectory(用户数据文件夹路径)
-        If FileIO.FileSystem.DirectoryExists(DLC文件夹路径) = False Then FileIO.FileSystem.CreateDirectory(DLC文件夹路径)
         If FileIO.FileSystem.DirectoryExists(插件文件夹路径) = False Then FileIO.FileSystem.CreateDirectory(插件文件夹路径)
+        Dim 旧预设文件 As String = Path.Combine(Application.StartupPath, "UserData\DLC5.json")
+        If FileIO.FileSystem.FileExists(导出预设数据保存路径) = False AndAlso FileIO.FileSystem.FileExists(旧预设文件) Then
+            FileIO.FileSystem.MoveFile(旧预设文件, 导出预设数据保存路径)
+        End If
         If FileIO.FileSystem.DirectoryExists(浏览器缓存路径) = False Then FileIO.FileSystem.CreateDirectory(浏览器缓存路径)
         If FileIO.FileSystem.DirectoryExists(自定义语言包路径) = False Then FileIO.FileSystem.CreateDirectory(自定义语言包路径)
         If FileIO.FileSystem.DirectoryExists(SMAPI下载路径) = False Then FileIO.FileSystem.CreateDirectory(SMAPI下载路径)
@@ -135,13 +134,12 @@ Public Class 设置
     Public Shared ReadOnly 安装程序更新下载文件路径 As String = Path.Combine(Application.StartupPath, "UserData\SMUI 6 Installer.exe")
     Public Shared ReadOnly 当日新闻列表文件路径 As String = Path.Combine(Application.StartupPath, "UserData\TodayNews")
 
-    Public Shared ReadOnly DLC文件夹路径 As String = Path.Combine(Application.StartupPath, "UserData\DLC")
     Public Shared ReadOnly 插件文件夹路径 As String = Path.Combine(Application.StartupPath, "UserData\Plugin")
     Public Shared ReadOnly 浏览器缓存路径 As String = Path.Combine(Application.StartupPath, "UserData\WebView2Cache")
     Public Shared ReadOnly 自定义语言包路径 As String = Path.Combine(Application.StartupPath, "UserData\Language")
     Public Shared ReadOnly SMAPI下载路径 As String = Path.Combine(Application.StartupPath, "UserData\SmapiDownload")
     Public Shared ReadOnly SMAPI解压路径 As String = Path.Combine(Application.StartupPath, "UserData\SmapiDecompress")
-    Public Shared ReadOnly 导出预设数据保存路径 As String = Path.Combine(Application.StartupPath, "UserData\DLC5.json")
+    Public Shared ReadOnly 导出预设数据保存路径 As String = Path.Combine(Application.StartupPath, "UserData\Presets.json")
 
     Public Shared Function 检查并返回数据库下载文件夹路径() As String
         If Not FileIO.FileSystem.DirectoryExists(Path.Combine(全局设置数据("LocalRepositoryPath"), ".Download")) Then
@@ -516,7 +514,6 @@ R1:
     End Sub
 
     Public Shared Sub 加载自定义背景()
-        If Not DLC.DLC解锁标记.CustomSkinExtension Then Exit Sub
         If FileIO.FileSystem.FileExists(全局设置数据("BGP_News")) Then
             Using fs As New IO.FileStream(全局设置数据("BGP_News"), IO.FileMode.Open, IO.FileAccess.Read)
                 Form1.Panel35.BackgroundImage = Image.FromStream(fs)

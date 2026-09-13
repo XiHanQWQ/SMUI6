@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports System.Net.Http
 Imports System.Text.RegularExpressions
-Imports Newtonsoft.Json.Linq
+Imports System.Text.Json.Nodes
 Imports SharpCompress.Archives
 Imports SharpCompress.Archives.Rar
 Imports SharpCompress.Archives.SevenZip
@@ -379,8 +379,8 @@ Public Class 下载进度界面块控件本体
             Dim 清单路径 As String = Path.Combine(实际解压路径算起位置, 解压文件夹, "manifest.json")
             If FileIO.FileSystem.FileExists(清单路径) Then
                 Try
-                    Dim 清单数据 As JObject = JObject.Parse(FileIO.FileSystem.ReadAllText(清单路径))
-                    Dim 清单UniqueID As String = 清单数据.GetValue("UniqueID", StringComparison.OrdinalIgnoreCase)?.ToString
+                    Dim 清单数据 As JsonObject = FileIO.FileSystem.ReadAllText(清单路径).从文本()
+                    Dim 清单UniqueID As String = 清单数据.取值("UniqueID")?.ToString
                     If 清单UniqueID <> "" Then 下载的UniqueID列表.Add(清单UniqueID)
                 Catch
                     ' 清单解析失败交由后续安装评估环节处理

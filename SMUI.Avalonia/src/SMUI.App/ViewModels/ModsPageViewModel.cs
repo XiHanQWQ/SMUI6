@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -37,18 +38,46 @@ public class ModItemVm : ViewModelBase
     private string _status = InstallStatus.UnKnow;
     private string _extraStatus = "";
     private string _fontStyleKey = "";
+    private string _colorKey = "";
 
     public string Name { get; set; } = "";
     public string Category { get; set; } = "";
     public string ItemPath { get; set; } = "";
     public List<string> VirtualGroups { get; set; } = new();
 
+    /// <summary>项目录 Color 标记文件对应的画刷 key（red/orange/…，空为默认白）。</summary>
+    public string ColorKey
+    {
+        get => _colorKey;
+        set
+        {
+            if (SetProperty(ref _colorKey, value))
+            {
+                OnPropertyChanged(nameof(ColorBrush));
+                OnPropertyChanged(nameof(NameBrush));
+            }
+        }
+    }
+
+    public IBrush ColorBrush => DialogService.StatusBrush(_colorKey);
+
+    /// <summary>项名称显示颜色：有 Color 标记时用标记色，否则按安装状态着色（与 WinForms 一致）。</summary>
+    public IBrush NameBrush
+    {
+        get
+        {
+            OnPropertyChanged(nameof(StatusColorKey));
+            return DialogService.StatusBrush(
+                _colorKey is { Length: > 0 } ? _colorKey : StatusColorKey);
+        }
+    }
+
     /// <summary>列表副行显示文本（虚拟组或全库模式下的分类名）。</summary>
     private string _subText = "";
     public string SubText { get => _subText; set { if (SetProperty(ref _subText, value)) OnPropertyChanged(nameof(GroupsText)); } }
 
     public string VersionText { get => _versionText; set => SetProperty(ref _versionText, value); }
-    public string Status { get => _status; set { if (SetProperty(ref _status, value)) OnPropertyChanged(nameof(StatusText)); } }
+    public string Status { get => _status; set { if (SetProperty(ref _status, value)) { OnPropertyChanged(nameof(StatusText)); OnPropertyChanged(nameof(NameBrush)); } } }
     public string ExtraStatus { get => _extraStatus; set => SetProperty(ref _extraStatus, value); }
     public string FontStyleKey { get => _fontStyleKey; set { if (SetProperty(ref _fontStyleKey, value)) { OnPropertyChanged(nameof(FontWeight)); OnPropertyChanged(nameof(FontStyle)); OnPropertyChanged(nameof(Decorations)); } } }
 
@@ -83,6 +112,7 @@ public class ModItemVm : ViewModelBase
         Status = e.Status,
         ExtraStatus = e.ExtraStatus,
         FontStyleKey = e.Appearance.FontStyle,
+        ColorKey = e.Appearance.Color,
     };
 
     /// <summary>由项目录重新读取状态与版本。</summary>
@@ -98,6 +128,7 @@ public class ModItemVm : ViewModelBase
         Status = entry.Status;
         ExtraStatus = entry.ExtraStatus;
         FontStyleKey = entry.Appearance.FontStyle;
+        ColorKey = entry.Appearance.Color;
     }
 }
 
@@ -194,7 +225,108 @@ public partial class ModsPageViewModel : ViewModelBase
     private string _detailDescription = "";
 
     [ObservableProperty]
-    private string _detailSourceTag = "";
+    private bool _isDescriptionEditable;
+
+    [RelayCommand]
+    private void ToggleDescriptionEdit() => IsDescriptionEditable = !IsDescriptionEditable;
+
+    /// <summary>描述编辑框失去焦点时自动保存到纯文本 README（对齐 WinForms 就地编辑体验）。</summary>
+    public void SaveDescriptionIfEditing()
+    {
+        if (!IsDescriptionEditable || SelectedItem == null) return;
+        if (DetailDescription == _loadedDescription) return;
+        try
+        {
+            File.WriteAllText(Path.Combine(SelectedItem.ItemPath, "README"), DetailDescription);
+            var rtf = Path.Combine(SelectedItem.ItemPath, "README.rtf");
+            if (File.Exists(rtf)) File.Delete(rtf);
+            DetailSourceTag = "TXT";
+            _log.Print($"已保存描述（纯文本）：{SelectedItem.Name}", Services.LogKind.Success);
+            _loadedDescription = DetailDescription;
+        }
+        catch (Exception ex)
+        {
+            _dialogs.InfoAsync("保存描述失败", ex.Message);
+        }
+    }
+
+    [RelayCommand]
+    private void SaveDescriptionAsText()
+    {
+        if (SelectedItem == null) return;
+        try
+        {
+            File.WriteAllText(Path.Combine(SelectedItem.ItemPath, "README"), DetailDescription);
+            var rtf = Path.Combine(SelectedItem.ItemPath, "README.rtf");
+            if (File.Exists(rtf)) File.Delete(rtf);
+            DetailSourceTag = "TXT";
+            _log.Print($"已保存描述（纯文本）：{SelectedItem.Name}", Services.LogKind.Success);
+        }
+        catch (Exception ex)
+        {
+            _dialogs.InfoAsync("保存描述失败", ex.Message);
+        }
+    }
+
+    [RelayCommand]
+    private void NewDescription()
+    {
+        if (SelectedItem == null) return;
+        DetailDescription = "";
+        IsDescriptionEditable = true;
+    }
+
+    [RelayCommand]
+    private async Task DeleteAllDescriptionsAsync()
+    {
+        if (SelectedItem == null) return;
+        if (!await _dialogs.ConfirmAsync("删除所有自定义描述",
+                $"将删除模组项 {SelectedItem.Name} 下的 README / README.txt / README.rtf，继续？")) return;
+        foreach (var name in new[] { "README", "README.txt", "README.rtf" })
+        {
+            var f = Path.Combine(SelectedItem.ItemPath, name);
+            if (File.Exists(f)) File.Delete(f);
+        }
+        DetailDescription = "";
+        DetailSourceTag = "None";
+        _log.Print($"已删除所有自定义描述：{SelectedItem.Name}", Services.LogKind.Warning);
+    }
+
+    [RelayCommand]
+    private async Task EditRtfExternallyAsync()
+    {
+        if (SelectedItem == null) return;
+        var rtf = Path.Combine(SelectedItem.ItemPath, "README.rtf");
+        if (!File.Exists(rtf))
+        {
+            if (!await _dialogs.ConfirmAsync("创建富文本描述", "此模组项不包含富文本描述文件（README.rtf），是否创建？")) return;
+            File.WriteAllText(rtf, @"{\rtf1\ansi}");
+        }
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(rtf) { UseShellExecute = true });
+            _log.Print("已用系统关联程序打开富文本描述（WinForms 版为写字板）", Services.LogKind.Info);
+        }
+        catch (Exception ex)
+        {
+            await _dialogs.InfoAsync("打开失败", ex.Message);
+        }
+    }
+
+    [ObservableProperty]
+    private string _detailSourceTag = "TYPE";
+
+    /// <summary>选中项的更新键列表（底栏「更新键」下拉用，格式同 WinForms）。</summary>
+    public System.Collections.ObjectModel.ObservableCollection<string> UpdateKeyItems { get; } = new();
+
+    /// <summary>描述文本中检测到的链接（点击打开模组页面，复刻 WinForms RichTextBox 链接点击）。</summary>
+    public System.Collections.ObjectModel.ObservableCollection<string> DetailLinks { get; } = new();
+
+    /// <summary>加载时的描述原文：未变化则失焦不写盘。</summary>
+    private string _loadedDescription = "";
+
+    /// <summary>VM 主动设置列表选中项（全选/反选/按状态选中）。</summary>
+    public event Action<IReadOnlyList<object>>? RequestSelectItems;
 
     [ObservableProperty]
     private string _detailUpdateKeys = "无更新键";
@@ -443,16 +575,35 @@ public partial class ModsPageViewModel : ViewModelBase
                     _ => "None",
                 };
             }
+            _loadedDescription = DetailDescription;
+            IsDescriptionEditable = true;
 
             // 更新键
-            DetailUpdateKeys =
-                info.NexusIds.Count > 0 ? $"NEXUS: {info.NexusIds[0]}" :
-                info.ModDropIds.Count > 0 ? $"ModDrop: {info.ModDropIds[0]}" :
-                info.GitHubRepos.Count > 0 ? $"GitHub: {info.GitHubRepos[0]}" :
-                "无更新键";
+            if (info.NexusIds.Count > 0 && info.ModDropIds.Count > 0)
+                DetailUpdateKeys = $"NEXUS: {info.NexusIds[0]}  ModDrop";
+            else if (info.NexusIds.Count > 0)
+                DetailUpdateKeys = $"NEXUS: {info.NexusIds[0]}";
+            else if (info.ModDropIds.Count > 0)
+                DetailUpdateKeys = $"ModDrop: {info.ModDropIds[0]}";
+            else if (info.GitHubRepos.Count > 0)
+                DetailUpdateKeys = "GitHub";
+            else
+                DetailUpdateKeys = "无更新键";
+            UpdateKeyItems.Clear();
+            foreach (var id in info.NexusIds) UpdateKeyItems.Add($"NEXUS: {id}");
+            foreach (var id in info.ModDropIds) UpdateKeyItems.Add($"ModDrop: {id}");
+            foreach (var repo in info.GitHubRepos) UpdateKeyItems.Add($"GitHub: {repo}");
+
+            // 描述中的链接（点击直达模组页面）
+            DetailLinks.Clear();
+            foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(DetailDescription, @"https?://\S+"))
+            {
+                var link = m.Value.TrimEnd(',', ')', ']', '，', '）');
+                if (!DetailLinks.Contains(link)) DetailLinks.Add(link);
+            }
 
             DetailDeps = info.ContentPackDeps.Count + info.OtherDeps.Count > 0
-                ? $"内容包依赖 C{info.ContentPackDeps.Count} + 其他依赖 R{info.OtherDeps.Count}"
+                ? $"依赖项：C{info.ContentPackDeps.Count} + R{info.OtherDeps.Count}"
                 : "没有依赖项";
 
             DetailUniqueIdsList.Clear();
@@ -460,8 +611,8 @@ public partial class ModsPageViewModel : ViewModelBase
             DetailUniqueIds = info.UniqueIds.Count switch
             {
                 0 => "无 UniqueID",
-                1 => info.UniqueIds[0],
-                _ => $"[{info.UniqueIds.Count}] {info.UniqueIds[0]}",
+                1 => $"UniqueID：{info.UniqueIds[0]}",
+                _ => $"[{info.UniqueIds.Count}] UniqueID：{info.UniqueIds[0]}",
             };
 
             DetailAuthorsList.Clear();
@@ -469,8 +620,8 @@ public partial class ModsPageViewModel : ViewModelBase
             DetailAuthors = info.Authors.Count switch
             {
                 0 => "无作者信息",
-                1 => info.Authors[0],
-                _ => $"[{info.Authors.Count}] {info.Authors[0]}",
+                1 => $"作者：{info.Authors[0]}",
+                _ => $"[{info.Authors.Count}] 作者：{info.Authors[0]}",
             };
 
             // 预览图
@@ -526,10 +677,10 @@ public partial class ModsPageViewModel : ViewModelBase
     {
         if (!keepName) DetailName = "";
         DetailVersion = ""; DetailInstalledVersion = ""; DetailStatus = "";
-        DetailDescription = ""; DetailSourceTag = "";
-        DetailUpdateKeys = "无更新键"; DetailDeps = "没有依赖项";
-        DetailUniqueIds = "无 UniqueID"; DetailAuthors = "无作者信息";
-        DetailUniqueIdsList.Clear(); DetailAuthorsList.Clear();
+        DetailDescription = ""; DetailSourceTag = "TYPE"; _loadedDescription = "";
+        DetailUpdateKeys = "更新键"; DetailDeps = "依赖项表";
+        DetailUniqueIds = "UniqueID 表"; DetailAuthors = "作者表";
+        DetailUniqueIdsList.Clear(); DetailAuthorsList.Clear(); UpdateKeyItems.Clear(); DetailLinks.Clear(); _loadedDescription = "";
         _previewFiles = new List<string>(); _previewIndex = 0;
         PreviewImage = null; PreviewCounter = ""; HasPreview = false;
         HasVersionDifference = false;
@@ -738,6 +889,19 @@ public partial class ModsPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task SetItemColorAsync()
+    {
+        if (SelectedItems.Count == 0) return;
+        var options = new List<string> { "默认白", "红色 RED", "橙色 ORANGE", "黄色 YELLOW", "绿色 GREEN", "青色 AQUA", "蓝色 BLUE", "紫色 PURPLE" };
+        var pick = await _dialogs.ChoiceAsync("设置项颜色", $"为 {SelectedItems.Count} 个选中项选择标记颜色", options);
+        if (pick < 0) return;
+        var key = pick == 0 ? "" : options[pick].Split(' ')[1];
+        foreach (var item in SelectedItems)
+            AppServices.ItemOps.SetItemColor(item.ItemPath, key);
+        await RefreshItemsAsync();
+    }
+
+    [RelayCommand]
     private async Task ClearConfigCacheAsync()
     {
         if (SelectedItems.Count == 0) return;
@@ -854,7 +1018,212 @@ public partial class ModsPageViewModel : ViewModelBase
         var pick = await _dialogs.ChoiceAsync("按虚拟组筛选", "选择要显示的虚拟组（取消清除筛选）", groups);
         VirtualGroupFilter = pick >= 0 ? groups[pick] : null;
     }
+
+    // --------------------------------------------------- 复刻 WinForms：选择/移动/预览图/IDE 命令
+
+    private void SelectMany(IEnumerable<ModItemVm> items)
+    {
+        var list = items.Cast<object>().ToList();
+        RequestSelectItems?.Invoke(list);
+    }
+
+    [RelayCommand]
+    private void SelectAll() => SelectMany(FilteredItems);
+
+    [RelayCommand]
+    private void InvertSelection()
+    {
+        var current = SelectedItems.ToHashSet();
+        SelectMany(FilteredItems.Where(i => !current.Contains(i)));
+    }
+
+    private bool MatchStatus(ModItemVm i, string kind) => kind switch
+    {
+        "已安装" => SMUI.Core.Models.InstallStatus.DisplayName(i.Status) == "已安装",
+        "未安装" => SMUI.Core.Models.InstallStatus.DisplayName(i.Status) == "未安装",
+        "非标项" => SMUI.Core.Models.InstallStatus.DisplayName(i.Status) is "未知" or "未配置" or "未定义的状态值",
+        "更新可用" => i.ExtraStatus.Contains("更新可用"),
+        "已有新的" => i.ExtraStatus.Contains("已有新的"),
+        _ => false,
+    };
+
+    [RelayCommand] private void SelectInstalled() => SelectMany(FilteredItems.Where(i => MatchStatus(i, "已安装")));
+    [RelayCommand] private void SelectUninstalled() => SelectMany(FilteredItems.Where(i => MatchStatus(i, "未安装")));
+    [RelayCommand] private void SelectNonStandard() => SelectMany(FilteredItems.Where(i => MatchStatus(i, "非标项")));
+    [RelayCommand] private void SelectUpdatable() => SelectMany(FilteredItems.Where(i => MatchStatus(i, "更新可用")));
+    [RelayCommand] private void SelectHasNew() => SelectMany(FilteredItems.Where(i => MatchStatus(i, "已有新的")));
+
+    /// <summary>扫描当前子库全部分类并报告匹配数量（复刻 WinForms 扫描当前子库所有 X）。</summary>
+    [RelayCommand]
+    private async Task ScanByStatusAsync(string? kind)
+    {
+        if (kind == null || SelectedSubLibrary == null) return;
+        var categories = Categories.Select(c => c.Name).ToList();
+        int total = 0;
+        await Task.Run(() =>
+        {
+            foreach (var cat in categories)
+                foreach (var e in AppServices.Library.ScanItems(SelectedSubLibrary!, cat))
+                    if (MatchStatus(ModItemVm.From(e), kind)) total++;
+        });
+        await _dialogs.InfoAsync($"扫描当前子库所有{kind}", $"子库「{SelectedSubLibrary}」共扫描到 {total} 个{kind}的模组项。");
+    }
+
+    /// <summary>移动项：把选中项移动到其他数据子库（保留分类层级）。</summary>
+    [RelayCommand]
+    private async Task MoveItemsAsync()
+    {
+        if (SelectedItems.Count == 0 || SelectedSubLibrary == null) return;
+        var options = SubLibraries.Where(s => s != SelectedSubLibrary).ToList();
+        if (options.Count == 0) { await _dialogs.InfoAsync("移动项", "没有其他数据子库可移动。"); return; }
+        var idx = await _dialogs.ChoiceAsync("移动项", $"把选中的 {SelectedItems.Count} 个项移动到哪个数据子库？", options);
+        if (idx < 0) return;
+        var target = options[idx];
+        int moved = 0, skipped = 0;
+        await Task.Run(() =>
+        {
+            foreach (var item in SelectedItems.ToList())
+            {
+                var catDir = Path.GetDirectoryName(item.ItemPath)!;
+                var cat = Path.GetFileName(catDir);
+                var dest = Path.Combine(_settings.RepositoryPath, target, cat, Path.GetFileName(item.ItemPath));
+                if (Directory.Exists(dest)) { skipped++; continue; }
+                Directory.Move(item.ItemPath, dest);
+                moved++;
+            }
+        });
+        _log.Print($"已移动 {moved} 个项到子库「{target}」（{skipped} 个因重名跳过）", LogKind.Success);
+        await RefreshItemsAsync();
+    }
+
+    /// <summary>转移分类：把当前分类移动到其他数据子库。</summary>
+    [RelayCommand]
+    private async Task MoveCategoryAsync()
+    {
+        if (SelectedCategory == null || SelectedSubLibrary == null) return;
+        var options = SubLibraries.Where(s => s != SelectedSubLibrary).ToList();
+        if (options.Count == 0) { await _dialogs.InfoAsync("转移分类", "没有其他数据子库。"); return; }
+        var idx = await _dialogs.ChoiceAsync("转移分类", $"把分类「{SelectedCategory.Name}」转移到哪个数据子库？", options);
+        if (idx < 0) return;
+        var target = options[idx];
+        var source = Path.Combine(AppServices.Library.SubLibraryPath(SelectedSubLibrary), SelectedCategory.Name);
+        var dest = Path.Combine(AppServices.Library.SubLibraryPath(target), SelectedCategory.Name);
+        if (!Directory.Exists(source)) { await _dialogs.InfoAsync("转移分类", "未找到分类文件夹。"); return; }
+        if (Directory.Exists(dest)) { await _dialogs.InfoAsync("转移分类", "目标子库已存在同名分类。"); return; }
+        Directory.Move(source, dest);
+        _log.Print($"分类「{SelectedCategory.Name}」已转移到「{target}」", LogKind.Success);
+        await LoadCategoriesAsync();
+    }
+
+    /// <summary>切换数据子库（分类和子库菜单 → 数据子库操作 → 切换数据子库）。</summary>
+    [RelayCommand]
+    private void SwitchSubLibrary(string? name)
+    {
+        if (name == null || SelectedSubLibrary == name) return;
+        SelectedSubLibrary = name;
+    }
+
+    /// <summary>按名称删除数据子库（数据子库操作 → 删除数据子库 子列表）。</summary>
+    [RelayCommand]
+    private async Task DeleteSubLibraryByNameAsync(string? name)
+    {
+        if (name == null) return;
+        if (!await _dialogs.ConfirmAsync("删除子库", $"是否确认删除子库 {name} 及其中的全部内容？此操作不可恢复。")) return;
+        try
+        {
+            Directory.Delete(AppServices.Library.SubLibraryPath(name), true);
+            if (SelectedSubLibrary == name)
+            {
+                _settings.LastSubLibrary = "";
+                await LoadAsync();
+            }
+            else
+                await LoadCategoriesAsync();
+            _log.Print($"子库「{name}」已删除", LogKind.Success);
+        }
+        catch (Exception ex) { await _dialogs.InfoAsync("错误", ex.Message); }
+    }
+
+    // ---- 预览图（IMG 菜单） ----
+
+    [RelayCommand]
+    private void OpenScreenshotFolder()
+    {
+        if (SelectedItem == null) return;
+        var dir = Path.Combine(SelectedItem.ItemPath, "Screenshot");
+        if (!Directory.Exists(dir)) { _dialogs.InfoAsync("预览图文件夹", "该项没有 Screenshot 文件夹。"); return; }
+        Process.Start(new ProcessStartInfo(dir) { UseShellExecute = true });
+    }
+
+    [RelayCommand]
+    private void DeleteCurrentPreview()
+    {
+        if (SelectedItem == null || _previewFiles.Count == 0 || _previewIndex < 0) return;
+        try { File.Delete(_previewFiles[_previewIndex]); } catch { }
+        _previewFiles.RemoveAt(_previewIndex);
+        if (_previewFiles.Count == 0) { _previewIndex = 0; LoadPreview(); }
+        else { _previewIndex = Math.Min(_previewIndex, _previewFiles.Count - 1); LoadPreview(); }
+    }
+
+    [RelayCommand]
+    private void DeleteAllPreviews()
+    {
+        if (SelectedItem == null) return;
+        var dir = Path.Combine(SelectedItem.ItemPath, "Screenshot");
+        try { if (Directory.Exists(dir)) Directory.Delete(dir, true); } catch (Exception ex) { _dialogs.InfoAsync("删除全部预览图", ex.Message); }
+        _previewFiles = new List<string>(); _previewIndex = 0;
+        LoadPreview();
+    }
+
+    // ---- 用 IDE 打开（编辑子菜单） ----
+
+    private async Task OpenWithIdeAsync(string settingKey, string ideName)
+    {
+        if (SelectedItem == null) return;
+        var idePath = _settings[settingKey];
+        if (string.IsNullOrWhiteSpace(idePath) || !File.Exists(idePath))
+        {
+            await _dialogs.InfoAsync($"用 {ideName} 打开", $"请先在 设置 → 路径设置 中配置 {ideName} 程序路径。");
+            return;
+        }
+        Process.Start(new ProcessStartInfo(idePath, "\"" + SelectedItem.ItemPath + "\"") { UseShellExecute = true });
+    }
+
+    [RelayCommand] private Task OpenWithVsCodeAsync() => OpenWithIdeAsync("VsCodePath", "Visual Studio Code");
+    [RelayCommand] private Task OpenWithVsAsync() => OpenWithIdeAsync("VsPath", "Visual Studio");
+
+    /// <summary>加入检查更新表（检查更新页暂未接入手动添加入口，给出指引）。</summary>
+    [RelayCommand]
+    private async Task AddToCheckUpdatesAsync()
+    {
+        if (SelectedItems.Count == 0) { await _dialogs.InfoAsync("加入检查更新表", "请先选中模组项。"); return; }
+        int total = 0;
+        foreach (var item in SelectedItems.ToList())
+            total += _updates.AddToCheckTable(item.ItemPath);
+        await _dialogs.InfoAsync("加入检查更新表", $"已把 {total} 个 UniqueID 条目加入检查更新表（检查更新 → 步骤一）。");
+    }
+
+    /// <summary>打开描述中的链接（点击描述区链接列表）。</summary>
+    [RelayCommand]
+    private void OpenDetailLink(string? url)
+    {
+        if (!string.IsNullOrEmpty(url))
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+    }
+
+    /// <summary>打开更新键对应页面（底栏「更新键」下拉项）。</summary>
+    [RelayCommand]
+    private void OpenUpdateKey(string? item)
+    {
+        if (string.IsNullOrEmpty(item)) return;
+        var url = item.StartsWith("NEXUS: ") ? "https://www.nexusmods.com/stardewvalley/mods/" + item[7..]
+                : item.StartsWith("ModDrop: ") ? "https://www.moddrop.com/stardew-valley/mods/" + item[9..]
+                : item.StartsWith("GitHub: ") ? "https://github.com/" + item[8..]
+                : null;
+        if (url != null) Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+    }
 }
+
 
 /// <summary>极简 RTF 转纯文本（用于描述显示）。</summary>
 public static class RtfToText

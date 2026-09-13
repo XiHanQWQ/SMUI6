@@ -1,6 +1,4 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
+using Avalonia.Controls;
 using SMUI.App.ViewModels;
 
 namespace SMUI.App.Views;
@@ -11,7 +9,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         AttachNavHandlers();
-        AttachWindowStateHandler();
         DataContextChanged += (_, _) =>
         {
             if (DataContext is MainWindowViewModel vm)
@@ -24,35 +21,6 @@ public partial class MainWindow : Window
         };
     }
 
-    private void AttachWindowStateHandler()
-    {
-        PropertyChanged += (_, e) =>
-        {
-            if (e.Property.Name == nameof(WindowState))
-                MaximizeButton.Content = WindowState == WindowState.Maximized ? "❐" : "□";
-        };
-    }
-
-    // ------------------------------------------------------------ 自定义标题栏
-
-    private void TitleBar_PointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            BeginMoveDrag(e);
-    }
-
-    private void TitleBar_DoubleTapped(object? sender, TappedEventArgs e)
-    {
-        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-    }
-
-    private void Minimize_Click(object? sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
-
-    private void Maximize_Click(object? sender, RoutedEventArgs e)
-        => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-
-    private void Close_Click(object? sender, RoutedEventArgs e) => Close();
-
     // ------------------------------------------------------------ 导航
 
     private void AttachNavHandlers()
@@ -64,6 +32,8 @@ public partial class MainWindow : Window
             if (child is RadioButton radio)
                 radio.IsCheckedChanged += (_, _) =>
                 {
+                    // 单选组切换时旧项会收到取消选中事件，必须过滤，否则页面会跳回上一个选项
+                    if (radio.IsChecked != true) return;
                     if (DataContext is MainWindowViewModel vm)
                         vm.SelectedPageIndex = captured;
                     ShowPage(captured);

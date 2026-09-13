@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports Sunny.UI
 Imports System.Diagnostics
 Imports System.Text.Json
@@ -36,41 +36,39 @@ Public Class 模组检查更新管理器
         AddHandler 管理模组的菜单.菜单项_检查更新_输入ModDrop更新.Click, Sub() 自由发起更新("moddrop")
         AddHandler 管理模组的菜单.菜单项_检查更新_输入Gtihub更新.Click, Sub() 自由发起更新("github")
 
-        If DLC.DLC解锁标记.UpdateModItemExtension Then
-            AddHandler Form1.ListView12.KeyDown, Sub(sender, e)
-                                                     e.SuppressKeyPress = True
-                                                     Select Case e.KeyCode
-                                                         Case Keys.W, Keys.Up
-                                                             If Form1.ListView12.SelectedItems.Count = 0 Then Exit Sub
-                                                             Dim a = Form1.ListView12.SelectedIndices(0)
-                                                             If a > 0 Then
-                                                                 For Each item In Form1.ListView12.Items
-                                                                     item.Selected = False
-                                                                 Next
-                                                                 Form1.ListView12.Items(a - 1).Selected = True
-                                                                 Form1.ListView12.Items(a - 1).EnsureVisible()
-                                                             End If
-                                                         Case Keys.S, Keys.Down
-                                                             If Form1.ListView12.SelectedItems.Count = 0 Then Exit Sub
-                                                             Dim a = Form1.ListView12.SelectedIndices(0)
-                                                             If a <> Form1.ListView12.Items.Count - 1 Then
-                                                                 For Each item In Form1.ListView12.Items
-                                                                     item.Selected = False
-                                                                 Next
-                                                                 Form1.ListView12.Items(a + 1).Selected = True
-                                                                 Form1.ListView12.Items(a + 1).EnsureVisible()
-                                                             End If
-                                                         Case Keys.N
-                                                             发起更新("nexus")
-                                                         Case Keys.M
-                                                             发起更新("moddrop")
-                                                         Case Keys.G
-                                                             发起更新("github")
-                                                         Case Keys.B
-                                                             批量更新队列.批量更新按钮点击()
-                                                     End Select
-                                                 End Sub
-        End If
+        AddHandler Form1.ListView12.KeyDown, Sub(sender, e)
+                                                 e.SuppressKeyPress = True
+                                                 Select Case e.KeyCode
+                                                     Case Keys.W, Keys.Up
+                                                         If Form1.ListView12.SelectedItems.Count = 0 Then Exit Sub
+                                                         Dim a = Form1.ListView12.SelectedIndices(0)
+                                                         If a > 0 Then
+                                                             For Each item In Form1.ListView12.Items
+                                                                 item.Selected = False
+                                                             Next
+                                                             Form1.ListView12.Items(a - 1).Selected = True
+                                                             Form1.ListView12.Items(a - 1).EnsureVisible()
+                                                         End If
+                                                     Case Keys.S, Keys.Down
+                                                         If Form1.ListView12.SelectedItems.Count = 0 Then Exit Sub
+                                                         Dim a = Form1.ListView12.SelectedIndices(0)
+                                                         If a <> Form1.ListView12.Items.Count - 1 Then
+                                                             For Each item In Form1.ListView12.Items
+                                                                 item.Selected = False
+                                                             Next
+                                                             Form1.ListView12.Items(a + 1).Selected = True
+                                                             Form1.ListView12.Items(a + 1).EnsureVisible()
+                                                         End If
+                                                     Case Keys.N
+                                                         发起更新("nexus")
+                                                     Case Keys.M
+                                                         发起更新("moddrop")
+                                                     Case Keys.G
+                                                         发起更新("github")
+                                                     Case Keys.B
+                                                         批量更新队列.批量更新按钮点击()
+                                                 End Select
+                                             End Sub
 
         批量更新队列.初始化()
 
@@ -376,11 +374,6 @@ Public Class 模组检查更新管理器
             Form1.ListView12.Items(Form1.ListView12.Items.Count - 1).SubItems.Add("")
         Next
         UIMessageTip.Show("已添加",, 2500)
-        If Not DLC.DLC解锁标记.CheckUpdatesExtension Then
-            UIMessageTip.Show("DLC 4 未解锁，每次启动只能使用一次添加到步骤三",, 3000)
-            Form1.UiButton87.Enabled = False
-            Form1.UiButton88.Enabled = False
-        End If
     End Sub
 
     Public Shared Sub 添加全部到步骤三()
@@ -424,11 +417,6 @@ Public Class 模组检查更新管理器
             Form1.ListView12.Items(Form1.ListView12.Items.Count - 1).SubItems.Add("")
         Next
         UIMessageTip.Show("已添加",, 2500)
-        If Not DLC.DLC解锁标记.CheckUpdatesExtension Then
-            UIMessageTip.Show("DLC 4 未解锁，每次启动只能使用一次添加到步骤三",, 3000)
-            Form1.UiButton87.Enabled = False
-            Form1.UiButton88.Enabled = False
-        End If
     End Sub
 
     Public Shared Sub 清空并返回步骤二()
@@ -569,7 +557,7 @@ Public Class 模组检查更新管理器
         If Form1.ListView12.SelectedItems(0).SubItems(4).Text = "" Then Exit Sub
         Select Case 更新平台
             Case "nexus"
-                Dim a As New 输入对话框("DLC 1", "输入要访问的 NEXUS ID")
+                Dim a As New 输入对话框("打开模组页面", "输入要访问的 NEXUS ID")
                 Dim b = a.ShowDialog(Form1)
                 If b = "" Then Exit Sub
 
@@ -581,12 +569,12 @@ Public Class 模组检查更新管理器
                 更新模组.获取NEXUS文件列表(b, str, a1.版本.FirstOrDefault, "checkupdate")
 
             Case "moddrop"
-                Dim a As New 输入对话框("DLC 1", "输入要访问的 ModDrop ID")
+                Dim a As New 输入对话框("打开模组页面", "输入要访问的 ModDrop ID")
                 Dim b = a.ShowDialog(Form1)
                 If b = "" Then Exit Sub
                 更新模组.转到浏览器等待ModDrop下载链接(b, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView12.SelectedItems(0).SubItems(3).Text, Form1.ListView12.SelectedItems(0).SubItems(4).Text), "checkupdate")
             Case "github"
-                Dim a As New 输入对话框("DLC 1", "输入要访问的 GitHub 信息")
+                Dim a As New 输入对话框("打开模组页面", "输入要访问的 GitHub 信息")
                 Dim b = a.ShowDialog(Form1)
                 If b = "" Then Exit Sub
                 更新模组.获取Github文件列表(b, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView12.SelectedItems(0).SubItems(3).Text, Form1.ListView12.SelectedItems(0).SubItems(4).Text), "checkupdate")

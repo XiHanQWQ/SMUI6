@@ -151,9 +151,9 @@ Namespace My.Resources
         '''    )
         '''} 的本地化字符串。
         '''</summary>
-        Friend ReadOnly Property DLC5导出时删除存在文件模板() As String
+        Friend ReadOnly Property 导出时删除存在文件模板() As String
             Get
-                Return ResourceManager.GetString("DLC5导出时删除存在文件模板", resourceCulture)
+                Return ResourceManager.GetString("导出时删除存在文件模板", resourceCulture)
             End Get
         End Property
         

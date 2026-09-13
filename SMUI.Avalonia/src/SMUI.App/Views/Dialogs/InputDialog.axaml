@@ -19,7 +19,6 @@
 
     <Border Margin="1" CornerRadius="12" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1">
         <StackPanel Margin="22,18,22,20" Spacing="14">
-            <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" IsVisible="{Binding Label, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             <TextBox Text="{Binding Value}" x:Name="ValueBox" AcceptsReturn="{Binding Multiline}"
                      MinHeight="{Binding Multiline, Converter={x:Static v:MultilineMinHeightConverter.Instance}}" TextWrapping="Wrap" />

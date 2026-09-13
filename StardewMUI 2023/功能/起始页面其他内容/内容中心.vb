@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports System.Diagnostics
 
 Public Class 内容中心
@@ -9,7 +9,6 @@ Public Class 内容中心
         内容中心主菜单.Items.Add(New ToolStripSeparator)
         内容中心主菜单.Items.Add(菜单项_打开软件安装目录)
         内容中心主菜单.Items.Add(菜单项_打开用户数据文件夹)
-        内容中心主菜单.Items.Add(菜单项_打开DLC文件夹)
         内容中心主菜单.Items.Add(菜单项_打开插件文件夹)
 
         菜单项_游戏文件夹菜单.DropDown = 游戏文件夹菜单
@@ -36,9 +35,15 @@ Public Class 内容中心
         AddHandler Form1.UiButton36.MouseDown, Sub(sender, e) 内容中心主菜单.Show(sender, New Point(0, sender.height))
         AddHandler Form1.UiButton44.MouseDown, Sub(sender, e) 内容中心主菜单.Show(sender, New Point(sender.Width - 内容中心主菜单.Width, sender.height))
 
+        ' 欢迎页的内容中心快捷按钮
+        AddHandler Form1.UiButton64.Click, Sub(sender, e) 游戏文件夹菜单.Show(sender, New Point(0, sender.Height))
+        AddHandler Form1.UiButton65.Click, Sub(sender, e) 链接菜单.Show(sender, New Point(0, sender.Height))
+        AddHandler Form1.UiButton66.Click, Sub() 菜单项_打开软件安装目录.PerformClick()
+        AddHandler Form1.UiButton69.Click, Sub() 菜单项_打开用户数据文件夹.PerformClick()
+        AddHandler Form1.UiButton113.Click, Sub() 菜单项_打开插件文件夹.PerformClick()
+
         AddHandler 菜单项_打开软件安装目录.Click, Sub() Process.Start("explorer.exe", Application.StartupPath)
         AddHandler 菜单项_打开用户数据文件夹.Click, Sub() Process.Start("explorer.exe", 设置.用户数据文件夹路径)
-        AddHandler 菜单项_打开DLC文件夹.Click, Sub() Process.Start("explorer.exe", 设置.DLC文件夹路径)
         AddHandler 菜单项_打开插件文件夹.Click, Sub() Process.Start("explorer.exe", 设置.插件文件夹路径)
 
         AddHandler 菜单项_游戏文件夹.Click, Sub() Process.Start("explorer.exe", 设置.全局设置数据("StardewValleyGamePath"))
@@ -66,7 +71,6 @@ Public Class 内容中心
     Public Shared Property 内容中心主菜单 As New 暗黑菜单条控件本体 With {.ImageScalingSize = New Size(25 * 界面控制.DPI, 25 * 界面控制.DPI)}
     Public Shared Property 菜单项_打开软件安装目录 As New ToolStripMenuItem With {.Text = "打开安装目录", .Image = My.Resources.代码文件夹}
     Public Shared Property 菜单项_打开用户数据文件夹 As New ToolStripMenuItem With {.Text = "打开用户数据文件夹", .Image = My.Resources.代码文件夹}
-    Public Shared Property 菜单项_打开DLC文件夹 As New ToolStripMenuItem With {.Text = "打开 DLC 文件夹", .Image = My.Resources.代码文件夹}
     Public Shared Property 菜单项_打开插件文件夹 As New ToolStripMenuItem With {.Text = "打开插件文件夹", .Image = My.Resources.代码文件夹}
     Public Shared Property 菜单项_游戏文件夹菜单 As New ToolStripMenuItem With {.Text = "游戏文件夹集", .Image = My.Resources.Stardew_Valley}
     Public Shared Property 菜单项_链接菜单 As New ToolStripMenuItem With {.Text = "链接菜单集"}

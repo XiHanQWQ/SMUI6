@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports System.Runtime.InteropServices
 Imports Microsoft.Web.WebView2.WinForms
 Imports Sunny.UI
@@ -44,7 +44,6 @@ Public Class 界面控制
         暗黑列表视图自绘制.绑定列表视图事件(Form1.ListView6)
         暗黑列表视图自绘制.绑定列表视图事件(Form1.ListView7)
         暗黑列表视图自绘制.绑定列表视图事件(Form1.ListView8)
-        暗黑列表视图自绘制.绑定列表视图事件(Form1.ListView9)
         暗黑列表视图自绘制.绑定列表视图事件(Form1.ListView10)
         暗黑列表视图自绘制.绑定列表视图事件(Form1.ListView11)
         暗黑列表视图自绘制.绑定列表视图事件(Form1.ListView12)
@@ -121,8 +120,6 @@ Public Class 界面控制
 
         Form1.ColumnHeader7.Width = (Form1.ListView7.Width - 垂直滚动条实际预留宽度) * 0.3
         Form1.ColumnHeader8.Width = (Form1.ListView7.Width - 垂直滚动条实际预留宽度) * 0.7
-        Form1.ColumnHeader9.Width = Form1.ListView9.Width * 0.7
-        Form1.ColumnHeader13.Width = Form1.ListView9.Width * 0.3
 
         Form1.UiButton45.Height = Form1.UiTabControl1.ItemSize.Height : Form1.UiButton45.Width = Form1.UiTabControl1.Width - Form1.UiTabControl1.ItemSize.Width * 7
         Form1.UiButton45.Left = Form1.UiTabControl1.Width - Form1.UiButton45.Width : Form1.UiButton45.Top = 0

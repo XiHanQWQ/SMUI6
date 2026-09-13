@@ -15,7 +15,6 @@ Public Class Form1
         SmuiCore.CoreTokens.GiteeToken = 设置.全局设置数据("GiteeToken")
         SmuiCore.CoreTokens.NexusApiKey = 设置.全局设置数据("NexusAPI")
         密码本.读取导入导出密码本()
-        DLC.初始化()
         配置队列.初始化()
         界面控制.初始化界面()
         管理模组.初始化()
@@ -27,7 +26,7 @@ Public Class Form1
         全局模组安装检查器.初始化()
         存档编辑器.初始化()
         批量分发管理.初始化()
-        DLC.加载用户插件()
+        用户插件.加载用户插件()
     End Sub
 
     Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown

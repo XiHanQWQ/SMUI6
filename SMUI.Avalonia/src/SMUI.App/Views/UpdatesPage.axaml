@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:SMUI.App.ViewModels"
+             xmlns:v="using:SMUI.App.Views"
              x:Class="SMUI.App.Views.UpdatesPage"
              x:DataType="vm:UpdatesPageViewModel">
 
@@ -8,74 +9,174 @@
         <vm:UpdatesPageViewModel/>
     </Design.DataContext>
 
-    <!-- ============ 检查更新（复刻原版 UiTabControl2 三步骤子选项卡） ============ -->
+    <!-- ============ 检查更新（一比一复刻 WinForms UiTabControl2：步骤一/二/三） ============ -->
     <Grid RowDefinitions="Auto,*">
-        <Border Grid.Row="0" Background="#181818" BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
-            <StackPanel x:Name="StepNav" Orientation="Horizontal" Spacing="2" Margin="10,6">
-                <RadioButton Classes="leftNav" Width="150" Content="步骤一 发送数据" GroupName="steps" IsChecked="True" />
-                <RadioButton Classes="leftNav" Width="150" Content="步骤二 选择返回数据" GroupName="steps" />
-                <RadioButton Classes="leftNav" Width="150" Content="步骤三 在本地找到项" GroupName="steps" />
+        <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Spacing="4" Margin="6,0">
+                <RadioButton Classes="stepTab" MinWidth="380" Content="   步骤一：向 smapi.io 发送数据" GroupName="steps"
+                             IsChecked="{Binding StepIndex, Converter={x:Static v:IndexToBoolConverter.Instance}, ConverterParameter=0, Mode=TwoWay}" />
+                <RadioButton Classes="stepTab" MinWidth="380" Content="   步骤二：选择返回的数据" GroupName="steps"
+                             IsChecked="{Binding StepIndex, Converter={x:Static v:IndexToBoolConverter.Instance}, ConverterParameter=1, Mode=TwoWay}" />
+                <RadioButton Classes="stepTab" MinWidth="380" Content="   步骤三：在本地找到项" GroupName="steps"
+                             IsChecked="{Binding StepIndex, Converter={x:Static v:IndexToBoolConverter.Instance}, ConverterParameter=2, Mode=TwoWay}" />
             </StackPanel>
         </Border>
 
         <Panel Grid.Row="1">
-            <!-- ======== 步骤一：发送数据到 smapi.io ======== -->
-            <ScrollViewer x:Name="Step1" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="24,20" Spacing="14" MaxWidth="760" HorizontalAlignment="Left">
-                    <TextBlock Text="步骤一：发送数据到 smapi.io" FontSize="17" FontWeight="Bold" />
-                    <TextBlock TextWrapping="Wrap" Classes="dim" LineHeight="20"
-                               Text="此步骤会把当前子库中所有模组项的 UniqueID、更新键与已安装版本号发送到 SMAPI 官方云服务（smapi.io），批量查询每个模组的最新版本与兼容性信息。数据仅用于查询，不会被存储。&#x0a;检查完成后到「步骤二」查看返回的更新建议，再到「步骤三」定位本地模组项并执行更新。" />
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Classes="accent" Content="开始检查全部更新" Command="{Binding CheckAllUpdatesCommand}" />
-                        <TextBlock Text="{Binding BusyText}" Classes="dim" VerticalAlignment="Center" />
-                    </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Classes="dim"
-                               Text="提示：smapi.io 云检查不需要 API Key；后续的 NEXUS 下载更新需要在「设置 → 在线服务」中配置 NEXUS API Key。" />
-                </StackPanel>
-            </ScrollViewer>
 
-            <!-- ======== 步骤二：选择返回数据 ======== -->
-            <Grid x:Name="Step2" RowDefinitions="Auto,*,Auto" Margin="14,12" IsVisible="False">
-                <TextBlock Grid.Row="0" Text="步骤二：选择返回数据（检查结果列表）" FontWeight="Bold" Margin="0,0,0,8" />
-                <ListBox Grid.Row="1" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult}"
-                         Background="#202020" BorderBrush="#2E2E2E" BorderThickness="1">
+            <!-- ======== 步骤一：向 smapi.io 发送数据 ======== -->
+            <Grid IsVisible="{Binding StepIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=0}"
+                  ColumnDefinitions="400,1,*">
+                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="20,14" Spacing="14">
+                        <Button Classes="accent" Content="发送数据到 smapi.io" Command="{Binding SendCheckTableCommand}"
+                                HorizontalAlignment="Left" FontSize="14" />
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="游戏版本" Classes="formLabel" />
+                            <TextBox Text="{Binding GameVersion}" />
+                        </StackPanel>
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="SMAPI 版本" Classes="formLabel" />
+                            <TextBox Text="{Binding SmapiVersion}" />
+                        </StackPanel>
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="操作系统平台" Classes="formLabel" />
+                            <ComboBox SelectedItem="{Binding OsPlatform}" MinWidth="360" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="Windows" />
+                                <ComboBoxItem Content="Linux" />
+                                <ComboBoxItem Content="macOS" />
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Spacing="8" Margin="0,8,0,0">
+                            <TextBlock Text="操作提示" FontSize="13.5" FontWeight="Bold" />
+                            <TextBlock TextWrapping="Wrap" FontSize="12.5" LineHeight="21"
+                                       Text="在分类列表视图和模组项列表视图的右键菜单中选择【加入检查更新表】来添加 UniqueID 信息。" />
+                            <TextBlock TextWrapping="Wrap" FontSize="12.5" LineHeight="21"
+                                       Text="确认左侧信息无误后点击发送并等待 SMAPI 云服务响应。" />
+                            <TextBlock TextWrapping="Wrap" FontSize="12.5" LineHeight="21"
+                                       Text="在步骤二中查阅更新可用的条目或者添加到步骤三进行搜索，之后可以在对应模组项上发起更新。" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding BusyText}" Classes="dim" TextWrapping="Wrap" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Border Grid.Column="1" Background="{DynamicResource BorderBrush1}" />
+
+                <Grid Grid.Column="2" RowDefinitions="Auto,*">
+                    <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="8,4"
+                            BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Classes="flat" Content="编辑版本" Command="{Binding EditCheckVersionCommand}" />
+                            <Button Classes="flat" Content="编辑更新键" Command="{Binding EditCheckKeysCommand}" />
+                            <Button Classes="flat" Content="移除选中" Command="{Binding RemoveCheckRowCommand}" />
+                            <Button Classes="flat" Content="移除全部" Command="{Binding ClearCheckRowsCommand}" />
+                            <TextBlock Text="{Binding BusyText}" Classes="dim" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding CheckRows}" SelectedItem="{Binding SelectedCheckRow}"
+                             Background="Transparent" Margin="0,4">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CheckRowVm">
+                                <Grid ColumnDefinitions="300,*,160" Margin="12,5" VerticalAlignment="Center">
+                                    <TextBlock Grid.Column="0" Text="{Binding UniqueId}" FontSize="13" FontWeight="Bold"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="1" Text="{Binding UpdateKeys}" FontSize="12" Classes="dim"
+                                               TextTrimming="CharacterEllipsis" Margin="8,0" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Version}" FontSize="12"
+                                               VerticalAlignment="Center" TextAlignment="Right" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Grid>
+
+            <!-- ======== 步骤二：选择返回的数据 ======== -->
+            <Grid IsVisible="{Binding StepIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=1}"
+                  ColumnDefinitions="*,1,380">
+                <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                    <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="8,4"
+                            BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Classes="flat" Content="选中所有更新可用" Command="{Binding SelectUpdatableResultsCommand}" />
+                            <Button Classes="flat" Content="添加选中到步骤三" Command="{Binding GotoStep3Command}" />
+                            <Button Classes="flat" Content="清空并返回" Command="{Binding ClearResultsAndBackCommand}" />
+                        </StackPanel>
+                    </Border>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult}"
+                             Background="Transparent" Margin="0,4" x:Name="ResultList"
+                             SelectionMode="Multiple,Toggle">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:UpdateResultVm">
+                                <Grid ColumnDefinitions="*,150,150,150" Margin="12,5" VerticalAlignment="Center">
+                                    <StackPanel Grid.Column="0" Spacing="1">
+                                        <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding UniqueId}" FontSize="10.5" Classes="dim" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding NexusIdText}" FontSize="12" VerticalAlignment="Center" Margin="4,0" />
+                                    <TextBlock Grid.Column="2" Text="{Binding SuggestedVersionText}" FontSize="12"
+                                               Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="3" Text="{Binding Compatibility}" FontSize="11" Classes="dim"
+                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="4,0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+
+                <Border Grid.Column="1" Background="{DynamicResource BorderBrush1}" />
+
+                <!-- 右侧详情（复刻 Panel59：选择条目查看详情/更新键/兼容性描述/链接） -->
+                <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto" Background="{DynamicResource WindowBgBrush}">
+                    <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="8,4"
+                            BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="选择条目查看详情" FontSize="13" FontWeight="Bold" />
+                    </Border>
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="14,10" Spacing="8">
+                            <TextBlock Text="更新键" FontSize="12.5" FontWeight="Bold" />
+                            <TextBlock Text="{Binding SelectedResult.UniqueId}" FontSize="12" Classes="dim" TextWrapping="Wrap" />
+                            <TextBlock Text="兼容性描述" FontSize="12.5" FontWeight="Bold" Margin="0,6,0,0" />
+                            <TextBlock Text="{Binding SelectedResult.Compatibility}" FontSize="12" Classes="dim" TextWrapping="Wrap" />
+                            <TextBlock Text="建议版本" FontSize="12.5" FontWeight="Bold" Margin="0,6,0,0" />
+                            <TextBlock Text="{Binding SelectedResult.SuggestedVersionText}" FontSize="12" Classes="dim" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </ScrollViewer>
+                    <StackPanel Grid.Row="2" Margin="14,10" Spacing="8">
+                        <Button Classes="tool" Content="打开建议更新版本地址" Command="{Binding OpenSuggestedUrlCommand}" HorizontalAlignment="Left" />
+                        <Button Classes="tool" Content="显示所有信息" Command="{Binding ShowResultDetailCommand}" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <!-- ======== 步骤三：在本地找到项 ======== -->
+            <Grid IsVisible="{Binding StepIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=2}"
+                  RowDefinitions="Auto,*">
+                <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="8,4"
+                        BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Classes="flat" Content="扫描子库来找到项" Command="{Binding ScanLocalItemsCommand}" />
+                        <Button Classes="flat" Content="对选中的单项操作" Command="{Binding ShowLocalItemOpsCommand}" />
+                        <Button Classes="flat" Content="移除选中" Command="{Binding RemoveLocalItemCommand}" />
+                        <Button Classes="flat" Content="清空并返回" Command="{Binding ClearLocalAndBackCommand}" />
+                        <Button Classes="flat" Content="N网更新选中项" Command="{Binding RunNexusUpdateCommand}" />
+                        <Button Classes="flat" Content="GitHub 更新选中项" Command="{Binding RunGitHubUpdateCommand}" />
+                        <Button Classes="flat" Content="打开建议链接" Command="{Binding OpenSuggestedUrlCommand}" />
+                    </StackPanel>
+                </Border>
+                <ListBox Grid.Row="1" ItemsSource="{Binding LocalItems}" SelectedItem="{Binding SelectedLocalItem}"
+                         Background="Transparent" Margin="0,4">
                     <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="vm:UpdateResultVm">
-                            <Grid ColumnDefinitions="*,190,150" Margin="2,4" VerticalAlignment="Center">
-                                <StackPanel Grid.Column="0" Spacing="1">
-                                    <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding UniqueId}" FontSize="10.5" Classes="dim" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                                <TextBlock Grid.Column="1" Text="{Binding VersionText}" FontSize="12"
-                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="2" Text="{Binding Compatibility}" FontSize="11" Classes="dim"
-                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <DataTemplate x:DataType="vm:LocalItemVm">
+                            <Grid ColumnDefinitions="200,*,Auto" Margin="12,5" VerticalAlignment="Center">
+                                <TextBlock Grid.Column="0" Text="{Binding Category}" FontSize="12" Classes="dim" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="13" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="2" Text="本地项" FontSize="10.5" Classes="dim" Margin="10,0,0,0" />
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,10,0,0">
-                    <Button Classes="tool" Content="← 回到步骤一 重新检查" Command="{Binding CheckAllUpdatesCommand}" />
-                    <TextBlock Text="在列表中选中一个结果后，到「步骤三」执行更新。" Classes="dim" VerticalAlignment="Center" />
-                </StackPanel>
             </Grid>
-
-            <!-- ======== 步骤三：在本地找到项 ======== -->
-            <ScrollViewer x:Name="Step3" HorizontalScrollBarVisibility="Disabled" IsVisible="False">
-                <StackPanel Margin="24,20" Spacing="14" MaxWidth="760" HorizontalAlignment="Left">
-                    <TextBlock Text="步骤三：在本地找到项并运行更新" FontSize="17" FontWeight="Bold" />
-                    <TextBlock TextWrapping="Wrap" Classes="dim" LineHeight="20"
-                               Text="选中「步骤二」中的一个结果后，选择下方按钮执行更新。更新内容会下载到指定的本地模组项中，压缩包自动解压。" />
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Classes="accent" Content="N网更新（NEXUS）" Command="{Binding RunNexusUpdateCommand}" />
-                        <Button Classes="tool" Content="GitHub 更新" Command="{Binding RunGitHubUpdateCommand}" />
-                        <Button Classes="tool" Content="打开 ModDrop 页面" Command="{Binding OpenModDropPageCommand}" />
-                        <Button Classes="tool" Content="打开建议链接" Command="{Binding OpenSuggestedUrlCommand}" />
-                    </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Classes="dim"
-                               Text="ModDrop 需要浏览器登录账户，因此打开网页手动下载后，再把压缩包放入模组项（管理模组 → 项内容 → 添加文件）。" />
-                </StackPanel>
-            </ScrollViewer>
         </Panel>
     </Grid>
 </UserControl>

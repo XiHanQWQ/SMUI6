@@ -100,7 +100,7 @@ public class PresetEntry
 }
 
 /// <summary>
-/// 批量分发 / 导出预设（对应原版 DLC5 批量分发管理，数据存于 UserData/Presets.json）。
+/// 批量分发 / 导出预设（对应原版批量分发管理，数据存于 UserData/Presets.json）。
 /// </summary>
 public class DistributionPresetService
 {

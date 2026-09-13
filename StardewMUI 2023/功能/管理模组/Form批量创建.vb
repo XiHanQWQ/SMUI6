@@ -1,6 +1,5 @@
 ﻿
-Imports Newtonsoft.Json
-Imports Newtonsoft.Json.Linq
+Imports System.Text.Json.Nodes
 
 Public Class Form批量创建
 
@@ -27,14 +26,14 @@ Public Class Form批量创建
             Me.ListView1.Items.Add(s2(i))
             If My.Computer.FileSystem.FileExists(str2 & s2(i) & "\manifest.json") = True Then
                 Dim b As String = ""
-                Dim JsonData As Object = CType(JsonConvert.DeserializeObject(My.Computer.FileSystem.ReadAllText(str2 & s2(i) & "\manifest.json")), JObject)
-                If JsonData.item("EntryDll") IsNot Nothing Then
+                Dim JsonData As JsonObject = My.Computer.FileSystem.ReadAllText(str2 & s2(i) & "\manifest.json").从文本()
+                If JsonData.取值("EntryDll") IsNot Nothing Then
                     b &= "EntryDll - "
                 Else
                     b &= "Content Pak - "
                 End If
-                If JsonData.item("Version") IsNot Nothing Then
-                    b &= "v" & JsonData.item("Version").ToString
+                If JsonData.取值("Version") IsNot Nothing Then
+                    b &= "v" & JsonData.取值("Version").ToString
                 Else
                     b &= "unknow"
                 End If

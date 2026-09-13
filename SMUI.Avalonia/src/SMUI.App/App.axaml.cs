@@ -28,7 +28,8 @@ public partial class App : Application
         var home = new HomeViewModel(settings, dialogs, log);
         var logVm = new LogViewModel();
         var settingsVm = new SettingsPageViewModel(settings, dialogs, log);
-        var mainVm = new MainWindowViewModel(home, mods, queue, updates, logVm, settingsVm, log, dialogs);
+        var toolsVm = new ToolsViewModel(settings);
+        var mainVm = new MainWindowViewModel(home, mods, queue, updates, logVm, settingsVm, toolsVm, log, dialogs);
 
         var window = new MainWindow { DataContext = mainVm };
 

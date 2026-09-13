@@ -1,249 +1,139 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:SMUI.App.Views">
 
-    <!-- ============ SMUI 6 原版配色（WinForms SunnyUI 复刻） ============ -->
+    <!-- ============ SMUI 配色：Catppuccin Mocha（Base #1E1E2E / Mantle #181825 / Surface #313244 / Blue #89B4FA） ============ -->
 
-    <Styles.Resources>
-        <SolidColorBrush x:Key="WindowBgBrush" Color="#181818" />
-        <SolidColorBrush x:Key="PanelBrush" Color="#202020" />
-        <SolidColorBrush x:Key="ToolbarBrush" Color="#2A2A2A" />
-        <SolidColorBrush x:Key="CardBrush" Color="#2A2A2A" />
-        <SolidColorBrush x:Key="CardHoverBrush" Color="#404040" />
-        <SolidColorBrush x:Key="CardPressedBrush" Color="#505050" />
-        <SolidColorBrush x:Key="BorderBrush1" Color="#2E2E2E" />
-        <SolidColorBrush x:Key="BorderBrush2" Color="#3C3C3C" />
-        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#E0E0E0" />
-        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#969696" />
-        <SolidColorBrush x:Key="TextTertiaryBrush" Color="#6E6E6E" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#6EBE28" />
-        <SolidColorBrush x:Key="AccentSoftBrush" Color="#336EBE28" />
-        <SolidColorBrush x:Key="AccentHoverBrush" Color="#7ED236" />
-        <SolidColorBrush x:Key="AccentPressedBrush" Color="#5FA822" />
-        <SolidColorBrush x:Key="DangerBrush" Color="#FF4500" />
-
-        <SolidColorBrush x:Key="StatusWhiteBrush" Color="#DCDCDC" />
-        <SolidColorBrush x:Key="StatusRedBrush" Color="#FF4500" />
-        <SolidColorBrush x:Key="StatusOrangeBrush" Color="#FF8C00" />
-        <SolidColorBrush x:Key="StatusYellowBrush" Color="#F0F0F0" />
-        <SolidColorBrush x:Key="StatusGreenBrush" Color="#32CD32" />
-        <SolidColorBrush x:Key="StatusCyanBrush" Color="#00E6E6" />
-        <SolidColorBrush x:Key="StatusBlueBrush" Color="#00BFFF" />
-        <SolidColorBrush x:Key="StatusPurpleBrush" Color="#EE82EE" />
-    </Styles.Resources>
-
-    <Style Selector="Window, UserControl">
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI, PingFang SC, Noto Sans CJK SC, sans-serif" />
-        <Setter Property="FontSize" Value="13" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-    </Style>
-
+    <!-- ============ 全局（控件模板交给 Material.Avalonia，这里只做底色/字体） ============ -->
     <Style Selector="Window">
         <Setter Property="Background" Value="{DynamicResource WindowBgBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="FontFamily" Value="微软雅黑" />
+    </Style>
+    <Style Selector="UserControl">
+        <Setter Property="Background" Value="{DynamicResource WindowBgBrush}" />
     </Style>
 
-    <Style Selector="TextBox">
-        <Setter Property="Background" Value="#232323" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="#3C3C3C" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="Padding" Value="8,5" />
-        <Setter Property="MinHeight" Value="30" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-        <Setter Property="Background" Value="#282828" />
-        <Setter Property="BorderBrush" Value="#4A4A4A" />
-    </Style>
-    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="Background" Value="#232323" />
-    </Style>
-
+    <!-- ============ 全局按钮前景（Material 默认前景在暗底上不可读，统一亮色） ============ -->
     <Style Selector="Button">
-        <Setter Property="Background" Value="{DynamicResource ToolbarBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="#3C3C3C" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="Padding" Value="13,6" />
+    </Style>
+
+    <!-- ============ 扁平文本按钮（WinForms 菜单栏按钮样式：白字无边框） ============ -->
+    <Style Selector="Button.flat">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="MinHeight" Value="30" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <Style Selector="Button:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
-        <Setter Property="BorderBrush" Value="#4A4A4A" />
+    <Style Selector="Button.flat:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderBrush1}" />
+    </Style>
+    <Style Selector="Button.flat:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CardPressedBrush}" />
+    </Style>
+    <Style Selector="Button.flat.left">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+
+    <Style Selector="Button.flat.accent">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Button.flat.orange">
+        <Setter Property="Foreground" Value="{DynamicResource LabelOrangeBrush}" />
+    </Style>
+
+    <!-- 次级描边按钮（对话框/弹窗用） -->
+    <Style Selector="Button.tool">
+        <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush2}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Padding" Value="12,6" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="MinHeight" Value="30" />
     </Style>
-    <Style Selector="Button:pressed /template/ ContentPresenter">
+    <Style Selector="Button.tool:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
+    </Style>
+    <Style Selector="Button.tool:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource CardPressedBrush}" />
     </Style>
 
     <Style Selector="Button.accent">
         <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="Foreground" Value="#10140A" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="#11111B" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
     <Style Selector="Button.accent:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-        <Setter Property="Foreground" Value="#10140A" />
     </Style>
     <Style Selector="Button.accent:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
     </Style>
 
     <Style Selector="Button.danger">
-        <Setter Property="Background" Value="#33FF4500" />
-        <Setter Property="Foreground" Value="#FF8A78" />
-        <Setter Property="BorderBrush" Value="#55FF4500" />
+        <Setter Property="Background" Value="#33F38BA8" />
+        <Setter Property="Foreground" Value="#F38BA8" />
+        <Setter Property="BorderBrush" Value="#55F38BA8" />
     </Style>
     <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#55FF4500" />
-        <Setter Property="Foreground" Value="#FFB0A2" />
+        <Setter Property="Background" Value="#55F38BA8" />
+        <Setter Property="Foreground" Value="#F8C9D4" />
     </Style>
 
     <Style Selector="Button.ghost">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
     <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
     </Style>
 
-    <Style Selector="ListBox">
+    <!-- 链接样式按钮（复刻原版 LinkLabel：默认无下划线，悬停下划线） -->
+    <Style Selector="Button.linkBtn">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
-    </Style>
-    <Style Selector="ListBoxItem">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="Padding" Value="10,5" />
-        <Setter Property="MinHeight" Value="29" />
-    </Style>
-    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#2E2E2E" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
     </Style>
-    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-        <Setter Property="Background" Value="#3A4A2A" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-    </Style>
-
-    <Style Selector="ComboBox">
-        <Setter Property="Background" Value="{DynamicResource ToolbarBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="#3C3C3C" />
-        <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="MinHeight" Value="30" />
-        <Setter Property="Padding" Value="9,5" />
-    </Style>
-    <Style Selector="ComboBox:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
-        <Setter Property="BorderBrush" Value="#4A4A4A" />
-    </Style>
-    <Style Selector="ComboBoxItem">
-        <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="Padding" Value="10,6" />
-        <Setter Property="MinHeight" Value="30" />
-    </Style>
-    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
-    </Style>
-    <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
-    </Style>
-
-    <Style Selector="CheckBox">
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="MinHeight" Value="26" />
-    </Style>
-    <Style Selector="CheckBox /template/ Border#NormalRectangle">
-        <Setter Property="BorderBrush" Value="#4A4A4A" />
-        <Setter Property="CornerRadius" Value="0" />
-    </Style>
-    <Style Selector="RadioButton">
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="MinHeight" Value="26" />
-    </Style>
-    <Style Selector="ToggleSwitch">
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-    </Style>
-    <Style Selector="ToggleSwitch /template/ Border#PART_SwitchKnobBoundsOn">
-        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-    </Style>
-
-    <Style Selector="ScrollBar">
+    <Style Selector="Button.linkBtn:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent" />
     </Style>
-    <Style Selector="ScrollBar:vertical">
-        <Setter Property="Width" Value="10" />
+    <Style Selector="Button.linkBtn:pointerover">
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="TextBlock.TextDecorations" Value="Underline" />
     </Style>
-    <Style Selector="ScrollBar:horizontal">
-        <Setter Property="Height" Value="10" />
-    </Style>
-    <Style Selector="ScrollBar /template/ Thumb">
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border CornerRadius="0" Background="#3C3C3C" Margin="2" />
-            </ControlTemplate>
-        </Setter>
-    </Style>
-    <Style Selector="ScrollBar /template/ Thumb:pointerover">
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border CornerRadius="0" Background="#4A4A4A" Margin="2" />
-            </ControlTemplate>
-        </Setter>
+    <Style Selector="Button.linkBtn.dim">
+        <Setter Property="Foreground" Value="Silver" />
     </Style>
 
-    <Style Selector="ProgressBar">
-        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="Background" Value="#232323" />
-        <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="MinHeight" Value="6" />
+    <!-- ============ 橙色栏目标签（配置队列/项的数据内容/设置安装规划…） ============ -->
+    <Style Selector="TextBlock.areaLabel">
+        <Setter Property="Foreground" Value="{DynamicResource LabelOrangeBrush}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
-    <Style Selector="ContextMenu">
-        <Setter Property="Background" Value="#232323" />
-        <Setter Property="BorderBrush" Value="#3C3C3C" />
-        <Setter Property="Padding" Value="2" />
-    </Style>
-    <Style Selector="MenuItem">
+    <!-- ============ 列表 ============ -->
+    <Style Selector="ListBox">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="Padding" Value="10,6" />
-        <Setter Property="FontSize" Value="12.5" />
-    </Style>
-    <Style Selector="MenuItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-    </Style>
-    <Style Selector="Separator">
-        <Setter Property="Background" Value="#3C3C3C" />
-        <Setter Property="Margin" Value="6,3" />
-        <Setter Property="Height" Value="1" />
+        <Setter Property="Padding" Value="0" />
     </Style>
 
-    <Style Selector="ToolTip">
-        <Setter Property="Background" Value="#2A2A2A" />
-        <Setter Property="BorderBrush" Value="#3C3C3C" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="Padding" Value="10,6" />
-    </Style>
-
-    <!-- ============ 顶部主选项卡条（复刻 UiTabControlMenu，151x50） ============ -->
+    <!-- ============ 主导航选项卡（复刻 UiTabControl1：等宽 + 底部蓝线） ============ -->
     <Style Selector="RadioButton.mainTab">
-        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-        <Setter Property="Width" Value="130" />
-        <Setter Property="Height" Value="42" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Width" Value="140" />
+        <Setter Property="Height" Value="46" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border x:Name="root" Background="Transparent" BorderThickness="0,3,0,0" BorderBrush="Transparent">
+                <Border x:Name="root" Background="Transparent" BorderThickness="0,0,0,3" BorderBrush="Transparent">
                     <TextBlock Text="{TemplateBinding Content}" FontSize="13.5" FontWeight="Bold"
                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
@@ -251,13 +141,37 @@
         </Setter>
     </Style>
     <Style Selector="RadioButton.mainTab:pointerover /template/ Border#root">
-        <Setter Property="Background" Value="#232323" />
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
     </Style>
     <Style Selector="RadioButton.mainTab:checked /template/ Border#root">
-        <Setter Property="Background" Value="#202020" />
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="RadioButton.mainTab:checked">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <!-- ============ 检查更新步骤选项卡（步骤一/二/三） ============ -->
+    <Style Selector="RadioButton.stepTab">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Height" Value="52" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="root" Background="Transparent" BorderThickness="0,0,0,3" BorderBrush="Transparent"
+                        Padding="16,0">
+                    <TextBlock Text="{TemplateBinding Content}" FontSize="13.5" FontWeight="Bold"
+                               HorizontalAlignment="Left" VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="RadioButton.stepTab:pointerover /template/ Border#root">
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    </Style>
+    <Style Selector="RadioButton.stepTab:checked /template/ Border#root">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="RadioButton.stepTab:checked">
         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
 
@@ -267,7 +181,7 @@
         <Setter Property="Height" Value="40" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border x:Name="root" Background="#202020" BorderThickness="0" Padding="14,0">
+                <Border x:Name="root" Background="{DynamicResource PanelBrush}" BorderThickness="0" Padding="14,0">
                     <TextBlock Text="{TemplateBinding Content}" FontSize="13" FontWeight="Bold"
                                VerticalAlignment="Center" />
                 </Border>
@@ -275,36 +189,145 @@
         </Setter>
     </Style>
     <Style Selector="RadioButton.leftNav:pointerover /template/ Border#root">
-        <Setter Property="Background" Value="#282828" />
+        <Setter Property="Background" Value="{DynamicResource CardBrush}" />
     </Style>
     <Style Selector="RadioButton.leftNav:checked /template/ Border#root">
-        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+        <Setter Property="BorderThickness" Value="3,0,0,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="RadioButton.leftNav:checked">
-        <Setter Property="Foreground" Value="#10140A" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
 
-    <!-- 窗口标题栏控制按钮 -->
-    <Style Selector="Button.cap">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="46" />
-        <Setter Property="Height" Value="42" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <!-- ============ 紧凑菜单（复刻 WinForms 菜单：同背景色 / 带图标 / 13px 密度） ============ -->
+    <Style Selector="ContextMenu">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush1}" />
     </Style>
-    <Style Selector="Button.cap:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
+    <Style Selector="MenuFlyoutPresenter">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush1}" />
+    </Style>
+    <Style Selector="MenuItem">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="Padding" Value="8,3" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <!-- 覆盖 Material 的 48dp 大模板：复刻 WinForms 菜单密度的紧凑模板 -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border x:Name="PART_LayoutRoot" Background="Transparent" CornerRadius="3"
+                            MinHeight="{TemplateBinding MinHeight}" Padding="{TemplateBinding Padding}">
+                        <Grid ColumnDefinitions="Auto,*,Auto,8" VerticalAlignment="Center">
+                            <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Width="16" Height="16"
+                                              Margin="0,0,7,0"
+                                              IsVisible="{TemplateBinding Icon, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                              VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            <ContentPresenter Grid.Column="1" Content="{TemplateBinding Header}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                              VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="{TemplateBinding InputGesture}" Opacity="0.55"
+                                       VerticalAlignment="Center" />
+                            <Path Grid.Column="2" Data="M 0 0 L 4 4 L 0 8 Z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"
+                                  Margin="8,0,0,0" VerticalAlignment="Center"
+                                  IsVisible="{Binding Items, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static v:HasItemsConverter.Instance}}" />
+                        </Grid>
+                    </Border>
+                    <Popup x:Name="PART_Popup" Placement="Right"
+                           IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}"
+                           PlacementTarget="{Binding $parent[MenuItem]}">
+                        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush1}"
+                                BorderThickness="1" CornerRadius="5" Padding="2" Margin="6,0,8,8">
+                            <ScrollViewer MaxHeight="620">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
     </Style>
-    <Style Selector="Button.cap.close:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#E81123" />
-        <Setter Property="Foreground" Value="White" />
+    <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+        <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
+    </Style>
+    <Style Selector="MenuItem:open /template/ Border#PART_LayoutRoot">
+        <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+    </Style>
+    <Style Selector="MenuFlyout > Separator">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource BorderBrush1}" />
+        <Setter Property="Margin" Value="2,2" />
     </Style>
 
-    <Style Selector="Button.tool">
-        <Setter Property="Background" Value="{DynamicResource ToolbarBrush}" />
+    <!-- ============ TextBox：复刻 WinForms 带边框单行框（去 Material 下划线/装饰条） ============ -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource WindowBgBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush1}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
         <Setter Property="MinHeight" Value="30" />
+        <Setter Property="Padding" Value="8,5" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentSoftBrush}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="PART_BorderElement"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <DockPanel Margin="{TemplateBinding Padding}">
+                        <TextBlock x:Name="PART_Watermark" DockPanel.Dock="Top"
+                                   Text="{TemplateBinding Watermark}"
+                                   Foreground="{DynamicResource TextTertiaryBrush}" FontSize="12"
+                                   IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                                   IsHitTestVisible="False" />
+                        <ScrollViewer x:Name="PART_ScrollViewer"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto"
+                                      AllowAutoHide="True">
+                            <TextPresenter x:Name="PART_TextPresenter"
+                                           Text="{TemplateBinding Text}"
+                                           TextWrapping="{TemplateBinding TextWrapping}"
+                                           PasswordChar="{TemplateBinding PasswordChar}"
+                                           RevealPassword="{TemplateBinding RevealPassword}"
+                                           CaretBrush="{TemplateBinding CaretBrush}"
+                                           SelectionBrush="{TemplateBinding SelectionBrush}"
+                                           TextAlignment="{TemplateBinding TextAlignment}" />
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush2}" />
+    </Style>
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="TextBox">
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+    </Style>
+
+    <!-- ============ 杂项 ============ -->
+    <Style Selector="TextBlock.dim">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="FontSize" Value="11.5" />
+    </Style>
+
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="{DynamicResource BorderBrush1}" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,4" />
     </Style>
 </Styles>

@@ -95,6 +95,14 @@ public class ModItemOperations
         else File.WriteAllText(file, fontKey);
     }
 
+    /// <summary>设置项颜色标记文件（大写 RED/ORANGE/AQUA…，与 WinForms 版互通；空串删除标记恢复默认）。</summary>
+    public void SetItemColor(string itemPath, string colorKey)
+    {
+        var file = Path.Combine(itemPath, "Color");
+        if (string.IsNullOrEmpty(colorKey)) { if (File.Exists(file)) File.Delete(file); }
+        else File.WriteAllText(file, colorKey);
+    }
+
     /// <summary>清除 config.json 备份缓存。</summary>
     public void ClearConfigCache(string itemPath)
     {

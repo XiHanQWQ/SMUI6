@@ -132,6 +132,22 @@ public partial class ModsPageViewModel
 
     // ------------------------------------------------- 更新模组项
 
+    /// <summary>底栏「更新键」菜单：对指定 NEXUS ID 执行更新（复刻 获取NEXUS文件列表 入口）。</summary>
+    public async Task RunNexusUpdateForAsync(string nexusId)
+    {
+        if (SelectedItems.Count != 1) { await _dialogs.InfoAsync("提示", "请先选中一个模组项。"); return; }
+        await _updates.RunNexusUpdateAsync(nexusId, SelectedItems[0].ItemPath);
+        await RefreshItemsAsync();
+    }
+
+    /// <summary>底栏「更新键」菜单：对指定 GitHub 仓库执行更新。</summary>
+    public async Task RunGitHubUpdateForAsync(string repo)
+    {
+        if (SelectedItems.Count != 1) { await _dialogs.InfoAsync("提示", "请先选中一个模组项。"); return; }
+        await _updates.RunGitHubUpdateAsync(repo, SelectedItems[0].ItemPath);
+        await RefreshItemsAsync();
+    }
+
     [RelayCommand]
     private async Task NexusUpdateAsync()
     {

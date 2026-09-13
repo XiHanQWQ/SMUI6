@@ -3,7 +3,7 @@
         xmlns:v="using:SMUI.App.Views"
         x:Class="SMUI.App.Views.SearchWindow"
         Title="全库搜索" Width="820" Height="540" CanResize="True"
-        Background="#181818" Foreground="#E0E0E0" FontFamily="微软雅黑">
+        Background="{DynamicResource WindowBgBrush}" Foreground="{DynamicResource TextPrimaryBrush}" FontFamily="微软雅黑">
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="14">
         <TextBox x:Name="KeywordBox" Watermark="输入关键字（项名 / 作者 / 描述 / UniqueID）" />
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,10">

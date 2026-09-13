@@ -7,11 +7,9 @@ Public Class Form下载并新建项
     Public Shared Property 拖入的链接 As String
 
     Public Shared Sub 模组项列表视图DragDrop(sender As Object, e As DragEventArgs)
-        If DLC.DLC解锁标记.NewItemExtension Then
-            If e.Data.GetDataPresent(DataFormats.Text) Then
-                拖入的链接 = e.Data.GetData(DataFormats.Text).ToString()
-                管理模组的菜单.菜单项_下载并新建项.PerformClick()
-            End If
+        If e.Data.GetDataPresent(DataFormats.Text) Then
+            拖入的链接 = e.Data.GetData(DataFormats.Text).ToString()
+            管理模组的菜单.菜单项_下载并新建项.PerformClick()
         End If
     End Sub
 

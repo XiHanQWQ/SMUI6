@@ -1,16 +1,42 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
              x:Class="SMUI.App.App"
              RequestedThemeVariant="Dark">
     <Application.Styles>
-        <FluentTheme />
+        <themes:MaterialTheme BaseTheme="Dark" PrimaryColor="Blue" SecondaryColor="LightBlue" />
         <StyleInclude Source="avares://SMUI/Styles/Theme.axaml" />
     </Application.Styles>
     <Application.Resources>
         <ResourceDictionary>
-            <SolidColorBrush x:Key="AccentBrush" Color="#7CC540" />
-            <SolidColorBrush x:Key="AccentHoverBrush" Color="#8FD94F" />
-            <SolidColorBrush x:Key="AccentPressedBrush" Color="#6AAD35" />
+            <!-- 强调色（应用级资源：代码里的 StatusBrush/FindBrush 只查 Application.Resources） -->
+            <SolidColorBrush x:Key="AccentBrush" Color="#89B4FA" />
+            <SolidColorBrush x:Key="AccentHoverBrush" Color="#A9C9F9" />
+            <SolidColorBrush x:Key="AccentPressedBrush" Color="#6E9CD9" />
+            <!-- 窗口/面板/文字 -->
+            <SolidColorBrush x:Key="WindowBgBrush" Color="#1E1E2E" />
+            <SolidColorBrush x:Key="PanelBrush" Color="#181825" />
+            <SolidColorBrush x:Key="ToolbarBrush" Color="#181825" />
+            <SolidColorBrush x:Key="CardBrush" Color="#313244" />
+            <SolidColorBrush x:Key="CardHoverBrush" Color="#45475A" />
+            <SolidColorBrush x:Key="CardPressedBrush" Color="#585B70" />
+            <SolidColorBrush x:Key="BorderBrush1" Color="#313244" />
+            <SolidColorBrush x:Key="BorderBrush2" Color="#45475A" />
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#CDD6F4" />
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#A6ADC8" />
+            <SolidColorBrush x:Key="TextTertiaryBrush" Color="#6C7086" />
+            <SolidColorBrush x:Key="AccentSoftBrush" Color="#3389B4FA" />
+            <SolidColorBrush x:Key="LabelOrangeBrush" Color="#FAB387" />
+            <SolidColorBrush x:Key="DangerBrush" Color="#F38BA8" />
+            <!-- 模组状态/标记调色板（与 WinForms Color1 一致） -->
+            <SolidColorBrush x:Key="StatusWhiteBrush" Color="#F5E0DC" />
+            <SolidColorBrush x:Key="StatusRedBrush" Color="#F38BA8" />
+            <SolidColorBrush x:Key="StatusOrangeBrush" Color="#FAB387" />
+            <SolidColorBrush x:Key="StatusYellowBrush" Color="#F9E2AF" />
+            <SolidColorBrush x:Key="StatusGreenBrush" Color="#A6E3A1" />
+            <SolidColorBrush x:Key="StatusCyanBrush" Color="#94E2D5" />
+            <SolidColorBrush x:Key="StatusBlueBrush" Color="#89B4FA" />
+            <SolidColorBrush x:Key="StatusPurpleBrush" Color="#CBA6F7" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

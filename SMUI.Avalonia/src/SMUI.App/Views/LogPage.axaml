@@ -12,14 +12,14 @@
     <Grid RowDefinitions="Auto,*" Margin="0">
         <Border Grid.Row="0" Background="{DynamicResource PanelBrush}" Padding="14,10"
                 BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
-            <TextBlock Text="调试输出" FontSize="16" FontWeight="Bold" />
+            <TextBlock Text="调试信息" FontSize="14" FontWeight="Bold" />
         </Border>
         <ListBox Grid.Row="1" ItemsSource="{Binding Entries}" x:Name="LogList" Margin="10"
                  Background="Transparent" SelectionMode="Single">
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="m:LogEntry">
                     <TextBlock FontFamily="Consolas, Menlo, monospace" FontSize="12" TextWrapping="Wrap" Margin="0,1">
-                        <Run Text="{Binding TimeString, Mode=OneWay}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                        <Run Text="[" /><Run Text="{Binding TimeString, Mode=OneWay}" Foreground="{DynamicResource TextTertiaryBrush}" /><Run Text="] " />
                         <Run Text="{Binding Message, Mode=OneWay}" Foreground="{Binding KindBrush}" />
                     </TextBlock>
                 </DataTemplate>

@@ -35,3 +35,15 @@ public class StatusColorConverter : IValueConverter
         return Brushes.White;
     }
 }
+
+/// <summary>bool → 状态圆点画刷（false 正常绿 / true 失败红）。</summary>
+public class BoolToStatusBrushConverter : IValueConverter
+{
+    public static readonly BoolToStatusBrushConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is true ? StatusColorConverter.FindBrush("StatusRedBrush") : StatusColorConverter.FindBrush("StatusGreenBrush");
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}

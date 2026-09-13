@@ -1,5 +1,4 @@
 ﻿Imports System.Net.Http
-Imports SMUI6.DLC
 Imports System.IO
 Imports ImageMagick
 Imports Sunny.UI
@@ -154,25 +153,23 @@ Public Class 在线模组列表
             基于面板.Controls.Add(独立容器)
             独立容器.BringToFront()
 
-            If DLC解锁标记.NewItemExtension = True Then
-                If a.status(i) = "not_published" Or a.status(i) = "removed" Or a.status(i) = "hidden" Then Continue For
-                Dim 直接创建按钮 As New UIButton With {.Text = "+", .Font = New Font(Form1.Font.Name, 18), .Style = UIStyle.Purple}
-                独立容器.Controls.Add(直接创建按钮)
-                直接创建按钮.BringToFront()
-                直接创建按钮.Height = 35 * 界面控制.DPI
-                直接创建按钮.Width = 40 * 界面控制.DPI
-                直接创建按钮.Top = 标题文字.Top
-                直接创建按钮.Left = 独立容器.Width - 直接创建按钮.Width - 直接创建按钮.Top
-                直接创建按钮.Anchor = AnchorStyles.Right
-                Dim strtit1 As String = a.name(i)
-                Dim strid1 As String = a.mod_id(i)
-                AddHandler 直接创建按钮.Click,
-                    Sub(s1, e1)
-                        Form下载并新建项.上一次填写的模组项名称 = strtit1
-                        Form下载并新建项.暗黑文本框2.Text = strid1
-                        显示模式窗体(Form下载并新建项, Form1)
-                    End Sub
-            End If
+            If a.status(i) = "not_published" Or a.status(i) = "removed" Or a.status(i) = "hidden" Then Continue For
+            Dim 直接创建按钮 As New UIButton With {.Text = "+", .Font = New Font(Form1.Font.Name, 18), .Style = UIStyle.Purple}
+            独立容器.Controls.Add(直接创建按钮)
+            直接创建按钮.BringToFront()
+            直接创建按钮.Height = 35 * 界面控制.DPI
+            直接创建按钮.Width = 40 * 界面控制.DPI
+            直接创建按钮.Top = 标题文字.Top
+            直接创建按钮.Left = 独立容器.Width - 直接创建按钮.Width - 直接创建按钮.Top
+            直接创建按钮.Anchor = AnchorStyles.Right
+            Dim strtit1 As String = a.name(i)
+            Dim strid1 As String = a.mod_id(i)
+            AddHandler 直接创建按钮.Click,
+                Sub(s1, e1)
+                    Form下载并新建项.上一次填写的模组项名称 = strtit1
+                    Form下载并新建项.暗黑文本框2.Text = strid1
+                    显示模式窗体(Form下载并新建项, Form1)
+                End Sub
         Next
         Dim c1 As New Label With {.AutoSize = False, .Dock = DockStyle.Top, .Height = 5}
         基于面板.Controls.Add(c1)

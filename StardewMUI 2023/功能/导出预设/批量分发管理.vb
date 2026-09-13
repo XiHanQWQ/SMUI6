@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports System.Text
 Imports System.Text.Json
 Imports SMUI6.批量分发管理.预设数据结构
@@ -321,10 +321,6 @@ jx1:
     End Sub
 
     Public Shared Sub 执行选中预设()
-        If Not DLC.DLC解锁标记.DistributionExtension Then
-            UIMessageTip.Show("需要激活 DLC 5 才可使用此功能",, 2000)
-            Exit Sub
-        End If
         If Form1.ListView13.SelectedItems.Count = 0 Then
             UIMessageTip.Show("选中一个预设再使用此功能",, 2000)
             Exit Sub
@@ -337,7 +333,7 @@ jx1:
         If Not DirEx.SelectDirEx("选择将这些打包文件输出到哪个文件夹", str1) Then Exit Sub
         Dim str As String = "$host.UI.RawUI.WindowTitle = " & """" & Form1.ListView13.SelectedItems(0).Text & """"
         Dim 选择的预设索引 As String = Form1.ListView13.SelectedIndices(0)
-        str &= vbCrLf & My.Resources.DLC5导出时删除存在文件模板
+        str &= vbCrLf & My.Resources.导出时删除存在文件模板
         For Each FileItem In 预设数据.Data(选择的预设索引).Value.文件列表
             Dim 单个导出文件路径 = Path.Combine(str1, FileItem.Key & If(FileItem.Value.分类还是模组项 = 1, ".smuicpak", ".smuimpak"))
             str &= vbCrLf & "Remove-FileToRecycleBin -filePath " & """" & 单个导出文件路径 & """"
@@ -351,12 +347,12 @@ jx1:
             End If
         Next
         If Form1.UiCheckBox2.Checked = True And Form1.暗黑文本框13.Text <> "" Then
-            str &= vbCrLf & "Write-Host " & """" & "如果你忘记了设置的密码，可以到用户配置文件夹，用记事本或其他编辑器打开最后的 DLC5.ps1 脚本文件查看即可，但是不要运行它，防止造成意外事故" & """"
+            str &= vbCrLf & "Write-Host " & """" & "如果你忘记了设置的密码，可以到用户配置文件夹，用记事本或其他编辑器打开最后的 分发脚本.ps1 脚本文件查看即可，但是不要运行它，防止造成意外事故" & """"
             str &= vbCrLf & "Write-Host " & """" & "密码：" & Form1.暗黑文本框13.Text & """"
         End If
         str &= vbCrLf & "pause"
-        FileIO.FileSystem.WriteAllText(Path.Combine(设置.用户数据文件夹路径, "DLC5.ps1"), str, False, Encoding.UTF8)
-        Process.Start("powershell.exe", "-File " & """" & Path.Combine(设置.用户数据文件夹路径, "DLC5.ps1") & """")
+        FileIO.FileSystem.WriteAllText(Path.Combine(设置.用户数据文件夹路径, "分发脚本.ps1"), str, False, Encoding.UTF8)
+        Process.Start("powershell.exe", "-File " & """" & Path.Combine(设置.用户数据文件夹路径, "分发脚本.ps1") & """")
         密码本.添加导入导出密码到密码本中(Form1.暗黑文本框13.Text)
     End Sub
 

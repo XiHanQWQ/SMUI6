@@ -9,47 +9,29 @@
         Width="1280" Height="800"
         MinWidth="1080" MinHeight="640"
         WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource WindowBgBrush}"
-        ExtendClientAreaToDecorationsHint="True"
-        SystemDecorations="Full">
+        Background="{DynamicResource WindowBgBrush}">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
+    <!-- ============ 主选项卡条（复刻 UiTabControl1 + RUN SMAPI 按钮） + 页面内容 ============ -->
     <Grid RowDefinitions="Auto,*">
 
-        <!-- ============ 标题栏 + 主选项卡条（复刻 UiTabControl1 + RUN SMAPI 浮动按钮） ============ -->
-        <Border Grid.Row="0" Background="#181818" BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
+        <Border Grid.Row="0" Background="{DynamicResource WindowBgBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
             <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Border Background="Transparent" PointerPressed="TitleBar_PointerPressed" DoubleTapped="TitleBar_DoubleTapped">
-                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="14,0,10,0" VerticalAlignment="Center">
-                            <Border Width="24" Height="24" Background="{DynamicResource AccentBrush}">
-                                <TextBlock Text="S" FontSize="14" FontWeight="Black" Foreground="#10140A"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-                            <TextBlock Text="SMUI 6" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Border>
-                    <StackPanel x:Name="NavPanel" Orientation="Horizontal" VerticalAlignment="Bottom">
-                        <RadioButton Classes="mainTab" Content="起始页面" GroupName="nav" IsChecked="True" />
-                        <RadioButton Classes="mainTab" Content="管理模组" GroupName="nav" />
-                        <RadioButton Classes="mainTab" Content="配置队列" GroupName="nav" />
-                        <RadioButton Classes="mainTab" Content="下载更新" GroupName="nav" />
-                        <RadioButton Classes="mainTab" Content="检查更新" GroupName="nav" />
-                        <RadioButton Classes="mainTab" Content="浏览器" GroupName="nav" />
-                        <RadioButton Classes="mainTab" Content="调试输出" GroupName="nav" />
-                    </StackPanel>
+                <StackPanel x:Name="NavPanel" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <RadioButton Classes="mainTab" Content="起始页面" GroupName="nav" IsChecked="True" />
+                    <RadioButton Classes="mainTab" Content="管理模组" GroupName="nav" />
+                    <RadioButton Classes="mainTab" Content="配置队列" GroupName="nav" />
+                    <RadioButton Classes="mainTab" Content="下载更新" GroupName="nav" />
+                    <RadioButton Classes="mainTab" Content="检查更新" GroupName="nav" />
+                    <RadioButton Classes="mainTab" Content="浏览器" GroupName="nav" />
+                    <RadioButton Classes="mainTab" Content="调试输出" GroupName="nav" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Stretch">
-                    <Button Classes="accent" Content="RUN SMAPI" Command="{Binding Home.RunSmapiCommand}"
-                            VerticalAlignment="Center" Margin="0,0,12,0" Padding="16,6" />
-                    <Button Classes="cap" Content="─" Click="Minimize_Click" />
-                    <Button Classes="cap" x:Name="MaximizeButton" Content="□" Click="Maximize_Click" />
-                    <Button Classes="cap close" Content="✕" Click="Close_Click" />
-                </StackPanel>
+                <Button Grid.Column="1" Classes="accent" Content="RUN SMAPI" Command="{Binding Home.RunSmapiCommand}"
+                        VerticalAlignment="Stretch" FontSize="15" FontWeight="Bold" Padding="28,0" />
             </Grid>
         </Border>
 

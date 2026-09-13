@@ -2,27 +2,35 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="SMUI.App.Views.BrowserPage">
 
-    <Grid RowDefinitions="Auto,*" Margin="0">
-        <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="10,5"
-                BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="*,Auto,Auto">
-                <TextBox x:Name="AddressBox" Height="28" Watermark="输入网址" KeyDown="AddressBox_KeyDown" />
-                <Button Grid.Column="1" Classes="tool" Content="前往" Click="Go_Click" />
-                <Button Grid.Column="2" Classes="tool" Content="↗ 外部打开" Click="OpenExternal_Click" />
+    <!-- 一比一复刻 WinForms「浏览器」选项卡：NEXUS 账户页 释放 刷新 后退 前进 停止 转到 + 地址输入 -->
+    <Grid RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="8,4"
+                BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,4,*">
+                <Button Grid.Column="0" Classes="flat" Content="NEXUS 账户页" Click="NexusAccount_Click" />
+                <Button Grid.Column="1" Classes="flat" Content="释放" Click="Release_Click" />
+                <Button Grid.Column="2" Classes="flat" Content="刷新" Click="Reload_Click" />
+                <Button Grid.Column="3" Classes="flat" Content="后退" Click="Back_Click" />
+                <Button Grid.Column="4" Classes="flat" Content="前进" Click="Forward_Click" />
+                <Button Grid.Column="5" Classes="flat" Content="停止" Click="Stop_Click" />
+                <Button Grid.Column="6" Classes="flat" Content="转到" Click="Go_Click" />
+                <!-- 地址输入（WinForms：在顶部菜单栏空白处输入并转到） -->
+                <TextBox x:Name="AddressBox" Grid.Column="8" Height="28" VerticalContentAlignment="Center"
+                         Watermark="在此输入网址后回车或点【转到】" KeyDown="AddressBox_KeyDown"
+                         Background="{DynamicResource WindowBgBrush}" BorderBrush="{DynamicResource BorderBrush1}" />
             </Grid>
         </Border>
-        <Panel Grid.Row="1" Background="{DynamicResource WindowBgBrush}">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" MaxWidth="480">
-                <TextBlock Text="内置浏览器" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"
-                           HorizontalAlignment="Center" />
-                <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
-                           HorizontalAlignment="Center" TextAlignment="Center"
-                           Text="输入网址后点击【前往】在系统浏览器中打开。&#x0a;内置浏览器功能将在后续版本中加入。" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
-                    <Button Classes="tool" Content="NEXUS" Click="OpenNexus_Click" />
-                    <Button Classes="tool" Content="SMAPI" Click="OpenSmapi_Click" />
-                    <Button Classes="tool" Content="ModDrop" Click="OpenModDrop_Click" />
-                </StackPanel>
+
+        <Panel x:Name="BrowserHost" Grid.Row="1" Background="{DynamicResource WindowBgBrush}">
+            <!-- 未初始化提示（文案复刻 WinForms） -->
+            <StackPanel x:Name="EmptyHint" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="26">
+                <TextBlock Text="=====  使用提示  =====" FontSize="15" TextAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="为节省日常使用的内存占用，只有当需要使用内置浏览器时才会完成初始化并创建控件"
+                           FontSize="14" TextAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="要在内置浏览器中访问其他地址，可以直接在顶部菜单栏空白处输入并转到"
+                           FontSize="14" TextAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="不要忘记定期清理浏览器缓存"
+                           FontSize="14" TextAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
         </Panel>
     </Grid>

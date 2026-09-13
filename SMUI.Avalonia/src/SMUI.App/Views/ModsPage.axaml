@@ -9,156 +9,308 @@
         <vm:ModsPageViewModel/>
     </Design.DataContext>
 
-    <!-- ============ 管理模组（复刻原版三栏 + 底部信息条） ============ -->
+    <!-- ============ 管理模组（一比一复刻 WinForms：单行菜单栏 + 三栏 + 全宽底部表栏） ============ -->
     <Grid RowDefinitions="Auto,*,Auto">
 
-        <!-- 工具条（复刻 Panel5/Panel6） -->
-        <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="10,5"
-                BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
-                    <Button Classes="tool" Content="分类和子库菜单">
+        <!-- 菜单栏（复刻 Panel5/Panel6：分类和子库菜单 26 | 模组项菜单 刷新 搜索 筛选 虚拟组 0 | 内容中心 描述菜单 TYPE） -->
+        <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="4,2"
+                BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto,Auto,Auto,Auto">
+                <Button Grid.Column="0" Classes="flat left" Width="250" Height="40" Content="分类和子库菜单">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="刷新分类" Command="{Binding LoadCategoriesCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/刷新.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="数据子库操作">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/数据库.png" Width="16" Height="16" /></MenuItem.Icon>
+                                <MenuItem Header="切换数据子库" ItemsSource="{Binding SubLibraries}"
+                                          Command="{Binding SwitchSubLibraryCommand}" CommandParameter="{Binding}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/数据切换.png" Width="16" Height="16" /></MenuItem.Icon>
+                                    <MenuItem.ItemContainerTheme>
+                                        <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                            <Setter Property="Header" Value="{Binding}" />
+                                            <Setter Property="Command" Value="{Binding $parent[UserControl].((vm:ModsPageViewModel)DataContext).SwitchSubLibraryCommand}" />
+                                            <Setter Property="CommandParameter" Value="{Binding}" />
+                                        </ControlTheme>
+                                    </MenuItem.ItemContainerTheme>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="刷新数据子库" Command="{Binding RefreshItemsCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/刷新.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="新建数据子库" Command="{Binding NewSubLibraryCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="导入数据子库" Command="{Binding ImportSubLibraryCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/下载.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="导出数据子库" Command="{Binding ExportSubLibraryCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上传.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="删除数据子库" ItemsSource="{Binding SubLibraries}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                                    <MenuItem.ItemContainerTheme>
+                                        <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                            <Setter Property="Header" Value="{Binding}" />
+                                            <Setter Property="Command" Value="{Binding $parent[UserControl].((vm:ModsPageViewModel)DataContext).DeleteSubLibraryByNameCommand}" />
+                                            <Setter Property="CommandParameter" Value="{Binding}" />
+                                        </ControlTheme>
+                                    </MenuItem.ItemContainerTheme>
+                                </MenuItem>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="新建分类" Command="{Binding NewCategoryCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="转移分类" Command="{Binding MoveCategoryCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/移动.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="删除分类" Command="{Binding DeleteCategoryCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="导入分类" Command="{Binding ImportCategoryCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/下载.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="导出分类" Command="{Binding ExportCategoryCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上传.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="更多">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/试验.png" Width="16" Height="16" /></MenuItem.Icon>
+                                <MenuItem Header="转换安装命令到安装规划" IsEnabled="False">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/试验.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="删除分类排序" IsEnabled="False">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                <TextBlock Grid.Column="1" Text="{Binding CategoryCountText}" Classes="dim" Width="50" TextAlignment="Center" VerticalAlignment="Center" FontSize="13" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Classes="flat left" Width="125" Height="40" Content="模组项菜单">
                         <Button.Flyout>
                             <MenuFlyout>
-                                <MenuItem Header="刷新数据子库" Command="{Binding LoadCommand}" />
-                                <MenuItem Header="新建数据子库" Command="{Binding NewSubLibraryCommand}" />
-                                <MenuItem Header="删除当前子库" Command="{Binding DeleteSubLibraryCommand}" />
+                                <MenuItem Header="新建项" Command="{Binding NewItemCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="下载并新建项" Command="{Binding DownloadAndCreateItemCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/下载.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
                                 <Separator />
-                                <MenuItem Header="新建分类" Command="{Binding NewCategoryCommand}" />
-                                <MenuItem Header="重命名分类" Command="{Binding RenameCategoryCommand}" />
-                                <MenuItem Header="删除分类" Command="{Binding DeleteCategoryCommand}" />
-                                <MenuItem Header="设置分类颜色" Command="{Binding SetCategoryColorCommand}" />
-                                <MenuItem Header="设置分类字体" Command="{Binding SetCategoryFontCommand}" />
+                                <MenuItem Header="移动项" Command="{Binding MoveItemsCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/移动.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="删除项" Command="{Binding DeleteItemsCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
                                 <Separator />
-                                <MenuItem Header="分类上移" Command="{Binding MoveCategoryUpCommand}" />
-                                <MenuItem Header="分类下移" Command="{Binding MoveCategoryDownCommand}" />
-                                <MenuItem Header="打开分类文件夹" Command="{Binding OpenCategoryFolderCommand}" />
+                                <MenuItem Header="导入项" Command="{Binding ImportItemsCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/下载.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="导出项" Command="{Binding ExportItemsCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上传.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="批量创建" Command="{Binding BatchCreateItemsCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/代码文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="本地更新">
+                                    <MenuItem Header="从 Mods 中覆盖到数据库" Command="{Binding UpdateItemOverwriteCommand}">
+                                        <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/试验.png" Width="16" Height="16" /></MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="从 Mods 中替换到数据库" Command="{Binding UpdateItemReplaceCommand}">
+                                        <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/试验.png" Width="16" Height="16" /></MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuItem>
+                                <MenuItem Header="设置字体" Command="{Binding SetItemFontCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文字大小.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
-                    <TextBlock Text="{Binding CategoryCountText}" Classes="dim" VerticalAlignment="Center" />
+                    <Button Classes="flat" Width="60" Height="40" Content="刷新" Command="{Binding RefreshItemsCommand}" />
+                    <Button Classes="flat" Width="60" Height="40" Content="搜索" Click="Search_Click" />
+                    <Button Classes="flat" Width="60" Height="40" Content="筛选">
+                        <Button.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="全选" Command="{Binding SelectAllCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/全选.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="反选" Command="{Binding InvertSelectionCommand}" />
+                                <Separator />
+                                <MenuItem Header="选中所有已安装" Command="{Binding SelectInstalledCommand}" />
+                                <MenuItem Header="选中所有未安装" Command="{Binding SelectUninstalledCommand}" />
+                                <MenuItem Header="选中所有非标项" Command="{Binding SelectNonStandardCommand}" />
+                                <MenuItem Header="选中所有更新可用" Command="{Binding SelectUpdatableCommand}" />
+                                <MenuItem Header="选中所有已有新的" Command="{Binding SelectHasNewCommand}" />
+                                <Separator />
+                                <MenuItem Header="扫描当前子库所有已安装" Command="{Binding ScanByStatusCommand}" CommandParameter="已安装" />
+                                <MenuItem Header="扫描当前子库所有未安装" Command="{Binding ScanByStatusCommand}" CommandParameter="未安装" />
+                                <MenuItem Header="扫描当前子库所有非标项" Command="{Binding ScanByStatusCommand}" CommandParameter="非标项" />
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Button Classes="flat" Width="70" Height="40" Content="虚拟组" Command="{Binding ManageVirtualGroupsCommand}" />
                 </StackPanel>
-                <TextBlock Grid.Column="1" Text="{Binding ItemCountText}" Classes="dim" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="8" Text="{Binding ItemCountText}" Classes="dim" Width="50" TextAlignment="Center" VerticalAlignment="Center" FontSize="13" />
+
+                <Button Grid.Column="9" Classes="flat" Width="90" Height="40" Content="内容中心">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="游戏文件夹菜单">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                                <MenuItem Header="游戏文件夹" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenGameFolderCommand}" />
+                                <MenuItem Header="游戏 Mods 文件夹" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenModsFolderCommand}" />
+                                <MenuItem Header="游戏存档文件夹" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenSavesFolderCommand}" />
+                                <MenuItem Header="SMAPI 日志文件夹" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenSmapiLogsCommand}" />
+                                <MenuItem Header="模组数据仓库" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenRepoFolderCommand}" />
+                                <MenuItem Header="用户数据文件夹" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenUserDataFolderCommand}" />
+                            </MenuItem>
+                            <MenuItem Header="链接菜单">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上传云.png" Width="16" Height="16" /></MenuItem.Icon>
+                                <MenuItem Header="SMAPI 官网" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenSmapiSiteCommand}" />
+                                <MenuItem Header="SMAPI 模组兼容表" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenSmapiCompatCommand}" />
+                                <MenuItem Header="SMAPI 日志分析器" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenSmapiLogParserCommand}" />
+                                <MenuItem Header="星露谷官方维基" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenWikiCommand}" />
+                                <MenuItem Header="星露谷官方社区" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenForumsCommand}" />
+                                <MenuItem Header="星露谷 NEXUS" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenNexusSdvCommand}" />
+                                <MenuItem Header="星露谷 ModDrop" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenModDropCommand}" />
+                                <MenuItem Header="农场布局规划器" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenFarmPlannerCommand}" />
+                                <MenuItem Header="存档预测器" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenPredictorCommand}" />
+                                <MenuItem Header="存档进度检测器" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenCheckupCommand}" />
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="打开软件安装目录" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenAppFolderCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="打开用户数据文件夹" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenUserDataFolderCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="打开插件文件夹" Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Home.OpenPluginFolderCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                <Button Grid.Column="10" Classes="flat left" Width="240" Height="40" Content="描述菜单">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="保存到纯文本" Command="{Binding SaveDescriptionAsTextCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/保存.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="保存到富文本" IsEnabled="False">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/保存.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="新建富文本文档" Command="{Binding NewDescriptionCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="用写字板编辑富文本" Command="{Binding EditRtfExternallyCommand}" />
+                            <Separator />
+                            <MenuItem Header="删除所有自定义描述" Command="{Binding DeleteAllDescriptionsCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="设置字体" IsEnabled="False">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文字大小.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="设置文字颜色" IsEnabled="False">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/颜色滤镜.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="设置文字背景颜色" IsEnabled="False">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/颜色滤镜.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="清除所有格式" IsEnabled="False">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                <Button Grid.Column="11" Classes="flat" Width="60" Height="40" x:Name="BtnType"
+                        Content="{Binding DetailSourceTag, FallbackValue=TYPE, TargetNullValue=TYPE}" />
             </Grid>
         </Border>
 
-        <!-- 三栏内容 -->
-        <Grid Grid.Row="1" ColumnDefinitions="250,7,*,7,310">
+        <!-- 三栏内容（复刻：分类列表 375 | 模组项列表 * | 详情 450） -->
+        <Grid Grid.Row="1" ColumnDefinitions="250,5,2*,5,1*">
 
             <!-- 分类（Panel2） -->
-            <Border Grid.Column="0" Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="0,0,1,0">
-                <ListBox x:Name="CategoryList" ItemsSource="{Binding Categories}" Margin="10,8"
+            <Border Grid.Column="0" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,1,0">
+                <ListBox x:Name="CategoryList" ItemsSource="{Binding Categories}" Margin="0,4"
                          SelectedItem="{Binding SelectedCategory}" Background="Transparent">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:CategoryVm">
-                            <TextBlock Text="{Binding Name}" FontSize="13" Foreground="{Binding ColorBrush}"
+                            <TextBlock Text="{Binding Name}" FontSize="13.5" Margin="14,7,6,7" Foreground="{Binding ColorBrush}"
                                        FontWeight="{Binding FontWeight}" FontStyle="{Binding FontStyle}"
                                        TextTrimming="CharacterEllipsis" />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="打开分类文件夹" Command="{Binding OpenCategoryFolderCommand}" />
-                            <MenuItem Header="重命名分类" Command="{Binding RenameCategoryCommand}" />
+                            <MenuItem Header="文件夹（F1）" Command="{Binding OpenCategoryFolderCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="重命名（F2）" Command="{Binding RenameCategoryCommand}" />
                             <Separator />
-                            <MenuItem Header="设置分类颜色" Command="{Binding SetCategoryColorCommand}" />
-                            <MenuItem Header="设置分类字体" Command="{Binding SetCategoryFontCommand}" />
+                            <MenuItem Header="加入检查更新表" IsEnabled="False">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="加入导出预设" IsEnabled="False">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="设置颜色" Command="{Binding SetCategoryColorCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/颜色滤镜.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="设置字体" Command="{Binding SetCategoryFontCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文字大小.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="排序">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/移动.png" Width="16" Height="16" /></MenuItem.Icon>
+                                <MenuItem Header="上移（F3）" Command="{Binding MoveCategoryUpCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上箭头.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="下移（F4）" Command="{Binding MoveCategoryDownCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/下箭头.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="删除其中的项排序" IsEnabled="False">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
                             <Separator />
-                            <MenuItem Header="分类上移" Command="{Binding MoveCategoryUpCommand}" />
-                            <MenuItem Header="分类下移" Command="{Binding MoveCategoryDownCommand}" />
-                            <Separator />
-                            <MenuItem Header="刷新分类" Command="{Binding LoadCategoriesCommand}" />
-                            <MenuItem Header="删除分类" Command="{Binding DeleteCategoryCommand}" />
+                            <MenuItem Header="转移分类" Command="{Binding MoveCategoryCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/移动.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="删除分类" Command="{Binding DeleteCategoryCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
                         </ContextMenu>
                     </ListBox.ContextMenu>
                 </ListBox>
             </Border>
 
-            <GridSplitter Grid.Column="1" Background="Transparent" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
+            <GridSplitter Grid.Column="1" Background="#313244" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
 
             <!-- 模组项列表（Panel4） -->
-            <Grid Grid.Column="2" RowDefinitions="Auto,*">
-                <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="10,5"
-                        BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
-                            <Button Classes="tool" Content="模组项菜单">
-                                <Button.Flyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="安装 (F5)" Command="{Binding InstallSelectedCommand}" />
-                                        <MenuItem Header="卸载 (F6)" Command="{Binding UninstallSelectedCommand}" />
-                                        <Separator />
-                                        <MenuItem Header="新建项" Command="{Binding NewItemCommand}" />
-                                        <MenuItem Header="批量创建项..." Command="{Binding BatchCreateItemsCommand}" />
-                                        <MenuItem Header="重命名项" Command="{Binding RenameItemCommand}" />
-                                        <MenuItem Header="删除项" Command="{Binding DeleteItemsCommand}" />
-                                        <MenuItem Header="设置项字体" Command="{Binding SetItemFontCommand}" />
-                                        <MenuItem Header="清除 Config 缓存" Command="{Binding ClearConfigCacheCommand}" />
-                                        <Separator />
-                                        <MenuItem Header="全局模组安装检查（从游戏 Mods 导入）..." Command="{Binding ImportFromGameModsCommand}" />
-                                        <MenuItem Header="下载并新建项..." Command="{Binding DownloadAndCreateItemCommand}" />
-                                    </MenuFlyout>
-                                </Button.Flyout>
-                            </Button>
-                            <Button Classes="tool" Content="⟳ 刷新" Command="{Binding RefreshItemsCommand}" />
-                            <Button x:Name="BtnFullSearch" Classes="tool" Content="🔍 全库搜索" />
-                            <TextBox Text="{Binding SearchText}" Watermark="搜索模组..." Width="170" Height="28" />
-                            <ComboBox MinWidth="100" SelectedIndex="{Binding StatusFilterIndex}" Height="28">
-                                <ComboBoxItem Content="全部" />
-                                <ComboBoxItem Content="已安装" />
-                                <ComboBoxItem Content="未安装" />
-                                <ComboBoxItem Content="更新可用" />
-                                <ComboBoxItem Content="全库已安装" />
-                                <ComboBoxItem Content="全库未安装" />
-                            </ComboBox>
-                            <Button Classes="tool" Content="虚拟组" Command="{Binding FilterByVirtualGroupCommand}" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
-                            <Button Classes="tool" Content="导入/导出">
-                                <Button.Flyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="导出数据子库 (.smuispak)" Command="{Binding ExportSubLibraryCommand}" />
-                                        <MenuItem Header="导出分类 (.smuicpak)" Command="{Binding ExportCategoryCommand}" />
-                                        <MenuItem Header="导出选中项 (.smuimpak)" Command="{Binding ExportItemsCommand}" />
-                                        <Separator />
-                                        <MenuItem Header="导入数据子库" Command="{Binding ImportSubLibraryCommand}" />
-                                        <MenuItem Header="导入分类" Command="{Binding ImportCategoryCommand}" />
-                                        <MenuItem Header="导入模组项" Command="{Binding ImportItemsCommand}" />
-                                        <Separator />
-                                        <MenuItem Header="加入导出预设" Command="{Binding AddToPresetCommand}" />
-                                        <MenuItem Header="批量导出预设..." Command="{Binding ExportPresetCommand}" />
-                                    </MenuFlyout>
-                                </Button.Flyout>
-                            </Button>
-                            <Button Classes="tool" Content="更多操作">
-                                <Button.Flyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="配置项（加入配置队列）" Command="{Binding AddToQueueCommand}" />
-                                        <MenuItem Header="虚拟组管理" Command="{Binding ManageVirtualGroupsCommand}" />
-                                        <Separator />
-                                        <MenuItem Header="从 Mods 覆盖到数据库（本地更新）" Command="{Binding UpdateItemOverwriteCommand}" />
-                                        <MenuItem Header="从 Mods 替换到数据库（本地更新·全量）" Command="{Binding UpdateItemReplaceCommand}" />
-                                        <Separator />
-                                        <MenuItem Header="N网更新选中项" Command="{Binding NexusUpdateCommand}" />
-                                        <MenuItem Header="GitHub 更新选中项" Command="{Binding GitHubUpdateCommand}" />
-                                    </MenuFlyout>
-                                </Button.Flyout>
-                            </Button>
-                            <TextBlock Text="{Binding SelectionCountText}" VerticalAlignment="Center"
-                                       Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" />
-                            <Button Classes="accent" Content="安装 F5" Command="{Binding InstallSelectedCommand}" />
-                            <Button Classes="danger" Content="卸载 F6" Command="{Binding UninstallSelectedCommand}" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-                <ListBox Grid.Row="1" x:Name="ItemsList" ItemsSource="{Binding FilteredItems}"
-                         SelectionMode="Multiple" Margin="8,6" Background="Transparent">
+            <Border Grid.Column="2" Background="{DynamicResource WindowBgBrush}">
+                <ListBox Grid.Row="0" x:Name="ItemsList" ItemsSource="{Binding FilteredItems}"
+                         SelectionMode="Multiple" Margin="0,4" Background="Transparent">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:ModItemVm">
-                            <Grid ColumnDefinitions="*,Auto,Auto" VerticalAlignment="Center">
+                            <Grid ColumnDefinitions="*,Auto,Auto" VerticalAlignment="Center" Margin="10,4">
                                 <StackPanel Grid.Column="0" Spacing="1">
-                                    <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="{Binding FontWeight}"
+                                    <TextBlock Text="{Binding Name}" FontSize="13.5" FontWeight="{Binding FontWeight}"
                                                FontStyle="{Binding FontStyle}" TextDecorations="{Binding Decorations}"
+                                               Foreground="{Binding NameBrush}"
                                                TextTrimming="CharacterEllipsis" />
                                     <TextBlock Text="{Binding GroupsText}" FontSize="10.5" Classes="dim"
                                                IsVisible="{Binding GroupsText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
@@ -173,41 +325,80 @@
                     </ListBox.ItemTemplate>
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="安装 (F5)" Command="{Binding InstallSelectedCommand}" />
-                            <MenuItem Header="卸载 (F6)" Command="{Binding UninstallSelectedCommand}" />
+                            <MenuItem Header="安装（F5）" Command="{Binding InstallSelectedCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/下载.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="卸载（F6）" Command="{Binding UninstallSelectedCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上传.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
                             <Separator />
-                            <MenuItem Header="配置项（加入配置队列）" Command="{Binding AddToQueueCommand}" />
-                            <MenuItem Header="打开项文件夹" Command="{Binding OpenItemFolderCommand}" />
-                            <MenuItem Header="重命名项" Command="{Binding RenameItemCommand}" />
-                            <MenuItem Header="删除项" Command="{Binding DeleteItemsCommand}" />
+                            <MenuItem Header="配置项（F8）" Command="{Binding AddToQueueCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/试验.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="文件夹（F1）" Command="{Binding OpenItemFolderCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="更新键" ItemsSource="{Binding UpdateKeyItems}">
+                                <MenuItem.ItemContainerTheme>
+                                    <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                        <Setter Property="Header" Value="{Binding}" />
+                                        <Setter Property="Command" Value="{Binding $parent[UserControl].((vm:ModsPageViewModel)DataContext).OpenUpdateKeyCommand}" />
+                                        <Setter Property="CommandParameter" Value="{Binding}" />
+                                    </ControlTheme>
+                                </MenuItem.ItemContainerTheme>
+                            </MenuItem>
+                            <MenuItem Header="加入检查更新表" Command="{Binding AddToCheckUpdatesCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="加入导出预设" Command="{Binding AddToPresetCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/添加带圆圈.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
                             <Separator />
-                            <MenuItem Header="从 Mods 覆盖到数据库（本地更新）" Command="{Binding UpdateItemOverwriteCommand}" />
-                            <MenuItem Header="从 Mods 替换到数据库（本地更新·全量）" Command="{Binding UpdateItemReplaceCommand}" />
+                            <MenuItem Header="编辑">
+                                <MenuItem Header="重命名（F2）" Command="{Binding RenameItemCommand}" />
+                                <Separator />
+                                <MenuItem Header="用 Visual Studio Code 打开" Command="{Binding OpenWithVsCodeCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/代码文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="用 Visual Studio 打开" Command="{Binding OpenWithVsCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/代码文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="清除 Config 缓存" Command="{Binding ClearConfigCacheCommand}">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="上移（F3）" IsEnabled="False">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上箭头.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="下移（F4）" IsEnabled="False">
+                                    <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/下箭头.png" Width="16" Height="16" /></MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                            <MenuItem Header="设置虚拟组" Command="{Binding ManageVirtualGroupsCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/六个点.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
                             <Separator />
-                            <MenuItem Header="N网更新选中项" Command="{Binding NexusUpdateCommand}" />
-                            <MenuItem Header="GitHub 更新选中项" Command="{Binding GitHubUpdateCommand}" />
-                            <Separator />
-                            <MenuItem Header="虚拟组管理" Command="{Binding ManageVirtualGroupsCommand}" />
-                            <MenuItem Header="加入导出预设" Command="{Binding AddToPresetCommand}" />
-                            <MenuItem Header="设置项字体" Command="{Binding SetItemFontCommand}" />
-                            <MenuItem Header="清除 Config 缓存" Command="{Binding ClearConfigCacheCommand}" />
+                            <MenuItem Header="移动项" Command="{Binding MoveItemsCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/移动.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="删除项" Command="{Binding DeleteItemsCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="导出项" Command="{Binding ExportItemsCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/上传.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
                         </ContextMenu>
                     </ListBox.ContextMenu>
                 </ListBox>
-            </Grid>
+            </Border>
 
-            <GridSplitter Grid.Column="3" Background="Transparent" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
+            <GridSplitter Grid.Column="3" Background="#313244" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
 
             <!-- 详情侧栏（Panel3） -->
-            <Border Grid.Column="4" Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="1,0,0,0">
-                <Grid RowDefinitions="Auto,*,Auto,Auto">
-                    <Border Grid.Row="0" Background="{DynamicResource ToolbarBrush}" Padding="10,5" BorderBrush="#2E2E2E" BorderThickness="0,0,0,1">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="描述" FontWeight="Bold" VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding DetailSourceTag}" Classes="dim" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Border>
-                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+            <Border Grid.Column="4" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1,0,0,0">
+                <Grid RowDefinitions="*,Auto">
+                    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="10,8" Spacing="10">
                             <TextBlock Text="{Binding DetailName}" FontSize="14.5" FontWeight="Bold" TextWrapping="Wrap" />
                             <StackPanel Orientation="Horizontal" Spacing="10">
@@ -216,8 +407,30 @@
                                     <Run Text="已装 " /><Run Text="{Binding DetailInstalledVersion}" />
                                 </TextBlock>
                             </StackPanel>
-                            <Border ClipToBounds="True" IsVisible="{Binding HasPreview}"
-                                    Background="#232323" MinHeight="100" MaxHeight="200">
+                            <!-- 预览图区标头（复刻 WinForms：预览图菜单 | 计数） -->
+                            <Grid ColumnDefinitions="250,*,60" IsVisible="{Binding HasPreview}">
+                                <Button Grid.Column="0" Classes="flat left" Height="32" Content="   预览图菜单">
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuItem Header="预览图文件夹" Command="{Binding OpenScreenshotFolderCommand}">
+                                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="复制" IsEnabled="False" />
+                                            <Separator />
+                                            <MenuItem Header="删除此图" Command="{Binding DeleteCurrentPreviewCommand}">
+                                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="删除全部图" Command="{Binding DeleteAllPreviewsCommand}">
+                                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                                            </MenuItem>
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBlock Grid.Column="2" Text="{Binding PreviewCounter}" TextAlignment="Right"
+                                           VerticalAlignment="Center" FontSize="13" FontWeight="Bold" />
+                            </Grid>
+                            <Border ClipToBounds="True" IsVisible="{Binding HasPreview}" x:Name="PreviewBox"
+                                    Background="{DynamicResource PanelBrush}" MinHeight="100" MaxHeight="200">
                                 <Panel>
                                     <Image Source="{Binding PreviewImage}" Stretch="Uniform" />
                                     <Border Background="#AA000000" Padding="7,2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="6">
@@ -225,48 +438,68 @@
                                     </Border>
                                 </Panel>
                             </Border>
-                            <Border Background="#232323" BorderBrush="#2E2E2E" BorderThickness="1" Padding="10,8" MaxHeight="240">
-                                <ScrollViewer>
-                                    <TextBlock Text="{Binding DetailDescription}" TextWrapping="Wrap" FontSize="12.5" LineHeight="19" />
-                                </ScrollViewer>
+                            <!-- 描述：查看态 TextBlock / 编辑态 TextBox（对齐 WinForms 就地编辑） -->
+                            <Border Background="{DynamicResource WindowBgBrush}" BorderBrush="{DynamicResource BorderBrush1}"
+                                    BorderThickness="1" Padding="10,8" MaxHeight="340" MinHeight="140">
+                                <TextBox x:Name="DescriptionEditor" Text="{Binding DetailDescription, Mode=TwoWay}"
+                                         TextWrapping="Wrap" FontSize="12.5" AcceptsReturn="True"
+                                         Background="Transparent" BorderThickness="0" Padding="0"
+                                         Watermark="在此编辑项描述，失焦自动保存为纯文本 README" />
                             </Border>
+                            <ItemsControl ItemsSource="{Binding DetailLinks}" Margin="0,6,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Classes="ghost" Padding="4,2" HorizontalAlignment="Left"
+                                                Content="{Binding}" Click="DetailLink_Click"
+                                                Foreground="{DynamicResource AccentBrush}" FontSize="12" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </StackPanel>
                     </ScrollViewer>
 
                     <!-- 版本对比条（复刻 Panel8） -->
                     <Border Grid.Row="2" Background="{DynamicResource PanelBrush}" Padding="10,6"
-                            BorderBrush="#2E2E2E" BorderThickness="0,1,0,0" IsVisible="{Binding HasVersionDifference}">
+                            BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,1,0,0" IsVisible="{Binding HasVersionDifference}">
                         <StackPanel Orientation="Horizontal" Spacing="14">
                             <TextBlock FontSize="12">
-                                <Run Text="仓库版本 " Foreground="#00BFFF" /><Run Text="{Binding DetailVersion}" Foreground="#00BFFF" FontWeight="Bold" />
+                                <Run Text="仓库版本 " Foreground="{DynamicResource StatusBlueBrush}" /><Run Text="{Binding DetailVersion}" Foreground="{DynamicResource StatusBlueBrush}" FontWeight="Bold" />
                             </TextBlock>
                             <TextBlock FontSize="12">
-                                <Run Text="已装版本 " Foreground="#32CD32" /><Run Text="{Binding DetailInstalledVersion}" Foreground="#32CD32" FontWeight="Bold" />
+                                <Run Text="已装版本 " Foreground="{DynamicResource StatusGreenBrush}" /><Run Text="{Binding DetailInstalledVersion}" Foreground="{DynamicResource StatusGreenBrush}" FontWeight="Bold" />
                             </TextBlock>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- 项信息按钮条（复刻 Panel1） -->
-                    <Border Grid.Row="3" Background="{DynamicResource ToolbarBrush}" Padding="8,4"
-                            BorderBrush="#2E2E2E" BorderThickness="0,1,0,0">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <Button Classes="tool" x:Name="BtnUpdateKeys" Content="更新键" FontSize="11.5" />
-                            <Button Classes="tool" x:Name="BtnDeps" Content="依赖项表" FontSize="11.5" />
-                            <Button Classes="tool" x:Name="BtnUniqueIds" Content="UniqueID 表" FontSize="11.5" />
-                            <Button Classes="tool" x:Name="BtnAuthors" Content="作者表" FontSize="11.5" />
                         </StackPanel>
                     </Border>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- 全局忙提示条 -->
-        <Border Grid.Row="2" Background="{DynamicResource ToolbarBrush}" Padding="10,4"
-                BorderBrush="#2E2E2E" BorderThickness="0,1,0,0" IsVisible="{Binding IsBusy}">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <ProgressBar IsIndeterminate="True" Width="80" Height="6" VerticalAlignment="Center" />
-                <TextBlock Text="{Binding BusyText}" FontSize="11.5" Foreground="{DynamicResource AccentBrush}" />
-            </StackPanel>
+        <!-- 全宽底部表栏（复刻：更新键 | 依赖项表 | UniqueID 表 | 作者表 | IMG） -->
+        <Border Grid.Row="2" Background="{DynamicResource ToolbarBrush}" Padding="6,3"
+                BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="230,200,520,*,60">
+                <Button Grid.Column="0" Classes="flat left" Height="36" x:Name="BtnUpdateKeys" Content="{Binding DetailUpdateKeys}" />
+                <Button Grid.Column="1" Classes="flat left" Height="36" x:Name="BtnDeps" Content="{Binding DetailDeps}" />
+                <Button Grid.Column="2" Classes="flat left" Height="36" x:Name="BtnUniqueIds" Content="{Binding DetailUniqueIds}" />
+                <Button Grid.Column="3" Classes="flat left" Height="36" x:Name="BtnAuthors" Content="{Binding DetailAuthors}" />
+                <Button Grid.Column="4" Classes="flat" Height="36" x:Name="BtnImg" Content="IMG">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="预览图文件夹" Command="{Binding OpenScreenshotFolderCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/文件夹.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="复制" IsEnabled="False" />
+                            <Separator />
+                            <MenuItem Header="删除此图" Command="{Binding DeleteCurrentPreviewCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="删除全部图" Command="{Binding DeleteAllPreviewsCommand}">
+                                <MenuItem.Icon><Image Source="avares://SMUI/Assets/Menu/删除.png" Width="16" Height="16" /></MenuItem.Icon>
+                            </MenuItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

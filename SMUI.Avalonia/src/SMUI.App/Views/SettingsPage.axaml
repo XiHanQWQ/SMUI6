@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:SMUI.App.ViewModels"
+             xmlns:v="using:SMUI.App.Views"
              x:Class="SMUI.App.Views.SettingsPage"
              x:DataType="vm:SettingsPageViewModel">
 
@@ -17,147 +18,280 @@
             </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="28,22" Spacing="20" MaxWidth="860" HorizontalAlignment="Left">
+        <Grid Grid.Row="1" ColumnDefinitions="220,1,*">
+            <!-- 二级菜单（复刻 WinForms 设置页 UiTabControlMenu2） -->
+            <Border Grid.Column="0" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,1,0">
+                <ListBox SelectedIndex="{Binding SectionIndex}" Background="Transparent" Margin="0,4" x:Name="SectionMenu">
+                    <ListBox.ItemContainerTheme>
+                        <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <Setter Property="MinHeight" Value="40" />
+                            <Setter Property="Padding" Value="16,0" />
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="Template">
+                                <ControlTemplate>
+                                    <Border x:Name="root" Background="Transparent" BorderThickness="3,0,0,0" BorderBrush="Transparent"
+                                            Padding="{TemplateBinding Padding}" MinHeight="{TemplateBinding MinHeight}">
+                                        <ContentPresenter Content="{TemplateBinding Content}"
+                                                          HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter>
+                        </ControlTheme>
+                    </ListBox.ItemContainerTheme>
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                        </Style>
+                        <Style Selector="ListBoxItem:pointerover /template/ Border#root">
+                            <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+                        </Style>
+                        <Style Selector="ListBoxItem:selected /template/ Border#root">
+                            <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource LabelOrangeBrush}" />
+                        </Style>
+                        <Style Selector="ListBoxItem:selected">
+                            <Setter Property="Foreground" Value="{DynamicResource LabelOrangeBrush}" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </ListBox.Styles>
+                    <ListBoxItem>路径设置</ListBoxItem>
+                    <ListBoxItem>地区和语言</ListBoxItem>
+                    <ListBoxItem>在线服务</ListBoxItem>
+                    <ListBoxItem>启动项</ListBoxItem>
+                    <ListBoxItem>功能和数值</ListBoxItem>
+                    <ListBoxItem>字体样式</ListBoxItem>
+                    <ListBoxItem>存储管理</ListBoxItem>
+                    <ListBoxItem>设置 WebView2</ListBoxItem>
+                    <ListBoxItem>自定义图像</ListBoxItem>
+                </ListBox>
+            </Border>
 
-                <!-- 路径设置 -->
-                <Border Classes="card">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="路径" Classes="sectionTitle" />
+            <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="24,18" Spacing="16" MaxWidth="860" HorizontalAlignment="Left">
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="星露谷游戏文件夹" Classes="formLabel" />
-                            <Grid ColumnDefinitions="*,8,Auto">
-                                <TextBox Text="{Binding GamePath}" />
-                                <Button Grid.Column="1" Content="浏览" Command="{Binding PickGamePathCommand}" />
-                            </Grid>
+                    <!-- ===== 0 路径设置 ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=0}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="路径" Classes="sectionTitle" />
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="星露谷游戏文件夹" Classes="formLabel" />
+                                <Grid ColumnDefinitions="*,8,Auto">
+                                    <TextBox Text="{Binding GamePath}" />
+                                    <Button Grid.Column="2" Width="35" MinWidth="35" Content="..." Command="{Binding PickGamePathCommand}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="模组数据仓库（将自动创建 Default Sub Library 与临时目录）" Classes="formLabel" />
+                                <Grid ColumnDefinitions="*,8,Auto">
+                                    <TextBox Text="{Binding RepositoryPath}" />
+                                    <Button Grid.Column="2" Width="35" MinWidth="35" Content="..." Command="{Binding PickRepositoryPathCommand}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="游戏备份路径（使用文件替换类命令时必须，卸载时自动还原）" Classes="formLabel" />
+                                <Grid ColumnDefinitions="*,8,Auto">
+                                    <TextBox Text="{Binding BackupPath}" />
+                                    <Button Grid.Column="2" Width="35" MinWidth="35" Content="..." Command="{Binding PickBackupPathCommand}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Visual Studio Code（用 VSC 打开项）" Classes="formLabel" />
+                                <Grid ColumnDefinitions="*,8,Auto">
+                                    <TextBox Text="{Binding VsCodePath}" />
+                                    <Button Grid.Column="2" Width="35" MinWidth="35" Content="..." Command="{Binding PickVsCodePathCommand}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Visual Studio（用 VS 打开项）" Classes="formLabel" />
+                                <Grid ColumnDefinitions="*,8,Auto">
+                                    <TextBox Text="{Binding VsPath}" />
+                                    <Button Grid.Column="2" Width="35" MinWidth="35" Content="..." Command="{Binding PickVsPathCommand}" />
+                                </Grid>
+                            </StackPanel>
                         </StackPanel>
+                    </Border>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="模组数据仓库（将自动创建 Default Sub Library 与临时目录）" Classes="formLabel" />
-                            <Grid ColumnDefinitions="*,8,Auto">
-                                <TextBox Text="{Binding RepositoryPath}" />
-                                <Button Grid.Column="1" Content="浏览" Command="{Binding PickRepositoryPathCommand}" />
-                            </Grid>
+                    <!-- ===== 1 地区和语言 ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=1}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="地区和语言" Classes="sectionTitle" />
+                            <StackPanel Orientation="Horizontal" Spacing="18">
+                                <RadioButton Content="简体中文" GroupName="lang" IsChecked="{Binding !IsEnglish}" />
+                                <RadioButton Content="English" GroupName="lang" IsChecked="{Binding IsEnglish}" />
+                            </StackPanel>
+                            <TextBlock Classes="dim" Text="选择界面语言。切换后点击右上角「保存全部设置」生效（界面翻译随更新逐步完善）。"
+                                       TextWrapping="Wrap" />
                         </StackPanel>
+                    </Border>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="游戏备份路径（使用文件替换类命令时必须，卸载时自动还原）" Classes="formLabel" />
-                            <Grid ColumnDefinitions="*,8,Auto">
-                                <TextBox Text="{Binding BackupPath}" />
-                                <Button Grid.Column="1" Content="浏览" Command="{Binding PickBackupPathCommand}" />
-                            </Grid>
-                        </StackPanel>
-
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="Visual Studio Code（用 VSC 打开项）" Classes="formLabel" />
-                            <Grid ColumnDefinitions="*,8,Auto">
-                                <TextBox Text="{Binding VsCodePath}" />
-                                <Button Grid.Column="1" Content="浏览" Command="{Binding PickVsCodePathCommand}" />
-                            </Grid>
-                        </StackPanel>
-
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="Visual Studio（用 VS 打开项）" Classes="formLabel" />
-                            <Grid ColumnDefinitions="*,8,Auto">
-                                <TextBox Text="{Binding VsPath}" />
-                                <Button Grid.Column="1" Content="浏览" Command="{Binding PickVsPathCommand}" />
-                            </Grid>
-                        </StackPanel>
+                    <!-- ===== 2 在线服务 ===== -->
+                    <StackPanel Spacing="16" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=2}">
+                        <Border Classes="card">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="在线服务" Classes="sectionTitle" />
+                                <TextBlock Text="NEXUSMODS Personal API Key" Classes="formLabel" />
+                                <Grid ColumnDefinitions="*,8,150">
+                                    <TextBox Text="{Binding NexusKey}" PasswordChar="{Binding NexusKeyChar}"
+                                             Height="96" TextWrapping="Wrap" VerticalContentAlignment="Top"
+                                             ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                                    <StackPanel Grid.Column="2" Spacing="8">
+                                        <Button Classes="tool" Content="前往管理（系统）" Command="{Binding OpenNexusAccountCommand}" />
+                                        <Button Classes="tool" Content="前往管理（内置）" IsEnabled="False" />
+                                        <Button Classes="tool" Content="测试密钥" Command="{Binding TestNexusKeyCommand}" />
+                                        <Button Classes="tool" Content="切换显示" Command="{Binding ToggleKeyRevealCommand}" />
+                                    </StackPanel>
+                                </Grid>
+                                <CheckBox Content="我是 NEXUS 会员（下载无需排队）" IsChecked="{Binding NexusPremium}" />
+                                <Border Background="{DynamicResource CardBrush}" CornerRadius="6" Padding="12,8">
+                                    <TextBlock Text="非 NEXUS 会员请在内置浏览器登录账号才能下载模组" FontSize="12.5" TextWrapping="Wrap" />
+                                </Border>
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="GitHub Token（加速与私有仓库）" Classes="formLabel" />
+                                    <TextBox Text="{Binding GithubToken}" PasswordChar="●" />
+                                </StackPanel>
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Gitee Token" Classes="formLabel" />
+                                    <TextBox Text="{Binding GiteeToken}" PasswordChar="●" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Classes="card">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="nxm 下载协议" Classes="sectionTitle" />
+                                <TextBlock Text="注册后，在 NEXUS 网站点击 Mod Managers Download（nxm: 链接）时会自动转接到 SMUI 处理。" Classes="dim" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Classes="accent" Content="注册协议" Command="{Binding RegisterNxmProtocolCommand}" />
+                                    <Button Content="移除协议" Command="{Binding RemoveNxmProtocolCommand}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-                </Border>
 
-                <!-- 在线服务 -->
-                <Border Classes="card">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="在线服务" Classes="sectionTitle" />
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="NEXUS API Key（更新模组与下载需要）" Classes="formLabel" />
+                    <!-- ===== 3 启动项 ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=3}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="启动项" Classes="sectionTitle" />
+                            <StackPanel Orientation="Horizontal" Spacing="18">
+                                <RadioButton Content="通过 SMAPI 启动" IsChecked="{Binding LaunchSelection}" GroupName="launch" />
+                                <RadioButton Content="自定义启动命令" IsChecked="{Binding !LaunchSelection}" GroupName="launch" />
+                            </StackPanel>
+                            <StackPanel Spacing="5" IsVisible="{Binding LaunchSelection}">
+                                <TextBlock Text="SMAPI 启动参数" Classes="formLabel" />
+                                <TextBox Text="{Binding LaunchParameters}" Watermark="--no-mods 等" />
+                            </StackPanel>
+                            <StackPanel Spacing="5" IsVisible="{Binding !LaunchSelection}">
+                                <TextBlock Text="自定义启动命令" Classes="formLabel" />
+                                <TextBox Text="{Binding CustomLaunchCmd}" Watermark="完整的 cmd 命令行" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ===== 4 功能和数值 ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=4}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="功能和数值" Classes="sectionTitle" />
+                            <CheckBox Content="自动获取新闻公告" IsChecked="{Binding AutoGetNews}" />
+                            <CheckBox Content="启动时自动检查应用更新" IsChecked="{Binding AutoCheckUpdate}" />
+                            <CheckBox Content="自动开始下载更新" IsChecked="{Binding AutoStartDownloadUpdate}" />
+                            <CheckBox Content="自动选择第一个 NEXUS 下载服务器" IsChecked="{Binding AutoSelectFirstNexusServer}" />
+                            <CheckBox Content="记住主窗口尺寸" IsChecked="{Binding SaveWindowSize}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ===== 5 字体样式 ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=5}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="字体样式" Classes="sectionTitle" />
+                            <TextBlock Classes="dim" Text="该设置分组来自 WinForms 版，暂未在 Avalonia 版提供。列表字体可在各列表右键菜单的「设置字体」中调整。" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ===== 6 存储管理（一比一复刻 WinForms ListView10 十项清单） ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=6}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="管理存储空间" Classes="sectionTitle" />
+                            <ListBox ItemsSource="{Binding StorageRows}" SelectedItem="{Binding SelectedStorageRow}"
+                                     MinHeight="200" MaxHeight="300" x:Name="StorageList">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:StorageRowVm">
+                                        <Grid ColumnDefinitions="*,Auto" Margin="10,5" VerticalAlignment="Center">
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="13"
+                                                       Foreground="{Binding RowBrush}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Grid.Column="1" Text="{Binding StatusText}" FontSize="12.5"
+                                                       Foreground="{Binding StatusBrush}" Margin="18,0,0,0"
+                                                       VerticalAlignment="Center" TextAlignment="Right" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Classes="tool" Content="立即刷新数据" Command="{Binding RefreshStorageCommand}" />
+                                    <Button Classes="danger" Content="清理选中项" Command="{Binding CleanupStorageCommand}" />
+                                    <Button Classes="tool" Content="{Binding StorageCalcText}" Command="{Binding CalculateStorageCommand}" />
+                                </StackPanel>
+                            </WrapPanel>
+                            <Separator />
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Classes="tool" Content="打开安装目录" Command="{Binding OpenAppFolder2Command}" />
+                                    <Button Classes="tool" Content="打开用户数据文件夹" Command="{Binding OpenUserDataFolder2Command}" />
+                                    <Button Classes="tool" Content="打开插件文件夹" Command="{Binding OpenPluginFolder2Command}" />
+                                </StackPanel>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ===== 7 设置 WebView2（同步 WinForms TabPage2） ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=7}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="选择使用 WebView2 的方式" Classes="sectionTitle" />
+                            <StackPanel Orientation="Vertical" Spacing="6">
+                                <RadioButton Content="使用本机安装的 WebView2" GroupName="webview" IsChecked="{Binding !UseStandaloneWebview}" />
+                                <RadioButton Content="使用独立版本 Runtime" GroupName="webview" IsChecked="{Binding UseStandaloneWebview}" />
+                            </StackPanel>
+                            <CheckBox Content="附加硬件加速参数" IsChecked="{Binding WebviewHardwareAccel}" />
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="指定 Runtime 文件夹" Classes="formLabel" />
+                                <Grid ColumnDefinitions="*,8,Auto">
+                                    <TextBox Text="{Binding WebviewRuntimeFolder}" />
+                                    <Button Grid.Column="2" Content="..." Command="{Binding PickWebviewRuntimeFolderCommand}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Classes="tool" Content="前往下载 WebView2" Command="{Binding OpenWebviewDownloadCommand}" />
+                                <Button Classes="accent" Content="保存本页设置" Command="{Binding SaveAllCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ===== 8 自定义图像 ===== -->
+                    <Border Classes="card" IsVisible="{Binding SectionIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=8}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="自定义图像" Classes="sectionTitle" />
+                            <TextBlock Text="为起始页新闻区、分类列表和模组项列表设置自定义背景图片。" Classes="dim" />
                             <Grid ColumnDefinitions="*,8,Auto,8,Auto">
-                                <TextBox Text="{Binding NexusKey}" PasswordChar="●" />
-                                <Button Grid.Column="1" Content="测试密钥" Command="{Binding TestNexusKeyCommand}" />
-                                <Button Grid.Column="2" Content="获取密钥" Click="OpenNexusApiPage" />
+                                <TextBox Text="{Binding Backgrounds.NewsBackground}" Watermark="新闻区背景图片路径" IsReadOnly="True" />
+                                <Button Grid.Column="2" Content="浏览" Command="{Binding Backgrounds.PickNewsCommand}" />
+                                <Button Grid.Column="4" Content="清除" Command="{Binding Backgrounds.ClearNewsCommand}" Classes="ghost" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*,8,Auto,8,Auto">
+                                <TextBox Text="{Binding Backgrounds.CategoryBackground}" Watermark="分类列表背景图片路径" IsReadOnly="True" />
+                                <Button Grid.Column="2" Content="浏览" Command="{Binding Backgrounds.PickCategoryCommand}" />
+                                <Button Grid.Column="4" Content="清除" Command="{Binding Backgrounds.ClearCategoryCommand}" Classes="ghost" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*,8,Auto,8,Auto">
+                                <TextBox Text="{Binding Backgrounds.ModItemBackground}" Watermark="模组项列表背景图片路径" IsReadOnly="True" />
+                                <Button Grid.Column="2" Content="浏览" Command="{Binding Backgrounds.PickModItemCommand}" />
+                                <Button Grid.Column="4" Content="清除" Command="{Binding Backgrounds.ClearModItemCommand}" Classes="ghost" />
                             </Grid>
                         </StackPanel>
-                        <CheckBox Content="我是 NEXUS 会员（下载无需排队）" IsChecked="{Binding NexusPremium}" />
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="GitHub Token（加速与私有仓库）" Classes="formLabel" />
-                            <TextBox Text="{Binding GithubToken}" PasswordChar="●" />
-                        </StackPanel>
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="Gitee Token" Classes="formLabel" />
-                            <TextBox Text="{Binding GiteeToken}" PasswordChar="●" />
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+                    </Border>
 
-                <!-- 启动项 -->
-                <Border Classes="card">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="启动项" Classes="sectionTitle" />
-                        <StackPanel Orientation="Horizontal" Spacing="18">
-                            <RadioButton Content="通过 SMAPI 启动" IsChecked="{Binding LaunchSelection}" GroupName="launch" />
-                            <RadioButton Content="自定义启动命令" IsChecked="{Binding !LaunchSelection}" GroupName="launch" />
-                        </StackPanel>
-                        <StackPanel Spacing="5" IsVisible="{Binding LaunchSelection}">
-                            <TextBlock Text="SMAPI 启动参数" Classes="formLabel" />
-                            <TextBox Text="{Binding LaunchParameters}" Watermark="--no-mods 等" />
-                        </StackPanel>
-                        <StackPanel Spacing="5" IsVisible="{Binding !LaunchSelection}">
-                            <TextBlock Text="自定义启动命令" Classes="formLabel" />
-                            <TextBox Text="{Binding CustomLaunchCmd}" Watermark="完整的 cmd 命令行" />
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- 功能开关 -->
-                <Border Classes="card">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="功能与开关" Classes="sectionTitle" />
-                        <CheckBox Content="自动获取新闻公告" IsChecked="{Binding AutoGetNews}" />
-                        <CheckBox Content="启动时自动检查应用更新" IsChecked="{Binding AutoCheckUpdate}" />
-                        <CheckBox Content="自动开始下载更新" IsChecked="{Binding AutoStartDownloadUpdate}" />
-                        <CheckBox Content="自动选择第一个 NEXUS 下载服务器" IsChecked="{Binding AutoSelectFirstNexusServer}" />
-                        <CheckBox Content="记住主窗口尺寸" IsChecked="{Binding SaveWindowSize}" />
-                    </StackPanel>
-                </Border>
-
-                <!-- nxm 下载协议 -->
-                <Border Classes="card">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="nxm 下载协议" Classes="sectionTitle" />
-                        <TextBlock Text="注册后，在 NEXUS 网站点击 Mod Managers Download（nxm: 链接）时会自动转接到 SMUI 处理。" Classes="dim" TextWrapping="Wrap" />
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Button Classes="accent" Content="注册协议" Command="{Binding RegisterNxmProtocolCommand}" />
-                            <Button Content="移除协议" Command="{Binding RemoveNxmProtocolCommand}" />
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- 自定义背景 -->
-                <Border Classes="card">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="自定义背景" Classes="sectionTitle" />
-                        <TextBlock Text="为起始页新闻区、分类列表和模组项列表设置自定义背景图片。" Classes="dim" />
-                        <Grid ColumnDefinitions="*,8,Auto,8,Auto">
-                            <TextBox Text="{Binding Backgrounds.NewsBackground}" Watermark="新闻区背景图片路径" IsReadOnly="True" />
-                            <Button Grid.Column="2" Content="浏览" Command="{Binding Backgrounds.PickNewsCommand}" />
-                            <Button Grid.Column="4" Content="清除" Command="{Binding Backgrounds.ClearNewsCommand}" Classes="ghost" />
-                        </Grid>
-                        <Grid ColumnDefinitions="*,8,Auto,8,Auto">
-                            <TextBox Text="{Binding Backgrounds.CategoryBackground}" Watermark="分类列表背景图片路径" IsReadOnly="True" />
-                            <Button Grid.Column="2" Content="浏览" Command="{Binding Backgrounds.PickCategoryCommand}" />
-                            <Button Grid.Column="4" Content="清除" Command="{Binding Backgrounds.ClearCategoryCommand}" Classes="ghost" />
-                        </Grid>
-                        <Grid ColumnDefinitions="*,8,Auto,8,Auto">
-                            <TextBox Text="{Binding Backgrounds.ModItemBackground}" Watermark="模组项列表背景图片路径" IsReadOnly="True" />
-                            <Button Grid.Column="2" Content="浏览" Command="{Binding Backgrounds.PickModItemCommand}" />
-                            <Button Grid.Column="4" Content="清除" Command="{Binding Backgrounds.ClearModItemCommand}" Classes="ghost" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-            </StackPanel>
-        </ScrollViewer>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </UserControl>

@@ -19,7 +19,15 @@ public partial class HomeViewModel : ViewModelBase
         _settings = settings;
         _dialogs = dialogs;
         _log = log;
+        LatestMods = new LatestModsViewModel();
+        Plugins = new PluginsViewModel();
     }
+
+    /// <summary>起始页「最新模组」子页。</summary>
+    public LatestModsViewModel LatestMods { get; }
+
+    /// <summary>起始页「扩展内容」子页（用户插件列表）。</summary>
+    public PluginsViewModel Plugins { get; }
 
     /// <summary>请求跳转到主界面选项卡（由主窗口接管）。</summary>
     public event Action<int>? NavigateRequested;
@@ -101,12 +109,6 @@ public partial class HomeViewModel : ViewModelBase
     private void OpenVideos() => OpenUrl("https://space.bilibili.com/319785096/channel/collectiondetail?sid=2903558");
 
     [RelayCommand]
-    private void OpenKook() => OpenUrl("https://kook.top/yW15HU");
-
-    [RelayCommand]
-    private void OpenQQGroup() => _dialogs.InfoAsync("开发者群", "主群：738313040\n分群 1：271734093\n\n欢迎加入交流反馈。");
-
-    [RelayCommand]
     private void RegisterNxm()
     {
         var error = NxmProtocolService.Register();
@@ -152,6 +154,9 @@ public partial class HomeViewModel : ViewModelBase
 
     [RelayCommand]
     private void OpenUserDataFolder() => OpenPath(AppServices.Settings.UserDataDirectory, "");
+
+    [RelayCommand]
+    private void OpenPluginFolder() => OpenPath(Path.Combine(AppServices.Settings.UserDataDirectory, "Plugin"), "");
 
     [RelayCommand]
     private void OpenSmapiSite() => OpenUrl("https://smapi.io");

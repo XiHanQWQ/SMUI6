@@ -12,8 +12,7 @@ Public Class 清理空间
         s1 = 共享方法.GetDirectorySizeWithSub(Application.StartupPath, {"UserData"})
         Form1.ListView10.Items(1).SubItems(2).Text = Format(s1 / 1024 / 1024, "0.0") & " MB"
 
-        s1 = 共享方法.GetDirectorySizeWithSub(IO.Path.Combine(Application.StartupPath, "UserData", "DLC"))
-        s1 += 共享方法.GetDirectorySizeWithSub(IO.Path.Combine(Application.StartupPath, "UserData", "Plugin"))
+        s1 = 共享方法.GetDirectorySizeWithSub(IO.Path.Combine(Application.StartupPath, "UserData", "Plugin"))
         Form1.ListView10.Items(2).SubItems(2).Text = Format(s1 / 1024, "0.0") & " KB"
 
 

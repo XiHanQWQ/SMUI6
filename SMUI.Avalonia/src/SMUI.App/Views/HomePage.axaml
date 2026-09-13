@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:SMUI.App.ViewModels"
              xmlns:views="using:SMUI.App.Views"
+             xmlns:v="using:SMUI.App.Views"
              x:Class="SMUI.App.Views.HomePage"
              x:DataType="vm:HomeViewModel">
 
@@ -9,15 +10,18 @@
         <vm:HomeViewModel/>
     </Design.DataContext>
 
-    <!-- ============ 起始页面（复刻原版：左侧竖排菜单 + 右侧内容） ============ -->
+    <!-- ============ 起始页面（复刻原版：左侧竖排菜单 8 项 + 右侧内容） ============ -->
     <Grid ColumnDefinitions="150,*">
 
-        <!-- 左侧竖排菜单（复刻 UiTabControlMenu1） -->
-        <Border Grid.Column="0" Background="#181818" BorderBrush="#2E2E2E" BorderThickness="0,0,1,0">
+        <!-- 左侧竖排菜单（复刻 UiTabControlMenu1：欢迎页/设置/扩展内容/最新模组/集成工具/更新记录/关于） -->
+        <Border Grid.Column="0" Background="{DynamicResource WindowBgBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,1,0">
             <StackPanel x:Name="LeftNavPanel">
                 <RadioButton Classes="leftNav" Content="欢迎页" GroupName="startnav" IsChecked="True" />
                 <RadioButton Classes="leftNav" Content="设置" GroupName="startnav" />
+                <RadioButton Classes="leftNav" Content="扩展内容" GroupName="startnav" />
+                <RadioButton Classes="leftNav" Content="最新模组" GroupName="startnav" />
                 <RadioButton Classes="leftNav" Content="集成工具" GroupName="startnav" />
+                <RadioButton Classes="leftNav" Content="更新记录" GroupName="startnav" />
                 <RadioButton Classes="leftNav" Content="关于" GroupName="startnav" />
             </StackPanel>
         </Border>
@@ -30,7 +34,7 @@
                     <TextBlock Text="{Binding Greeting}" FontSize="19" FontWeight="Bold" />
 
                     <!-- 状态信息（复刻原版 5 行状态） -->
-                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="1" Padding="14,10">
+                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1" Padding="14,10">
                         <StackPanel Spacing="8">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Text="状态信息" FontWeight="Bold" FontSize="14" />
@@ -39,7 +43,7 @@
                                     <Button Classes="ghost" Content="检查应用更新" Command="{Binding CheckAppUpdateCommand}" />
                                 </StackPanel>
                             </Grid>
-                            <ListBox ItemsSource="{Binding StatusLines}" Background="#232323" Padding="6,4">
+                            <ListBox ItemsSource="{Binding StatusLines}" Background="{DynamicResource PanelBrush}" Padding="6,4">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding}" FontSize="12.5" Margin="2,2" TextWrapping="Wrap" />
@@ -52,15 +56,13 @@
                     </Border>
 
                     <!-- 快捷入口（复刻原版 常驻主题） -->
-                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="1" Padding="14,10">
+                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1" Padding="14,10">
                         <StackPanel Spacing="10">
                             <TextBlock Text="快捷入口" FontWeight="Bold" FontSize="14" />
                             <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                 <Button Classes="tool" Margin="0,0,8,8" Content="▶ 启动 SMAPI" Command="{Binding RunSmapiCommand}" />
                                 <Button Classes="tool" Margin="0,0,8,8" Content="📄 查阅文档" Command="{Binding OpenDocsCommand}" />
                                 <Button Classes="tool" Margin="0,0,8,8" Content="📺 官方视频" Command="{Binding OpenVideosCommand}" />
-                                <Button Classes="tool" Margin="0,0,8,8" Content="💬 KOOK 频道" Command="{Binding OpenKookCommand}" />
-                                <Button Classes="tool" Margin="0,0,8,8" Content="👥 开发者群" Command="{Binding OpenQQGroupCommand}" />
                                 <Button Classes="tool" Margin="0,0,8,8" Content="📝 注册 nxm 协议" Command="{Binding RegisterNxmCommand}" />
                                 <Button Classes="tool" Margin="0,0,8,8" Content="🗑️ 移除 nxm 协议" Command="{Binding RemoveNxmCommand}" />
                             </WrapPanel>
@@ -68,7 +70,7 @@
                     </Border>
 
                     <!-- 内容中心（复刻原版 内容中心.vb） -->
-                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="1" Padding="14,10">
+                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1" Padding="14,10">
                         <StackPanel Spacing="10">
                             <TextBlock Text="内容中心" FontWeight="Bold" FontSize="14" />
                             <TextBlock Text="游戏文件夹集" Classes="dim" />
@@ -103,36 +105,246 @@
                 <views:SettingsPage DataContext="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Settings}" />
             </ScrollViewer>
 
+            <!-- ======== 扩展内容（官方内容已去除，仅用户插件） ======== -->
+            <ScrollViewer x:Name="NavExtensions" HorizontalScrollBarVisibility="Disabled" IsVisible="False">
+                <StackPanel Margin="24,20" Spacing="12" MaxWidth="900" HorizontalAlignment="Left">
+                    <TextBlock Text="扩展内容" FontSize="19" FontWeight="Bold" />
+                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1" Padding="14,10">
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Text="用户插件" FontWeight="Bold" FontSize="14" />
+                                <Button Grid.Column="1" Classes="ghost" Content="刷新" Command="{Binding Plugins.RefreshCommand}" />
+                            </Grid>
+                            <TextBlock Text="将插件 DLL（*.smui.dll）放入 UserData\Plugin 目录，SMUI 启动后自动加载其扩展安装规划。" Classes="dim" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Plugins.SummaryText}" Classes="dim" />
+                            <ListBox ItemsSource="{Binding Plugins.Plugins}" MinHeight="120" Background="{DynamicResource PanelBrush}" Padding="6,4">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <TextBlock Text="●" Foreground="{Binding Failed, Converter={x:Static views:BoolToStatusBrushConverter.Instance}}"
+                                                       VerticalAlignment="Center" FontSize="10" />
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                            <TextBlock Text="{Binding Version}" Classes="dim" />
+                                            <TextBlock Text="{Binding Author}" Classes="dim" />
+                                            <TextBlock Text="{Binding Architecture}" Classes="dim" />
+                                            <TextBlock Text="{Binding ErrorText}" Foreground="{DynamicResource StatusRedBrush}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ======== 最新模组（复刻原版 在线模组列表） ======== -->
+            <ScrollViewer x:Name="NavLatestMods" HorizontalScrollBarVisibility="Disabled" IsVisible="False">
+                <StackPanel Margin="24,20" Spacing="12">
+                    <Grid ColumnDefinitions="Auto,12,300,12,Auto,*,Auto">
+                        <Button Grid.Column="0" Classes="tool" Content="清除内容" Command="{Binding LatestMods.ClearCardsCommand}" />
+                        <ComboBox Grid.Column="2" SelectedIndex="{Binding LatestMods.SelectedTypeIndex}" VerticalContentAlignment="Center">
+                            <ComboBoxItem Content="获取最新发布的 10 个模组" />
+                            <ComboBoxItem Content="获取最近更新的 10 个模组" />
+                            <ComboBoxItem Content="获取有史以来最热门的 10 个模组" />
+                        </ComboBox>
+                        <Button Grid.Column="4" Classes="accent" Content="开始获取" Command="{Binding LatestMods.LoadCommand}" />
+                        <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding LatestMods.ErrorText}" Foreground="{DynamicResource StatusRedBrush}" MaxWidth="420" TextWrapping="Wrap"
+                                       IsVisible="{Binding LatestMods.ErrorText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <ProgressBar IsIndeterminate="True" Width="90" IsVisible="{Binding LatestMods.IsLoading}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding LatestMods.Cards}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                                    <Grid ColumnDefinitions="224,*" MinHeight="127">
+                                        <Border Grid.Column="0" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1" ClipToBounds="True"
+                                                Width="224" Height="127" VerticalAlignment="Top">
+                                            <Panel>
+                                                <Image Source="{Binding Image}" Stretch="UniformToFill" />
+                                                <TextBlock Text="无预览图" Classes="dim" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           IsVisible="{Binding Image, Converter={x:Static ObjectConverters.IsNull}}" />
+                                            </Panel>
+                                        </Border>
+                                        <Grid Grid.Column="1" Margin="12,0,0,0" RowDefinitions="Auto,Auto,Auto,*,Auto">
+                                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                                <Button Classes="linkBtn" Content="{Binding Title}" FontSize="15" FontWeight="Bold"
+                                                        HorizontalAlignment="Left" Tag="{Binding ModUrl}" Click="OpenLink_Click" />
+                                                <Button Grid.Column="1" Classes="accent" Content="+" FontSize="16" FontWeight="Bold"
+                                                        Width="36" Height="28" Padding="0" Tag="{Binding ModUrl}" Click="DownloadCreate_Click"
+                                                        ToolTip.Tip="用此模组下载并新建项" />
+                                            </Grid>
+                                            <Button Grid.Row="1" Classes="linkBtn dim" Content="{Binding Author}"
+                                                    HorizontalAlignment="Left" Margin="0,2,0,0" Tag="{Binding AuthorUrl}" Click="OpenLink_Click" />
+                                            <TextBlock Grid.Row="2" Text="{Binding StatusLine}" FontWeight="Bold" Foreground="#E8B584" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                            <TextBlock Grid.Row="3" Text="{Binding Summary}" Foreground="Gray" Margin="0,6,0,0" TextWrapping="Wrap"
+                                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Bottom" MaxHeight="48" />
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="尚未获取列表。请先在「设置」填写 NEXUS API Key。" Classes="dim"
+                               IsVisible="{Binding !LatestMods.HasLoaded}" />
+                </StackPanel>
+            </ScrollViewer>
+
             <!-- ======== 集成工具 ======== -->
             <ScrollViewer x:Name="NavTools" HorizontalScrollBarVisibility="Disabled" IsVisible="False">
-                <StackPanel Margin="24,20" Spacing="16" MaxWidth="820" HorizontalAlignment="Left">
-                    <TextBlock Text="集成工具" FontSize="19" FontWeight="Bold" />
-                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="1" Padding="14,10">
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="全局模组安装检查" FontWeight="Bold" />
-                            <TextBlock Text="扫描游戏 Mods 目录中手动安装的模组，一键导入数据库为模组项（自动生成安装规划与版本号）。" Classes="dim" TextWrapping="Wrap" />
-                            <Button Classes="tool" Content="开始扫描并导入" HorizontalAlignment="Left"
-                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Mods.ImportFromGameModsCommand}" />
-                        </StackPanel>
+                <Grid ColumnDefinitions="220,1,*" Margin="0,0,0,8">
+                    <!-- 二级菜单（复刻 WinForms 集成工具 UiTabControlMenu4） -->
+                    <Border Grid.Column="0" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="0,0,1,0">
+                        <ListBox SelectedIndex="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.ToolIndex}"
+                                 Background="Transparent" Margin="0,4">
+                            <ListBox.ItemContainerTheme>
+                                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                    <Setter Property="MinHeight" Value="40" />
+                                    <Setter Property="Padding" Value="16,0" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                    <Setter Property="FontSize" Value="13" />
+                                    <Setter Property="Template">
+                                        <ControlTemplate>
+                                            <Border x:Name="root" Background="Transparent" BorderThickness="3,0,0,0" BorderBrush="Transparent"
+                                                    Padding="{TemplateBinding Padding}" MinHeight="{TemplateBinding MinHeight}">
+                                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                                  HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter>
+                                </ControlTheme>
+                            </ListBox.ItemContainerTheme>
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                </Style>
+                                <Style Selector="ListBoxItem:pointerover /template/ Border#root">
+                                    <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+                                </Style>
+                                <Style Selector="ListBoxItem:selected /template/ Border#root">
+                                    <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource LabelOrangeBrush}" />
+                                </Style>
+                                <Style Selector="ListBoxItem:selected">
+                                    <Setter Property="Foreground" Value="{DynamicResource LabelOrangeBrush}" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Style>
+                            </ListBox.Styles>
+                            <ListBoxItem>SMAPI 安装管理器</ListBoxItem>
+                            <ListBoxItem>全局模组安装检查</ListBoxItem>
+                            <ListBoxItem>存档编辑器</ListBoxItem>
+                            <ListBoxItem>批量分发管理</ListBoxItem>
+                        </ListBox>
                     </Border>
-                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="1" Padding="14,10">
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="批量分发管理（导出预设）" FontWeight="Bold" />
-                            <TextBlock Text="在「管理模组 → 更多操作」中把模组项加入导出预设，在此批量导出为 .smuimpak 分发包。" Classes="dim" TextWrapping="Wrap" />
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Button Classes="tool" Content="批量导出预设..."
-                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Mods.ExportPresetCommand}" />
-                                <Button Classes="tool" Content="清空导出预设"
-                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Mods.ClearPresetCommand}" />
+
+                    <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="24,18" Spacing="16" MaxWidth="860" HorizontalAlignment="Left">
+
+                            <!-- ===== 0 SMAPI 安装管理器 ===== -->
+                            <StackPanel Spacing="16"
+                                        IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.ToolIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=0}">
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="下载 SMAPI" Classes="sectionTitle" />
+                                        <TextBlock Text="从 GitHub（Pathoschild/SMAPI）获取发行版文件列表并下载安装包。" Classes="dim" />
+                                        <ListBox ItemsSource="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.AvailableFiles}"
+                                                 SelectedIndex="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.AvailableIndex}"
+                                                 MinHeight="100" MaxHeight="180" />
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Classes="tool" Content="刷新文件"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.RefreshFilesCommand}" />
+                                            <Button Classes="accent" Content="下载选择的文件"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.DownloadSelectedCommand}" />
+                                            <Button Classes="tool" Content="取消下载"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.CancelDownloadCommand}" />
+                                        </StackPanel>
+                                        <StackPanel Spacing="4">
+                                            <ProgressBar Minimum="0" Maximum="100"
+                                                         Value="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.DownloadPercent}"
+                                                         Height="6" />
+                                            <TextBlock Classes="dim"
+                                                       Text="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.StatusText}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="安装 / 卸载" Classes="sectionTitle" />
+                                        <TextBlock Text="选择已下载的 SMAPI 安装包，解压后运行官方 SMAPI.Installer.exe（--no-prompt 静默安装到游戏目录）。" Classes="dim" TextWrapping="Wrap" />
+                                        <ListBox ItemsSource="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.DownloadedFiles}"
+                                                 SelectedIndex="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.DownloadedIndex}"
+                                                 MinHeight="80" MaxHeight="140" />
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Classes="tool" Content="刷新已下载文件"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.RefreshDownloadedCommand}" />
+                                            <Button Classes="accent" Content="运行安装"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.InstallCommand}" />
+                                            <Button Classes="danger" Content="运行卸载"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.UninstallCommand}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="清理空间" Classes="sectionTitle" />
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Classes="tool" Content="清理下载"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.ClearDownloadCommand}" />
+                                            <Button Classes="tool" Content="清理解压"
+                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.ClearDecompressCommand}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
+
+                            <!-- ===== 1 全局模组安装检查 ===== -->
+                            <Border Classes="card"
+                                    IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.ToolIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=1}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="全局模组安装检查" FontWeight="Bold" />
+                                    <TextBlock Text="扫描游戏 Mods 目录中手动安装的模组，一键导入数据库为模组项（自动生成安装规划与版本号）。" Classes="dim" TextWrapping="Wrap" />
+                                    <Button Classes="tool" Content="开始扫描并导入" HorizontalAlignment="Left"
+                                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Mods.ImportFromGameModsCommand}" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ===== 2 存档编辑器 ===== -->
+                            <Border Classes="card"
+                                    IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.ToolIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=2}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="存档编辑器" FontWeight="Bold" />
+                                    <TextBlock Classes="dim" Text="该工具来自 WinForms 版，暂未在 Avalonia 版提供。" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ===== 3 批量分发管理 ===== -->
+                            <Border Classes="card"
+                                    IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Tools.ToolIndex, Converter={x:Static v:IndexEqualsConverter.Instance}, ConverterParameter=3}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="批量分发管理（导出预设）" FontWeight="Bold" />
+                                    <TextBlock Text="在「管理模组 → 模组项菜单/右键菜单」中把模组项加入导出预设，在此批量导出为 .smuimpak 分发包。" Classes="dim" TextWrapping="Wrap" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Classes="tool" Content="批量导出预设..."
+                                                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Mods.ExportPresetCommand}" />
+                                        <Button Classes="tool" Content="清空导出预设"
+                                                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Mods.ClearPresetCommand}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
                         </StackPanel>
-                    </Border>
-                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="#2E2E2E" BorderThickness="1" Padding="14,10">
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="批量创建模组项" FontWeight="Bold" />
-                            <TextBlock Text="在「管理模组 → 更多操作 → 批量创建项」中，粘贴多行名称一次性创建模组项。" Classes="dim" TextWrapping="Wrap" />
-                            <Button Classes="tool" Content="前往管理模组" HorizontalAlignment="Left" Click="GoMods_Click" />
-                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </ScrollViewer>
+            <!-- ======== 更新记录 ======== -->
+            <ScrollViewer x:Name="NavUpdateLog" HorizontalScrollBarVisibility="Disabled" IsVisible="False">
+                <StackPanel Margin="24,20" Spacing="12" MaxWidth="900" HorizontalAlignment="Left">
+                    <TextBlock Text="更新记录" FontSize="19" FontWeight="Bold" />
+                    <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush1}" BorderThickness="1" Padding="14,10">
+                        <SelectableTextBlock x:Name="UpdateLogText" FontSize="12.5" TextWrapping="Wrap" LineHeight="22" />
                     </Border>
                 </StackPanel>
             </ScrollViewer>

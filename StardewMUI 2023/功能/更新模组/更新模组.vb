@@ -25,18 +25,16 @@ Public Class 更新模组
                                                    Form1.TabPageNEXUS下载模式.Text = "NEXUS 下载模式：Premium"
                                                End Sub
 
-        If DLC.DLC解锁标记.UpdateModItemExtension Then
-            AddHandler 全局键盘钩子.自定义全局键盘事件, Sub(e)
-                                             If Form1.UiTabControl1.SelectedTab IsNot Form1.TabPage下载更新 Then Exit Sub
-                                             If Form1.UiTabControlMenu3.SelectedTab IsNot Form1.TabPage选择要下载的文件 Then Exit Sub
-                                             If DLC6全局快捷键要触发的下载项 Is Nothing Then Exit Sub
-                                             If e = Keys.N Then DLC6全局快捷键要触发的下载项.PerformClick()
-                                         End Sub
-        End If
+        AddHandler 全局键盘钩子.自定义全局键盘事件, Sub(e)
+                                         If Form1.UiTabControl1.SelectedTab IsNot Form1.TabPage下载更新 Then Exit Sub
+                                         If Form1.UiTabControlMenu3.SelectedTab IsNot Form1.TabPage选择要下载的文件 Then Exit Sub
+                                         If 快捷键要触发的下载项 Is Nothing Then Exit Sub
+                                         If e = Keys.N Then 快捷键要触发的下载项.PerformClick()
+                                     End Sub
 
     End Sub
 
-    Public Shared Property DLC6全局快捷键要触发的下载项 As Button = Nothing
+    Public Shared Property 快捷键要触发的下载项 As Button = Nothing
 
     Public Shared Function 生成更新地址表菜单() As 暗黑菜单条控件本体
         Dim a As New 暗黑菜单条控件本体
@@ -56,16 +54,14 @@ Public Class 更新模组
             AddHandler a.Items.Add("复制链接").Click, Sub(s, e) Clipboard.SetText("https://www.nexusmods.com/stardewvalley/mods/" & s1)
             AddHandler a.Items.Add("从 NEXUS API 更新", My.Resources.NEXUS).Click, Sub(s, e) 获取NEXUS文件列表(s1, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text), Form1.ListView2.SelectedItems(0).SubItems(1).Text.Split({" → ", " ← "}, StringSplitOptions.None)(0))
         Next
-        If DLC.DLC解锁标记.CustomInputExtension Then
-            If a.Items.Count <> 0 Then a.Items.Add(New ToolStripSeparator)
-            AddHandler a.Items.Add("自由输入 NEXUS ID", My.Resources.NEXUS).Click, Sub(s, e)
-                                                                                   Dim d1 As New 输入对话框("DLC1", "输入你要访问的 NEXUS 模组 ID")
-                                                                                   d1.TranslateButtonText("确定", "取消")
-                                                                                   Dim d1r As String = d1.ShowDialog(Form1)
-                                                                                   If a.Items.Count <> 0 And 管理模组.当前项信息_ModDropID列表.Count > 0 Then a.Items.Add(New ToolStripSeparator)
-                                                                                   If d1r <> "" Then 获取NEXUS文件列表(d1r, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
-                                                                               End Sub
-        End If
+        If a.Items.Count <> 0 Then a.Items.Add(New ToolStripSeparator)
+        AddHandler a.Items.Add("自由输入 NEXUS ID", My.Resources.NEXUS).Click, Sub(s, e)
+                                                                               Dim d1 As New 输入对话框("打开模组页面", "输入你要访问的 NEXUS 模组 ID")
+                                                                               d1.TranslateButtonText("确定", "取消")
+                                                                               Dim d1r As String = d1.ShowDialog(Form1)
+                                                                               If a.Items.Count <> 0 And 管理模组.当前项信息_ModDropID列表.Count > 0 Then a.Items.Add(New ToolStripSeparator)
+                                                                               If d1r <> "" Then 获取NEXUS文件列表(d1r, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
+                                                                           End Sub
 
         If a.Items.Count <> 0 And 管理模组.当前项信息_ModDropID列表.Count > 0 Then a.Items.Add(New ToolStripSeparator)
         For i = 0 To 管理模组.当前项信息_ModDropID列表.Count - 1
@@ -74,15 +70,13 @@ Public Class 更新模组
             AddHandler a.Items.Add("复制链接").Click, Sub(s, e) Clipboard.SetText("https://www.moddrop.com/stardew-valley/mods/" & s2)
             AddHandler a.Items.Add("从 ModDrop 更新", My.Resources.ModDrop_White32).Click, Sub(s, e) 转到浏览器等待ModDrop下载链接(s2, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
         Next
-        If DLC.DLC解锁标记.CustomInputExtension Then
-            If a.Items.Count <> 0 Then a.Items.Add(New ToolStripSeparator)
-            AddHandler a.Items.Add("自由输入 ModDrop ID", My.Resources.ModDrop_White32).Click, Sub(s, e)
-                                                                                               Dim d1 As New 输入对话框("DLC1", "输入你要访问的 ModDrop 模组 ID")
-                                                                                               d1.TranslateButtonText("确定", "取消")
-                                                                                               Dim d1r As String = d1.ShowDialog(Form1)
-                                                                                               If d1r <> "" Then 转到浏览器等待ModDrop下载链接(d1r, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
-                                                                                           End Sub
-        End If
+        If a.Items.Count <> 0 Then a.Items.Add(New ToolStripSeparator)
+        AddHandler a.Items.Add("自由输入 ModDrop ID", My.Resources.ModDrop_White32).Click, Sub(s, e)
+                                                                                           Dim d1 As New 输入对话框("打开模组页面", "输入你要访问的 ModDrop 模组 ID")
+                                                                                           d1.TranslateButtonText("确定", "取消")
+                                                                                           Dim d1r As String = d1.ShowDialog(Form1)
+                                                                                           If d1r <> "" Then 转到浏览器等待ModDrop下载链接(d1r, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
+                                                                                       End Sub
 
         If a.Items.Count <> 0 And 管理模组.当前项信息_Github仓库列表.Count > 0 Then a.Items.Add(New ToolStripSeparator)
         For i = 0 To 管理模组.当前项信息_Github仓库列表.Count - 1
@@ -91,15 +85,13 @@ Public Class 更新模组
             AddHandler a.Items.Add("复制链接").Click, Sub(s, e) Clipboard.SetText("https://github.com/" & s2)
             AddHandler a.Items.Add("从 GitHub 更新", My.Resources.Github).Click, Sub(s, e) 获取Github文件列表(s2, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
         Next
-        If DLC.DLC解锁标记.CustomInputExtension Then
-            If a.Items.Count <> 0 Then a.Items.Add(New ToolStripSeparator)
-            AddHandler a.Items.Add("自由输入 GitHub 仓库名", My.Resources.Github).Click, Sub(s, e)
-                                                                                      Dim d1 As New 输入对话框("DLC1", "输入你要访问的 GitHub 仓库名，格式：用户名/仓库名")
-                                                                                      d1.TranslateButtonText("确定", "取消")
-                                                                                      Dim d1r As String = d1.ShowDialog(Form1)
-                                                                                      If d1r <> "" Then 获取Github文件列表(d1r, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
-                                                                                  End Sub
-        End If
+        If a.Items.Count <> 0 Then a.Items.Add(New ToolStripSeparator)
+        AddHandler a.Items.Add("自由输入 GitHub 仓库名", My.Resources.Github).Click, Sub(s, e)
+                                                                                  Dim d1 As New 输入对话框("打开模组页面", "输入你要访问的 GitHub 仓库名，格式：用户名/仓库名")
+                                                                                  d1.TranslateButtonText("确定", "取消")
+                                                                                  Dim d1r As String = d1.ShowDialog(Form1)
+                                                                                  If d1r <> "" Then 获取Github文件列表(d1r, Path.Combine(管理模组2.检查并返回当前所选子库路径(False), Form1.ListView2.SelectedItems(0).SubItems(3).Text, Form1.ListView2.SelectedItems(0).Text))
+                                                                              End Sub
 
         If a.Items.Count = 0 Then
             AddHandler a.Items.Add("没有可用的选项", My.Resources.模块).Click, Sub(s, e) Return
@@ -132,7 +124,7 @@ Public Class 更新模组
         转到下载文件页面()
         正在处理的NEXUSID = 模组ID
         是否取消操作 = False
-        DLC6全局快捷键要触发的下载项 = Nothing
+        快捷键要触发的下载项 = Nothing
         Form1.Label34.Text = "   正在连接到 NEXUS API 获取文件列表 ..."
         Form1.Panel34.Controls.Clear()
         Form1.Panel34.Enabled = True
@@ -148,7 +140,7 @@ Public Class 更新模组
 
         Dim 自动判断最合适的 As Long = 0
 
-        If DLC.DLC解锁标记.UpdateModItemExtension And 用于自动选择的旧版本号 <> "" Then
+        If 用于自动选择的旧版本号 <> "" Then
             If FileIO.FileSystem.FileExists(Path.Combine(模组项绝对路径, "NexusFileName")) Then
                 Dim str2 = FileIO.FileSystem.ReadAllText(Path.Combine(模组项绝对路径, "NexusFileName"))
                 Dim fa1 = NEXUS判断合适的文件标题.尝试判断(str2, 用于自动选择的旧版本号, a.FileListData)
@@ -198,12 +190,10 @@ Public Class 更新模组
         Dim 独立容器 As New Panel With {.Dock = DockStyle.Top, .Padding = New Padding(30, 10, 30, 7), .Height = 107 * 界面控制.DPI}
         Dim 标题文字 As New LinkLabel With {.AutoSize = False, .Dock = DockStyle.Top, .Height = 26 * 界面控制.DPI, .TextAlign = ContentAlignment.TopLeft, .Font = New Font(Form1.Font.Name, 12), .LinkColor = If(设置.全局设置数据("DownloadFileUseSMUI5Color") = True, Color1.绿色, Color1.蓝色), .LinkBehavior = LinkBehavior.HoverUnderline, .Text = Data.name}
 
-        If DLC.DLC解锁标记.UpdateModItemExtension Then
-            If 是自动判断最合适的 And DLC6全局快捷键要触发的下载项 Is Nothing Then
-                独立容器.BackColor = ColorTranslator.FromWin32(RGB(48, 48, 48))
-                DLC6全局快捷键要触发的下载项 = New Button
-                AddHandler DLC6全局快捷键要触发的下载项.Click, Sub() 标题文字点击事件(Data.name, Data.file_id, 模组项绝对路径, 结束后切换到选项卡)
-            End If
+        If 是自动判断最合适的 And 快捷键要触发的下载项 Is Nothing Then
+            独立容器.BackColor = ColorTranslator.FromWin32(RGB(48, 48, 48))
+            快捷键要触发的下载项 = New Button
+            AddHandler 快捷键要触发的下载项.Click, Sub() 标题文字点击事件(Data.name, Data.file_id, 模组项绝对路径, 结束后切换到选项卡)
         End If
 
         Dim 状态文字 As New Label With {.AutoSize = False, .Dock = DockStyle.Top, .Height = 21 * 界面控制.DPI, .TextAlign = ContentAlignment.TopLeft, .Font = New Font(Form1.Font.Name, 10), .ForeColor = If(设置.全局设置数据("DownloadFileUseSMUI5Color") = True, Color1.橙色, Color1.绿色)}
